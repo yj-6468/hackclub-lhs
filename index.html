@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hack Club LHS OS</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <meta
+      name="description"
+      content="A Y2K desktop OS experience for Hack Club at Lexington High School."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Jersey+15&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=photo-grid-4col" />
+  </head>
+  <body>
+    <div class="os-shell" data-theme="paper">
+      <header class="menubar" aria-label="Desktop menu bar">
+        <button class="start-menu" type="button" data-reset-desktop>
+          <span class="start-mark" aria-hidden="true">
+            <img src="assets/hack-club-sticker.png" alt="" />
+          </span>
+          <span>Hack Club</span>
+        </button>
+
+        <nav class="menu-links" aria-label="System menu">
+          <button type="button" data-open="about">About</button>
+          <button type="button" data-open="join">Join</button>
+          <button type="button" data-open="projects">Projects</button>
+          <div class="menu-item">
+            <button type="button" class="menu-trigger" data-dropdown="sponsors" aria-haspopup="true" aria-expanded="false">Sponsors</button>
+            <div class="menu-dropdown" data-dropdown-panel="sponsors" role="menu">
+              <a class="menu-dropdown-item" href="https://codewisp.ai/" target="_blank" rel="noreferrer" role="menuitem"><img src="assets/sponsors/codewisp.png" alt="" />Codewisp</a>
+              <a class="menu-dropdown-item" href="https://www.endstack.com/" target="_blank" rel="noreferrer" role="menuitem"><img src="assets/sponsors/endstack.png" alt="" />Endstack</a>
+              <a class="menu-dropdown-item" href="https://featherless.ai/" target="_blank" rel="noreferrer" role="menuitem"><img src="assets/sponsors/featherless.png" alt="" />Featherless AI</a>
+              <a class="menu-dropdown-item" href="https://hackclub.com/" target="_blank" rel="noreferrer" role="menuitem"><img src="assets/sponsors/hack-club.png" alt="" />Hack Club</a>
+            </div>
+          </div>
+          <button type="button" data-open="lexhack">LexHack '26</button>
+          <div class="menu-item">
+            <button type="button" class="menu-trigger" data-dropdown="theme" aria-haspopup="true" aria-expanded="false">Theme</button>
+            <div class="menu-dropdown" data-dropdown-panel="theme" role="menu">
+              <button class="menu-dropdown-item" type="button" data-theme-choice="paper" role="menuitem" style="--swatch:#ff7f50">Paper</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="orbit" role="menuitem" style="--swatch:#b4a7ff">Orbit</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="arcade" role="menuitem" style="--swatch:#ff2bd6">Arcade</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="matrix" role="menuitem" style="--swatch:#a6ff64">Matrix</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="candy" role="menuitem" style="--swatch:#ff7ab6">Candy</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="mono" role="menuitem" style="--swatch:#38bdf8">Mono</button>
+            </div>
+          </div>
+        </nav>
+
+        <div class="system-tray" aria-label="System status">
+          <a class="social-link" href="https://discord.gg/kztRuJzmX" target="_blank" rel="noreferrer">
+            Discord
+          </a>
+          <a class="social-link" href="https://www.instagram.com/lexhackclub" target="_blank" rel="noreferrer">
+            Instagram
+          </a>
+          <span data-clock>Thu 3:20 PM</span>
+        </div>
+      </header>
+
+      <main class="desktop" id="top" aria-label="Hack Club LHS desktop">
+        <div class="desktop-grid" aria-hidden="true"></div>
+
+        <section class="boot-card" aria-label="Boot status">
+          <p>hackclub@lexington:~$ boot HackClubOS</p>
+          <h1>Hack Club LHS</h1>
+        </section>
+
+        <nav class="desktop-icons" aria-label="Desktop apps">
+          <button class="desktop-icon" type="button" data-open="welcome">
+            <span class="icon-art icon-terminal"></span>
+            <span>Welcome</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="join">
+            <span class="icon-art icon-exe"></span>
+            <span>Join.exe</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="schedule">
+            <span class="icon-art icon-calendar"></span>
+            <span>Schedule</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="projects">
+            <span class="icon-art icon-folder"></span>
+            <span>Projects</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="hackathon">
+            <span class="icon-art icon-hackathon"></span>
+            <span>Hackathon</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="leaders">
+            <span class="icon-art icon-leaders"></span>
+            <span>Leaders</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="gallery">
+            <span class="icon-art icon-gallery"></span>
+            <span>Gallery</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="faq">
+            <span class="icon-art icon-note"></span>
+            <span>FAQ.txt</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="themes">
+            <span class="icon-art icon-theme"></span>
+            <span>Themes</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="lexhack">
+            <span class="icon-art icon-chip"></span>
+            <span>LexHack '26</span>
+          </button>
+          <button class="desktop-icon" type="button" data-external="https://hackclub.com/">
+            <span class="icon-art icon-hackclub"></span>
+            <span>Hack Club</span>
+          </button>
+          <button class="desktop-icon" type="button" data-external="https://hackclub.com/slack/">
+            <span class="icon-art icon-slack"></span>
+            <span>Hack Club Slack</span>
+          </button>
+          <button class="desktop-icon" type="button" data-open="sponsors">
+            <span class="icon-art icon-sponsors"></span>
+            <span>Sponsors</span>
+          </button>
+          <button class="desktop-icon" type="button" data-external="https://discord.gg/kztRuJzmX">
+            <span class="icon-art icon-discord"></span>
+            <span>LexHackClub Discord</span>
+          </button>
+          <button class="desktop-icon" type="button" data-external="https://www.instagram.com/lexhackclub">
+            <span class="icon-art icon-instagram"></span>
+            <span>LexHackClub Instagram</span>
+          </button>
+        </nav>
+
+        <section
+          class="app-window is-open"
+          data-window="welcome"
+          style="--x: 3vw; --y: 5vh; --w: 500px;"
+          aria-label="Welcome window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close welcome"></button>
+              <button type="button" data-minimize aria-label="Minimize welcome"></button>
+              <button type="button" data-maximize aria-label="Maximize welcome"></button>
+            </div>
+            <span>Welcome - hackclub@lhs</span>
+          </div>
+          <div class="window-content terminal-content">
+            <p><span>$</span> who?</p>
+            <p class="output">students at Lexington High School</p>
+            <p><span>$</span> open after_school.md</p>
+            <p>
+              We meet after school to build real websites, games, hardware, and
+              side projects. No coding experience required.
+            </p>
+            <div class="quick-actions">
+              <button type="button" data-open="join">run join.exe</button>
+              <button type="button" data-open="projects">open projects</button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window is-open"
+          data-window="schedule"
+          style="--x: 2vw; --y: 42vh; --w: 390px;"
+          aria-label="Schedule window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close schedule"></button>
+              <button type="button" data-minimize aria-label="Minimize schedule"></button>
+              <button type="button" data-maximize aria-label="Maximize schedule"></button>
+            </div>
+            <span>Schedule</span>
+          </div>
+          <div class="window-content">
+            <dl class="spec-list">
+              <div>
+                <dt>When</dt>
+                <dd>Every Thursday, 3:20-4:30 PM</dd>
+              </div>
+              <div>
+                <dt>Where</dt>
+                <dd>Room 215</dd>
+              </div>
+              <div>
+                <dt>What to bring</dt>
+                <dd>Bringing your personal laptop would be nice.</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="about"
+          style="--x: 18vw; --y: 18vh; --w: 560px;"
+          aria-label="About window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close about"></button>
+              <button type="button" data-minimize aria-label="Minimize about"></button>
+              <button type="button" data-maximize aria-label="Maximize about"></button>
+            </div>
+            <span>About Hack Club LHS</span>
+          </div>
+          <div class="window-content">
+            <div class="about-grid">
+              <article>
+                <span>01</span>
+                <h2>Make anything</h2>
+                <p>Sites, apps, games, hardware, AI experiments, and whatever you want to make next.</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h2>Start from scratch</h2>
+                <p>New members can join without coding experience and leave with a first commit. We will teach everything.</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h2>Build publicly</h2>
+                <p>Projects are for portfolios, friends, and the internet.</p>
+              </article>
+              <article>
+                <span>04</span>
+                <h2>Eat snacks</h2>
+                <p>Free food is part of the weekly meeting!</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="join"
+          style="--x: 54vw; --y: 12vh; --w: 430px;"
+          aria-label="Join window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close join"></button>
+              <button type="button" data-minimize aria-label="Minimize join"></button>
+              <button type="button" data-maximize aria-label="Maximize join"></button>
+            </div>
+            <span>Join.exe</span>
+          </div>
+          <div class="window-content install-window">
+            <h2>Install Hack Club?</h2>
+            <p>No application or tryout. You can just come to Room 215 after school on Thursday.</p>
+            <div class="progress" aria-label="Installation progress"><span></span></div>
+            <a class="primary-link" href="https://discord.gg/kztRuJzmX" target="_blank" rel="noreferrer">
+              Open Discord
+            </a>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="projects"
+          style="--x: 16vw; --y: 14vh; --w: 680px;"
+          aria-label="Projects window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close projects"></button>
+              <button type="button" data-minimize aria-label="Minimize projects"></button>
+              <button type="button" data-maximize aria-label="Maximize projects"></button>
+            </div>
+            <span>Projects</span>
+          </div>
+          <div class="window-content file-browser">
+            <article>
+              <span class="file-type">event</span>
+              <h2>LexHack '26</h2>
+              <p>Lexington's first in-person, student-led hackathon with the theme "Build for someone"</p>
+              <p class="event-status"><span class="event-status-label">Past event ·</span> <span class="event-status-date">June 6–13, 2026</span></p>
+              <button type="button" data-open="lexhack">open</button>
+            </article>
+            <article>
+              <span class="file-type">repo</span>
+              <h2>member-projects</h2>
+              <p>Portfolio websites, games, tools, and experiments made by club members.</p>
+              <button type="button" data-open="join">start</button>
+            </article>
+            <article>
+              <span class="file-type">setup</span>
+              <h2>first-commit</h2>
+              <p>Make your first repository, make a change, and push something before the meeting ends.</p>
+              <button type="button" data-open="join">run</button>
+            </article>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="hackathon"
+          style="--x: 28vw; --y: 20vh; --w: 600px;"
+          aria-label="Hackathon window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close hackathon"></button>
+              <button type="button" data-minimize aria-label="Minimize hackathon"></button>
+              <button type="button" data-maximize aria-label="Maximize hackathon"></button>
+            </div>
+            <span>Hackathon</span>
+          </div>
+          <div class="window-content hackathon-content">
+            <h2>Hackathon hub</h2>
+            <p>We host biannual hackathons.</p>
+            <div class="launch-grid" aria-label="LexHack editions">
+              <button class="launch-card" type="button" data-open="lexhack">
+                <strong>LexHack '26</strong>
+                <span class="event-status"><span class="event-status-label">Past event ·</span> <span class="event-status-date">June 6–13, 2026</span></span>
+              </button>
+              <button class="launch-card is-disabled" type="button" disabled>
+                <strong>LexHack '26.2</strong>
+                <span>Upcoming — specific info TBD</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window is-open"
+          data-window="lexhack"
+          style="--x: 51vw; --y: 45vh; --w: 590px; z-index: 6;"
+          aria-label="LexHack '26 window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close LexHack '26"></button>
+              <button type="button" data-minimize aria-label="Minimize LexHack '26"></button>
+              <button type="button" data-maximize aria-label="Maximize LexHack '26"></button>
+            </div>
+            <span>LexHack '26.desktop</span>
+          </div>
+          <div class="window-content lexhack-content">
+            <h2>LexHack '26</h2>
+            <p class="event-status"><span class="event-status-label">Past event ·</span> <span class="event-status-date">June 6–13, 2026</span></p>
+            <p>
+              Lexington's first in-person, student-led hackathon with the theme "Build for someone"
+            </p>
+            <div class="launch-grid" aria-label="LexHack '26 links">
+              <button class="launch-card" type="button" data-open="winners">
+                <strong>Winners</strong>
+                <span>Placements, teams, prizes</span>
+              </button>
+              <button class="launch-card" type="button" data-open="gallery" data-gallery-view="lexhack">
+                <strong>Gallery</strong>
+                <span>Photos and event moments</span>
+              </button>
+              <a class="launch-card" href="https://lexhack26.1.hackclublhs.com/" target="_blank" rel="noreferrer">
+                <strong>LexHack'26 Website</strong>
+                <span>Visit the event website</span>
+              </a>
+              <a class="launch-card" href="https://lexhack-26.devpost.com/" target="_blank" rel="noreferrer">
+                <strong>Devpost</strong>
+                <span>Rules, submissions, updates</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="leaders"
+          style="--x: 18vw; --y: 20vh; --w: 780px;"
+          aria-label="Leaders window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close leaders"></button>
+              <button type="button" data-minimize aria-label="Minimize leaders"></button>
+              <button type="button" data-maximize aria-label="Maximize leaders"></button>
+            </div>
+            <span>Leaders</span>
+          </div>
+          <div class="window-content people-content">
+            <h2>Club leaders</h2>
+            <p>Meet the leadership team.</p>
+            <div class="people-grid">
+              <article class="person-card">
+                <div class="person-photo">
+                  <img src="assets/leader-aaron-li.jpg" alt="Aaron Li" style="object-position: center 42%" onerror="this.style.display='none'" />
+                </div>
+                <h3>Aaron Li</h3>
+                <p>Senior</p>
+              </article>
+              <article class="person-card">
+                <div class="person-photo">
+                  <img src="assets/leader-ren-lin.jpg" alt="Ren Lin" style="object-position: center 30%" onerror="this.style.display='none'" />
+                </div>
+                <h3>Ren Lin</h3>
+                <p>Senior</p>
+              </article>
+              <article class="person-card">
+                <div class="person-photo">
+                  <img src="assets/leader-daniel-lim.jpg" alt="Daniel Lim" style="object-position: center 34%" onerror="this.style.display='none'" />
+                </div>
+                <h3>Daniel Lim</h3>
+                <p>Junior</p>
+              </article>
+              <article class="person-card">
+                <div class="person-photo">
+                  <img src="assets/leader-benjamin-zhang.jpg" alt="Benjamin Zhang" style="object-position: center 20%" onerror="this.style.display='none'" />
+                </div>
+                <h3>Benjamin Zhang</h3>
+                <p>Junior</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window is-open"
+          data-window="gallery"
+          style="--x: 33vw; --y: 5vh; --w: 480px;"
+          aria-label="Gallery window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close gallery"></button>
+              <button type="button" data-minimize aria-label="Minimize gallery"></button>
+              <button type="button" data-maximize aria-label="Maximize gallery"></button>
+            </div>
+            <span>Gallery</span>
+          </div>
+          <div class="window-content gallery-content" data-gallery>
+            <h2>Gallery</h2>
+            <p>Photos from club meetings and LexHack '26.</p>
+
+            <nav class="gallery-crumbs" data-gallery-crumbs aria-label="Gallery breadcrumbs"></nav>
+
+            <div class="gallery-albums" data-gallery-panel="albums">
+              <button class="gallery-album" type="button" data-gallery-album="meetings">
+                <span class="gallery-cover">
+                  <img src="assets/gallery/covers/meetings.jpg" alt="" onerror="this.style.display='none'" />
+                </span>
+                <strong>Meetings</strong>
+                <span>8 photos</span>
+              </button>
+              <button class="gallery-album" type="button" data-gallery-album="lexhack">
+                <span class="gallery-cover">
+                  <img src="assets/gallery/covers/lexhack-26.jpg" alt="" onerror="this.style.display='none'" />
+                </span>
+                <strong>LexHack '26</strong>
+                <span>2 days &middot; 239 photos</span>
+              </button>
+            </div>
+
+            <div class="gallery-folders" data-gallery-panel="lexhack" hidden>
+              <button class="gallery-folder" type="button" data-gallery-folder="day1">
+                <span class="gallery-cover">
+                  <img src="assets/gallery/covers/day-1.jpg" alt="" onerror="this.style.display='none'" />
+                </span>
+                <strong>Day 1</strong>
+                <span>89 photos</span>
+              </button>
+              <button class="gallery-folder" type="button" data-gallery-folder="day2">
+                <span class="gallery-cover">
+                  <img src="assets/gallery/covers/day-2.jpg" alt="" onerror="this.style.display='none'" />
+                </span>
+                <strong>Day 2</strong>
+                <span>150 photos</span>
+              </button>
+            </div>
+
+            <div class="gallery-photo-grid" data-gallery-panel="photos" hidden></div>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="winners"
+          style="--x: 20vw; --y: 18vh; --w: 780px;"
+          aria-label="LexHack '26 winners window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close winners"></button>
+              <button type="button" data-minimize aria-label="Minimize winners"></button>
+              <button type="button" data-maximize aria-label="Maximize winners"></button>
+            </div>
+            <span>LexHack '26 Winners</span>
+          </div>
+          <div class="window-content winners-content">
+            <h2>LexHack '26 winners</h2>
+            <div class="winners-grid">
+              <article class="winner-card">
+                <span class="winner-rank">1st place</span>
+                <div class="winner-image">
+                  <img src="assets/winner-first.jpg" alt="Mr. Narayan's Lab Assistant team at LexHack '26" onerror="this.style.display='none'" />
+                </div>
+                <h3>Mr. Narayan's Lab Assistant</h3>
+                <p><strong>Members:</strong> Jayant Krishnan, Kaden Shin, Vivek Varanasi</p>
+                <p><strong>Prize:</strong> $400 cash</p>
+              </article>
+              <article class="winner-card">
+                <span class="winner-rank">2nd place</span>
+                <div class="winner-image">
+                  <img src="assets/winner-second.jpg" alt="WindMesh team at LexHack '26" onerror="this.style.display='none'" />
+                </div>
+                <h3>WindMesh</h3>
+                <p><strong>Members:</strong> Atharva Ranjan, Toshan Goswami</p>
+                <p><strong>Prize:</strong> $100 cash + $300 Featherless credits</p>
+              </article>
+              <article class="winner-card">
+                <span class="winner-rank">People's choice</span>
+                <div class="winner-image">
+                  <img src="assets/winner-people.jpg" alt="CourseSearch by Conor Byrne at LexHack '26" onerror="this.style.display='none'" />
+                </div>
+                <h3>CourseSearch</h3>
+                <p><strong>Member:</strong> Conor Byrne</p>
+                <p><strong>Prize:</strong> $100 cash</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window is-open is-active"
+          data-window="sponsors"
+          style="--x: 25vw; --y: 43vh; --w: 720px;"
+          aria-label="Sponsors window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close sponsors"></button>
+              <button type="button" data-minimize aria-label="Minimize sponsors"></button>
+              <button type="button" data-maximize aria-label="Maximize sponsors"></button>
+            </div>
+            <span>Sponsors</span>
+          </div>
+          <div class="window-content sponsors-content">
+            <h2>Sponsors</h2>
+            <p>Huge thanks to the sponsors who have supporeted us. Click any logo to visit them.</p>
+            <div class="sponsor-grid">
+              <a class="sponsor-card" href="https://codewisp.ai/" target="_blank" rel="noreferrer">
+                <span class="sponsor-logo" aria-hidden="true">
+                  <img src="assets/sponsors/codewisp.png" alt="" />
+                </span>
+                <h3>Codewisp</h3>
+                <p>codewisp.ai</p>
+              </a>
+              <a class="sponsor-card" href="https://www.endstack.com/" target="_blank" rel="noreferrer">
+                <span class="sponsor-logo" aria-hidden="true">
+                  <img src="assets/sponsors/endstack.png" alt="" />
+                </span>
+                <h3>Endstack</h3>
+                <p>endstack.com</p>
+              </a>
+              <a class="sponsor-card" href="https://featherless.ai/" target="_blank" rel="noreferrer">
+                <span class="sponsor-logo" aria-hidden="true">
+                  <img src="assets/sponsors/featherless.png" alt="" />
+                </span>
+                <h3>Featherless AI</h3>
+                <p>featherless.ai</p>
+              </a>
+              <a class="sponsor-card" href="https://hackclub.com/" target="_blank" rel="noreferrer">
+                <span class="sponsor-logo" aria-hidden="true">
+                  <img src="assets/sponsors/hack-club.png" alt="" />
+                </span>
+                <h3>Hack Club</h3>
+                <p>hackclub.com</p>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="faq"
+          style="--x: 59vw; --y: 13vh; --w: 360px;"
+          aria-label="FAQ window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close FAQ"></button>
+              <button type="button" data-minimize aria-label="Minimize FAQ"></button>
+              <button type="button" data-maximize aria-label="Maximize FAQ"></button>
+            </div>
+            <span>FAQ.txt</span>
+          </div>
+          <div class="window-content faq-content">
+            <h2>FAQ.txt</h2>
+            <details open>
+              <summary>Do I need to know code?</summary>
+              <p>No. We are here to teach everyone!</p>
+            </details>
+            <details>
+              <summary>Does it cost money?</summary>
+              <p>No. It is free to join.</p>
+            </details>
+            <details>
+              <summary>What should I bring?</summary>
+              <p>A laptop if you have one. But you can also use the school iMac.</p>
+            </details>
+          </div>
+        </section>
+
+        <section
+          class="app-window"
+          data-window="themes"
+          style="--x: 54vw; --y: 18vh; --w: 430px;"
+          aria-label="Themes window"
+        >
+          <div class="titlebar">
+            <div class="titlebar-controls">
+              <button type="button" data-close aria-label="Close themes"></button>
+              <button type="button" data-minimize aria-label="Minimize themes"></button>
+              <button type="button" data-maximize aria-label="Maximize themes"></button>
+            </div>
+            <span>Appearance</span>
+          </div>
+          <div class="window-content theme-content">
+            <h2>Choose theme</h2>
+            <div class="theme-grid" role="list" aria-label="Available themes">
+              <button class="theme-choice is-selected" type="button" data-theme-choice="paper" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #fff4c2"></i>
+                  <i style="--swatch: #ff7f50"></i>
+                  <i style="--swatch: #2ec4b6"></i>
+                </span>
+                <strong>Paper</strong>
+                <span>notebook collage + soft OS</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="orbit" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #b4a7ff"></i>
+                  <i style="--swatch: #43ffd2"></i>
+                  <i style="--swatch: #ffcf56"></i>
+                </span>
+                <strong>Orbit</strong>
+                <span>space console + starfield</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="arcade" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #adff2f"></i>
+                  <i style="--swatch: #ff2bd6"></i>
+                  <i style="--swatch: #24f6ff"></i>
+                </span>
+                <strong>Arcade</strong>
+                <span>neon cabinet + pixel arena</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="matrix" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #a6ff64"></i>
+                  <i style="--swatch: #6de0ff"></i>
+                  <i style="--swatch: #ff5e8a"></i>
+                </span>
+                <strong>Matrix</strong>
+                <span>terminal wallpaper + green glow</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="candy" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #ff7ab6"></i>
+                  <i style="--swatch: #ffe66d"></i>
+                  <i style="--swatch: #8cf6ff"></i>
+                </span>
+                <strong>Candy</strong>
+                <span>sticker stripes + bright Y2K</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="mono" role="listitem">
+                <span class="theme-swatches" aria-hidden="true">
+                  <i style="--swatch: #f8fafc"></i>
+                  <i style="--swatch: #94a3b8"></i>
+                  <i style="--swatch: #38bdf8"></i>
+                </span>
+                <strong>Mono</strong>
+                <span>gray grid + clean blue accent</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="taskbar" aria-label="Open apps">
+        <button class="task-button is-active" type="button" data-open="welcome">
+          <span class="icon-art icon-terminal" aria-hidden="true"></span>
+          <span class="dock-label">Welcome</span>
+        </button>
+        <button class="task-button" type="button" data-open="join">
+          <span class="icon-art icon-exe" aria-hidden="true"></span>
+          <span class="dock-label">Join.exe</span>
+        </button>
+        <button class="task-button is-active" type="button" data-open="schedule">
+          <span class="icon-art icon-calendar" aria-hidden="true"></span>
+          <span class="dock-label">Schedule</span>
+        </button>
+        <button class="task-button" type="button" data-open="projects">
+          <span class="icon-art icon-folder" aria-hidden="true"></span>
+          <span class="dock-label">Projects</span>
+        </button>
+        <button class="task-button" type="button" data-open="hackathon">
+          <span class="icon-art icon-hackathon" aria-hidden="true"></span>
+          <span class="dock-label">Hackathon</span>
+        </button>
+        <button class="task-button" type="button" data-open="leaders">
+          <span class="icon-art icon-leaders" aria-hidden="true"></span>
+          <span class="dock-label">Leaders</span>
+        </button>
+        <button class="task-button is-active" type="button" data-open="gallery">
+          <span class="icon-art icon-gallery" aria-hidden="true"></span>
+          <span class="dock-label">Gallery</span>
+        </button>
+        <button class="task-button" type="button" data-open="faq">
+          <span class="icon-art icon-note" aria-hidden="true"></span>
+          <span class="dock-label">FAQ.txt</span>
+        </button>
+        <button class="task-button" type="button" data-open="themes">
+          <span class="icon-art icon-theme" aria-hidden="true"></span>
+          <span class="dock-label">Themes</span>
+        </button>
+        <button class="task-button is-active" type="button" data-open="lexhack">
+          <span class="icon-art icon-chip" aria-hidden="true"></span>
+          <span class="dock-label">LexHack '26</span>
+        </button>
+        <button class="task-button" type="button" data-external="https://hackclub.com/">
+          <span class="icon-art icon-hackclub" aria-hidden="true"></span>
+          <span class="dock-label">Hack Club</span>
+        </button>
+        <button class="task-button" type="button" data-external="https://hackclub.com/slack/">
+          <span class="icon-art icon-slack" aria-hidden="true"></span>
+          <span class="dock-label">Hack Club Slack</span>
+        </button>
+        <button class="task-button is-active" type="button" data-open="sponsors">
+          <span class="icon-art icon-sponsors" aria-hidden="true"></span>
+          <span class="dock-label">Sponsors</span>
+        </button>
+        <button class="task-button" type="button" data-external="https://discord.gg/kztRuJzmX">
+          <span class="icon-art icon-discord" aria-hidden="true"></span>
+          <span class="dock-label">LexHackClub Discord</span>
+        </button>
+        <button class="task-button" type="button" data-external="https://www.instagram.com/lhshackclub/">
+          <span class="icon-art icon-instagram" aria-hidden="true"></span>
+          <span class="dock-label">LexHackClub Instagram</span>
+        </button>
+      </footer>
+    </div>
+
+    <div class="lightbox" data-lightbox hidden>
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close photo viewer">&times;</button>
+      <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Previous photo">&lsaquo;</button>
+      <figure class="lightbox-figure">
+        <img data-lightbox-img alt="" />
+        <figcaption data-lightbox-caption></figcaption>
+      </figure>
+      <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Next photo">&rsaquo;</button>
+    </div>
+
+    <script src="script.js?v=gallery-dock-anchor"></script>
+  </body>
+</html>
