@@ -225,6 +225,7 @@ function moveInteraction(event) {
     drag.moved = true;
     drag.win.classList.add(drag.edge ? 'is-resizing' : 'is-dragging');
     shell.classList.add('is-grabbing');
+    if (drag.edge) shell.dataset.resizeEdge = drag.edge;
     if (drag.originalMode !== 'normal') {
       drag.win.dataset.mode = 'normal'; drag.win.classList.remove('is-maximized');
       if (!drag.edge) {
@@ -244,7 +245,7 @@ function endInteraction(cancel = false) {
   const drag = interaction; if (!drag) return;
   interaction = null;
   if (drag.target.hasPointerCapture(drag.pointerId)) drag.target.releasePointerCapture(drag.pointerId);
-  drag.win.classList.remove('is-dragging', 'is-resizing'); shell.classList.remove('is-grabbing'); showSnap(null);
+  drag.win.classList.remove('is-dragging', 'is-resizing'); shell.classList.remove('is-grabbing'); delete shell.dataset.resizeEdge; showSnap(null);
   if (!drag.moved) return;
   if (cancel) {
     normalBounds.set(drag.win.dataset.window, drag.originalNormal); drag.win.dataset.mode = drag.originalMode;
@@ -313,6 +314,7 @@ windows.forEach(win => {
 function applyTheme(theme) {
   const selectedTheme = themeChoices.some(choice => choice.dataset.themeChoice === theme) ? theme : DEFAULT_THEME;
   shell.dataset.theme = selectedTheme;
+  document.documentElement.dataset.theme = selectedTheme;
   themeChoices.forEach(choice => {
     const selected = choice.dataset.themeChoice === selectedTheme; choice.classList.toggle('is-selected', selected);
     choice.setAttribute(choice.getAttribute('role') === 'menuitemradio' ? 'aria-checked' : 'aria-pressed', String(selected));

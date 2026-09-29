@@ -1,0 +1,268 @@
+/* Generated pixel cursors. Each silhouette has a dark contour and a light halo. */
+:root[data-theme="paper"] {
+  --cursor-default: url("assets/theme-cursors/paper/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/paper/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/paper/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/paper/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/paper/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/paper/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/paper/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/paper/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/paper/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="sunflower-valley"] {
+  --cursor-default: url("assets/theme-cursors/sunflower-valley/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/sunflower-valley/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/sunflower-valley/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/sunflower-valley/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/sunflower-valley/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/sunflower-valley/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/sunflower-valley/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/sunflower-valley/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/sunflower-valley/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="ember-foundry"] {
+  --cursor-default: url("assets/theme-cursors/ember-foundry/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/ember-foundry/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/ember-foundry/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/ember-foundry/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/ember-foundry/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/ember-foundry/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/ember-foundry/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/ember-foundry/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/ember-foundry/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="dune-observatory"] {
+  --cursor-default: url("assets/theme-cursors/dune-observatory/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/dune-observatory/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/dune-observatory/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/dune-observatory/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/dune-observatory/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/dune-observatory/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/dune-observatory/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/dune-observatory/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/dune-observatory/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="maple-crossing"] {
+  --cursor-default: url("assets/theme-cursors/maple-crossing/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/maple-crossing/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/maple-crossing/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/maple-crossing/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/maple-crossing/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/maple-crossing/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/maple-crossing/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/maple-crossing/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/maple-crossing/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="rosewater-citadel"] {
+  --cursor-default: url("assets/theme-cursors/rosewater-citadel/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/rosewater-citadel/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/rosewater-citadel/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/rosewater-citadel/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/rosewater-citadel/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/rosewater-citadel/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/rosewater-citadel/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/rosewater-citadel/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/rosewater-citadel/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root, :root[data-theme="cherry"] {
+  --cursor-default: url("assets/theme-cursors/cherry/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/cherry/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/cherry/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/cherry/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/cherry/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/cherry/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/cherry/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/cherry/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/cherry/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="candy"] {
+  --cursor-default: url("assets/theme-cursors/candy/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/candy/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/candy/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/candy/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/candy/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/candy/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/candy/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/candy/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/candy/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="arcade"] {
+  --cursor-default: url("assets/theme-cursors/arcade/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/arcade/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/arcade/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/arcade/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/arcade/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/arcade/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/arcade/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/arcade/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/arcade/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="amethyst-hollow"] {
+  --cursor-default: url("assets/theme-cursors/amethyst-hollow/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/amethyst-hollow/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/amethyst-hollow/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/amethyst-hollow/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/amethyst-hollow/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/amethyst-hollow/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/amethyst-hollow/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/amethyst-hollow/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/amethyst-hollow/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="lavender-highlands"] {
+  --cursor-default: url("assets/theme-cursors/lavender-highlands/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/lavender-highlands/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/lavender-highlands/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/lavender-highlands/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/lavender-highlands/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/lavender-highlands/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/lavender-highlands/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/lavender-highlands/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/lavender-highlands/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="orbit"] {
+  --cursor-default: url("assets/theme-cursors/orbit/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/orbit/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/orbit/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/orbit/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/orbit/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/orbit/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/orbit/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/orbit/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/orbit/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="moonlit-library"] {
+  --cursor-default: url("assets/theme-cursors/moonlit-library/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/moonlit-library/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/moonlit-library/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/moonlit-library/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/moonlit-library/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/moonlit-library/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/moonlit-library/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/moonlit-library/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/moonlit-library/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="rainy-rooftops"] {
+  --cursor-default: url("assets/theme-cursors/rainy-rooftops/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/rainy-rooftops/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/rainy-rooftops/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/rainy-rooftops/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/rainy-rooftops/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/rainy-rooftops/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/rainy-rooftops/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/rainy-rooftops/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/rainy-rooftops/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="frosted"] {
+  --cursor-default: url("assets/theme-cursors/frosted/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/frosted/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/frosted/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/frosted/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/frosted/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/frosted/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/frosted/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/frosted/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/frosted/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="coral-circuit"] {
+  --cursor-default: url("assets/theme-cursors/coral-circuit/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/coral-circuit/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/coral-circuit/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/coral-circuit/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/coral-circuit/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/coral-circuit/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/coral-circuit/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/coral-circuit/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/coral-circuit/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="cloud-harbor"] {
+  --cursor-default: url("assets/theme-cursors/cloud-harbor/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/cloud-harbor/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/cloud-harbor/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/cloud-harbor/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/cloud-harbor/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/cloud-harbor/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/cloud-harbor/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/cloud-harbor/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/cloud-harbor/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="tideglass-isles"] {
+  --cursor-default: url("assets/theme-cursors/tideglass-isles/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/tideglass-isles/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/tideglass-isles/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/tideglass-isles/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/tideglass-isles/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/tideglass-isles/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/tideglass-isles/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/tideglass-isles/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/tideglass-isles/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="aurora-outpost"] {
+  --cursor-default: url("assets/theme-cursors/aurora-outpost/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/aurora-outpost/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/aurora-outpost/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/aurora-outpost/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/aurora-outpost/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/aurora-outpost/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/aurora-outpost/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/aurora-outpost/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/aurora-outpost/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="starlight-conservatory"] {
+  --cursor-default: url("assets/theme-cursors/starlight-conservatory/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/starlight-conservatory/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/starlight-conservatory/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/starlight-conservatory/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/starlight-conservatory/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/starlight-conservatory/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/starlight-conservatory/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/starlight-conservatory/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/starlight-conservatory/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="firefly-grove"] {
+  --cursor-default: url("assets/theme-cursors/firefly-grove/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/firefly-grove/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/firefly-grove/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/firefly-grove/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/firefly-grove/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/firefly-grove/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/firefly-grove/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/firefly-grove/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/firefly-grove/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="mosslight-ruins"] {
+  --cursor-default: url("assets/theme-cursors/mosslight-ruins/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/mosslight-ruins/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/mosslight-ruins/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/mosslight-ruins/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/mosslight-ruins/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/mosslight-ruins/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/mosslight-ruins/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/mosslight-ruins/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/mosslight-ruins/nesw-resize.svg") 16 16, nesw-resize;
+}
+:root[data-theme="mono"] {
+  --cursor-default: url("assets/theme-cursors/mono/arrow.svg") 5 4, default;
+  --cursor-pointer: url("assets/theme-cursors/mono/pointer.svg") 13 4, pointer;
+  --cursor-grab: url("assets/theme-cursors/mono/grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/theme-cursors/mono/grabbing.svg") 16 16, grabbing;
+  --cursor-text: url("assets/theme-cursors/mono/text.svg") 16 16, text;
+  --cursor-ns-resize: url("assets/theme-cursors/mono/ns-resize.svg") 16 16, ns-resize;
+  --cursor-ew-resize: url("assets/theme-cursors/mono/ew-resize.svg") 16 16, ew-resize;
+  --cursor-nwse-resize: url("assets/theme-cursors/mono/nwse-resize.svg") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("assets/theme-cursors/mono/nesw-resize.svg") 16 16, nesw-resize;
+}
+.os-shell { cursor: var(--cursor-default); }
+.window-content :is(p, li, dd, dt, pre, code, h1, h2, h3) { cursor: var(--cursor-text); }
+.resize-n, .resize-s { cursor: var(--cursor-ns-resize); }
+.resize-e, .resize-w { cursor: var(--cursor-ew-resize); }
+.resize-nw, .resize-se { cursor: var(--cursor-nwse-resize); }
+.resize-ne, .resize-sw { cursor: var(--cursor-nesw-resize); }
+.os-shell.is-grabbing[data-resize-edge="n"], .os-shell.is-grabbing[data-resize-edge="n"] * { cursor: var(--cursor-ns-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="s"], .os-shell.is-grabbing[data-resize-edge="s"] * { cursor: var(--cursor-ns-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="e"], .os-shell.is-grabbing[data-resize-edge="e"] * { cursor: var(--cursor-ew-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="w"], .os-shell.is-grabbing[data-resize-edge="w"] * { cursor: var(--cursor-ew-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="nw"], .os-shell.is-grabbing[data-resize-edge="nw"] * { cursor: var(--cursor-nwse-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="se"], .os-shell.is-grabbing[data-resize-edge="se"] * { cursor: var(--cursor-nwse-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="ne"], .os-shell.is-grabbing[data-resize-edge="ne"] * { cursor: var(--cursor-nesw-resize) !important; }
+.os-shell.is-grabbing[data-resize-edge="sw"], .os-shell.is-grabbing[data-resize-edge="sw"] * { cursor: var(--cursor-nesw-resize) !important; }

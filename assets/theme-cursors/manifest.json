@@ -1,0 +1,1060 @@
+[
+  {
+    "theme": "paper",
+    "name": "Workshop",
+    "design": "Drafting pencil",
+    "fill": "#ffd270",
+    "shade": "#ba7438",
+    "accent": "#68cabe",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "sunflower-valley",
+    "name": "Sunflower Valley",
+    "design": "Sunflower scout",
+    "fill": "#ffe586",
+    "shade": "#eeb535",
+    "accent": "#87562d",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "ember-foundry",
+    "name": "Ember Foundry",
+    "design": "Ember shard",
+    "fill": "#ffb85d",
+    "shade": "#f57239",
+    "accent": "#ffe8a0",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "dune-observatory",
+    "name": "Dune Observatory",
+    "design": "Desert compass",
+    "fill": "#ffe4ae",
+    "shade": "#cc8661",
+    "accent": "#83e2e1",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "maple-crossing",
+    "name": "Maple Crossing",
+    "design": "Maple leaf",
+    "fill": "#ffbe79",
+    "shade": "#e46643",
+    "accent": "#ffe4a3",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "rosewater-citadel",
+    "name": "Rosewater Citadel",
+    "design": "Rose pennant",
+    "fill": "#ffcee0",
+    "shade": "#d56599",
+    "accent": "#ffe6b1",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "cherry",
+    "name": "Cherry Blossom",
+    "design": "Sakura petal",
+    "fill": "#ffd1e7",
+    "shade": "#d875ae",
+    "accent": "#ffecae",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "candy",
+    "name": "Candy",
+    "design": "Candy twist",
+    "fill": "#fff0fc",
+    "shade": "#f36dbe",
+    "accent": "#87f1e2",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "arcade",
+    "name": "Arcade",
+    "design": "Neon game chip",
+    "fill": "#7ef5f3",
+    "shade": "#4298d1",
+    "accent": "#fc8bde",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "amethyst-hollow",
+    "name": "Amethyst Hollow",
+    "design": "Amethyst crystal",
+    "fill": "#e4b8ff",
+    "shade": "#a175dd",
+    "accent": "#8ef1eb",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "lavender-highlands",
+    "name": "Lavender Highlands",
+    "design": "Lavender sprig",
+    "fill": "#e8d4ff",
+    "shade": "#a383d4",
+    "accent": "#a5ddc0",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "orbit",
+    "name": "Orbit",
+    "design": "Orbit rocket",
+    "fill": "#c7f4ff",
+    "shade": "#778bd7",
+    "accent": "#ffcb75",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "moonlit-library",
+    "name": "Moonlit Library",
+    "design": "Moonlit quill",
+    "fill": "#fff0bf",
+    "shade": "#a29bd9",
+    "accent": "#d2e9ff",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "rainy-rooftops",
+    "name": "Rainy Rooftops",
+    "design": "Rain drop",
+    "fill": "#b8e7ff",
+    "shade": "#6298d5",
+    "accent": "#f4ce7f",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "frosted",
+    "name": "Frosted Dawn",
+    "design": "Frost facet",
+    "fill": "#e9fbff",
+    "shade": "#87c7e8",
+    "accent": "#c5aff6",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "coral-circuit",
+    "name": "Coral Circuit",
+    "design": "Coral fork",
+    "fill": "#ffc9b2",
+    "shade": "#ed807c",
+    "accent": "#88f0e0",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "cloud-harbor",
+    "name": "Cloud Harbor",
+    "design": "Cloud sail",
+    "fill": "#fff9d7",
+    "shade": "#94d3e0",
+    "accent": "#f0b680",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "tideglass-isles",
+    "name": "Tideglass Isles",
+    "design": "Sea glass",
+    "fill": "#b2f9ed",
+    "shade": "#50b8c2",
+    "accent": "#e8e1a6",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "aurora-outpost",
+    "name": "Aurora Outpost",
+    "design": "Aurora ribbon",
+    "fill": "#b2ffe6",
+    "shade": "#64c6dc",
+    "accent": "#c3a0f5",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "starlight-conservatory",
+    "name": "Starlight Conservatory",
+    "design": "Celestial leaf",
+    "fill": "#e1fbc1",
+    "shade": "#79bcab",
+    "accent": "#f7d28e",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "firefly-grove",
+    "name": "Firefly Grove",
+    "design": "Firefly lantern",
+    "fill": "#eff7a9",
+    "shade": "#8bcc9d",
+    "accent": "#ffdd78",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "mosslight-ruins",
+    "name": "Mosslight Ruins",
+    "design": "Moss rune",
+    "fill": "#d4eab1",
+    "shade": "#8caa80",
+    "accent": "#f1d6a1",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "theme": "mono",
+    "name": "Mono",
+    "design": "Graphite arrow",
+    "fill": "#edf4fa",
+    "shade": "#9caaba",
+    "accent": "#ffffff",
+    "hotspots": {
+      "arrow": [
+        5,
+        4
+      ],
+      "pointer": [
+        13,
+        4
+      ],
+      "grab": [
+        16,
+        16
+      ],
+      "grabbing": [
+        16,
+        16
+      ],
+      "text": [
+        16,
+        16
+      ],
+      "ns-resize": [
+        16,
+        16
+      ],
+      "ew-resize": [
+        16,
+        16
+      ],
+      "nwse-resize": [
+        16,
+        16
+      ],
+      "nesw-resize": [
+        16,
+        16
+      ]
+    }
+  }
+]
