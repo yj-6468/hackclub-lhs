@@ -1,22 +1,22 @@
 :root {
-  --bg: #07090d;
-  --ink: #f9fbec;
-  --panel: #151923;
-  --panel-strong: #202737;
-  --line: #465064;
-  --muted: #a7b2c2;
-  --green: #a6ff64;
-  --cyan: #6de0ff;
-  --pink: #ff5e8a;
-  --yellow: #ffd35d;
+  --bg: #f4d6e1;
+  --ink: #552d48;
+  --panel: #fff9fb;
+  --panel-strong: #f0d9e4;
+  --line: #ad718e;
+  --muted: #765668;
+  --green: #9c416a;
+  --cyan: #426b80;
+  --pink: #c97d9e;
+  --yellow: #805d25;
   --blue: #7b9cff;
   --shadow: 10px 10px 0 rgba(0, 0, 0, 0.42);
-  --wallpaper-shade: linear-gradient(rgba(7, 9, 13, 0.62), rgba(7, 9, 13, 0.82));
-  --wallpaper-art: url("assets/terminal-wallpaper.png") center / cover;
+  --wallpaper-shade: linear-gradient(transparent, transparent);
+  --wallpaper-art: url("assets/wallpaper-cherry-blossom.png") center / cover;
   --cursor-default: url("assets/cursor-arrow.svg") 5 3, auto;
-  --cursor-pointer: url("assets/cursor-pointer.svg") 15 5, pointer;
-  --cursor-grab: url("assets/cursor-grab.svg") 14 13, grab;
-  --cursor-grabbing: url("assets/cursor-grabbing.svg") 14 13, grabbing;
+  --cursor-pointer: url("assets/cursor-pointer.svg") 14 4, pointer;
+  --cursor-grab: url("assets/cursor-grab.svg") 16 16, grab;
+  --cursor-grabbing: url("assets/cursor-grabbing.svg") 16 16, grabbing;
   --cursor-text: url("assets/cursor-text.svg") 16 16, text;
   --dock-top: calc(100vh - 90px);
 }
@@ -65,6 +65,7 @@ textarea {
   min-height: 640px;
   display: grid;
   grid-template-rows: 34px 1fr;
+  grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   color: var(--ink);
   background:
@@ -78,21 +79,6 @@ textarea {
   cursor: var(--cursor-grabbing) !important;
 }
 
-.os-shell[data-theme="matrix"] {
-  --bg: #07090d;
-  --ink: #f9fbec;
-  --panel: #151923;
-  --panel-strong: #202737;
-  --line: #465064;
-  --muted: #a7b2c2;
-  --green: #a6ff64;
-  --cyan: #6de0ff;
-  --pink: #ff5e8a;
-  --yellow: #ffd35d;
-  --wallpaper-shade: linear-gradient(rgba(7, 9, 13, 0.62), rgba(7, 9, 13, 0.82));
-  --wallpaper-art: url("assets/terminal-wallpaper.png") center / cover;
-}
-
 .os-shell[data-theme="candy"] {
   --bg: #20111f;
   --ink: #fff7fb;
@@ -104,8 +90,8 @@ textarea {
   --cyan: #8cf6ff;
   --pink: #ff7ab6;
   --yellow: #b7ff5f;
-  --wallpaper-shade: linear-gradient(rgba(32, 17, 31, 0.56), rgba(70, 24, 65, 0.84));
-  --wallpaper-art: url("assets/wallpaper-candy.png") center / cover;
+  --wallpaper-shade: linear-gradient(#20111f15,#20111f45);
+  --wallpaper-art: url("assets/wallpaper-candy-mixtape.png") center / cover;
 }
 
 .os-shell[data-theme="mono"] {
@@ -119,8 +105,8 @@ textarea {
   --cyan: #e2e8f0;
   --pink: #f472b6;
   --yellow: #fde68a;
-  --wallpaper-shade: linear-gradient(rgba(15, 20, 27, 0.58), rgba(32, 43, 57, 0.86));
-  --wallpaper-art: url("assets/wallpaper-mono.png") center / cover;
+  --wallpaper-shade: linear-gradient(#0f141b20,#0f141b50);
+  --wallpaper-art: url("assets/wallpaper-mono-draft.png") center / cover;
 }
 
 .os-shell[data-theme="arcade"] {
@@ -134,8 +120,8 @@ textarea {
   --cyan: #24f6ff;
   --pink: #ff2bd6;
   --yellow: #fff336;
-  --wallpaper-shade: linear-gradient(rgba(8, 5, 15, 0.5), rgba(18, 7, 31, 0.86));
-  --wallpaper-art: url("assets/wallpaper-arcade.png") center / cover;
+  --wallpaper-shade: linear-gradient(#08050f20,#08050f55);
+  --wallpaper-art: url("assets/wallpaper-arcade-afterhours.png") center / cover;
 }
 
 .os-shell[data-theme="orbit"] {
@@ -149,8 +135,8 @@ textarea {
   --cyan: #8eeaff;
   --pink: #ff7edb;
   --yellow: #ffcf56;
-  --wallpaper-shade: linear-gradient(rgba(8, 10, 24, 0.48), rgba(10, 12, 33, 0.86));
-  --wallpaper-art: url("assets/wallpaper-orbit.png") center / cover;
+  --wallpaper-shade: linear-gradient(#080a1820,#080a1850);
+  --wallpaper-art: url("assets/wallpaper-orbit-station.png") center / cover;
 }
 
 .os-shell[data-theme="paper"] {
@@ -164,8 +150,8 @@ textarea {
   --cyan: #1b9aaa;
   --pink: #ff7f50;
   --yellow: #f7c948;
-  --wallpaper-shade: linear-gradient(rgba(246, 237, 205, 0.18), rgba(245, 224, 178, 0.55));
-  --wallpaper-art: url("assets/wallpaper-paper.png") center / cover;
+  --wallpaper-shade: linear-gradient(#f6edcd20,#f6edcd40);
+  --wallpaper-art: url("assets/wallpaper-paper-workshop.png") center / cover;
 }
 
 .menubar {
@@ -376,7 +362,7 @@ textarea {
   position: absolute;
   top: 58px;
   right: 22px;
-  z-index: 22;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, minmax(84px, 1fr));
   grid-auto-rows: min-content;
@@ -916,11 +902,11 @@ textarea {
 }
 
 .icon-hackathon {
-  --app-icon: url("assets/icon-hackathon.png");
+  --app-icon: url("assets/icon-hackathon.png?v=plain-icons-20260928");
 }
 
 .icon-leaders {
-  --app-icon: url("assets/icon-leaders.png");
+  --app-icon: url("assets/icon-leaders.png?v=plain-icons-20260928");
 }
 
 .icon-gallery {
@@ -984,10 +970,7 @@ textarea {
 }
 
 .app-window.is-maximized {
-  left: 22px !important;
-  top: 58px !important;
-  width: calc(100vw - 44px) !important;
-  max-height: calc(var(--dock-top) - 70px);
+  max-height: none;
 }
 
 .titlebar {
@@ -1726,29 +1709,10 @@ p {
   background: var(--swatch);
 }
 
-.theme-choice[data-theme-choice="matrix"] {
-  --preview-bg: url("assets/terminal-wallpaper.png") center / cover;
-}
 
-.theme-choice[data-theme-choice="candy"] {
-  --preview-bg: url("assets/wallpaper-candy.png") center / cover;
-}
 
-.theme-choice[data-theme-choice="mono"] {
-  --preview-bg: url("assets/wallpaper-mono.png") center / cover;
-}
 
-.theme-choice[data-theme-choice="arcade"] {
-  --preview-bg: url("assets/wallpaper-arcade.png") center / cover;
-}
 
-.theme-choice[data-theme-choice="orbit"] {
-  --preview-bg: url("assets/wallpaper-orbit.png") center / cover;
-}
-
-.theme-choice[data-theme-choice="paper"] {
-  --preview-bg: url("assets/wallpaper-paper.png") center / cover;
-}
 
 .taskbar {
   position: fixed;
@@ -2315,4 +2279,448 @@ p {
 .event-status-label,
 .event-status-date {
   white-space: nowrap;
+}
+
+
+/* Illustrated pastel worlds: T06 and T20. */
+.os-shell[data-theme="cherry"] {
+  --bg: #f4d6e1;
+  --ink: #552d48;
+  --panel: #fff9fb;
+  --panel-strong: #f0d9e4;
+  --line: #ad718e;
+  --muted: #765668;
+  --green: #9c416a;
+  --cyan: #426b80;
+  --pink: #c97d9e;
+  --yellow: #805d25;
+  --wallpaper-shade: linear-gradient(transparent, transparent);
+  --wallpaper-art: url("assets/wallpaper-cherry-blossom.png") center / cover;
+}
+
+.os-shell[data-theme="frosted"] {
+  --bg: #cadde9;
+  --ink: #334658;
+  --panel: #f9fbff;
+  --panel-strong: #e0e8f3;
+  --line: #7f92af;
+  --muted: #55657a;
+  --green: #686bab;
+  --cyan: #3b6a89;
+  --pink: #a79cc8;
+  --yellow: #765c30;
+  --wallpaper-shade: linear-gradient(transparent, transparent);
+  --wallpaper-art: url("assets/wallpaper-frosted-dawn.png") center / cover;
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) .boot-card {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border-color: var(--line);
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) .desktop-icon {
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .85);
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) .desktop-icon:not(.is-selected) > span:last-child {
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) :is(.quick-actions button, .file-browser a, .file-browser button, .primary-link, .avatar-slot) {
+  color: var(--panel);
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) .metric-grid div {
+  background: var(--panel-strong);
+}
+
+.os-shell:is([data-theme="cherry"], [data-theme="frosted"], [data-theme="sunflower-valley"], [data-theme="dune-observatory"], [data-theme="maple-crossing"], [data-theme="rosewater-citadel"], [data-theme="lavender-highlands"], [data-theme="cloud-harbor"], [data-theme="tideglass-isles"]) .terminal-content {
+  --panel: #090d10;
+  --green: #efbad3;
+  --cyan: #a9dff2;
+  --pink: #cf8bbb;
+  --yellow: #ffe0a6;
+}
+
+
+
+/* The theme-specific Paper width must not override the phone layout. */
+@media (max-width: 720px) {
+  .os-shell[data-theme="paper"] .boot-card {
+    width: 100%;
+    min-width: 0;
+  }
+  .boot-card h1 {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Window manager: fixed work area on desktop, one foreground app on phones. */
+.app-window {
+  display: none;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  box-shadow: 0 10px 28px #0003, 4px 4px 0 #0002;
+}
+.app-window.is-open { display: flex; flex-direction: column; }
+.app-window.is-minimized { display: none; }
+.app-window.is-active { box-shadow: 0 18px 48px #0005, 0 0 0 1px color-mix(in srgb, var(--green) 45%, transparent); }
+.app-window.is-maximized {
+  left: auto; top: auto; width: auto;
+  max-height: none;
+}
+.app-window .titlebar { flex: 0 0 auto; border-radius: 6px 6px 0 0; min-height: 42px; padding: 5px 8px; }
+.app-window .window-content { flex: 1 1 auto; min-height: 0; max-height: none; overflow: auto; border-radius: 0 0 6px 6px; overscroll-behavior: contain; }
+.app-window .titlebar > .window-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 4px; }
+.app-window.is-active .titlebar { color: var(--ink); background: color-mix(in srgb, var(--panel-strong) 86%, var(--green)); }
+.window-title:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; border-radius: 3px; }
+.titlebar-controls { gap: 4px; flex-shrink: 0; }
+.titlebar-controls button { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: #17242b; font: bold 18px/1 sans-serif; }
+.titlebar-controls button span { opacity: .6; }
+.titlebar-controls button:hover span, .titlebar-controls button:focus-visible span { opacity: 1; }
+.titlebar-controls button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.titlebar-controls button:disabled { opacity: .35; cursor: default; }
+.is-dragging, .is-resizing { user-select: none; }
+.is-grabbing iframe { pointer-events: none; }
+.resize-handle { position: absolute; z-index: 3; display: block; padding: 0; border: 0; background: transparent; touch-action: none; }
+.resize-n, .resize-s { left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
+.resize-n { top: -4px; } .resize-s { bottom: -4px; }
+.resize-e, .resize-w { top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
+.resize-e { right: -4px; } .resize-w { left: -4px; }
+.resize-ne, .resize-nw, .resize-se, .resize-sw { width: 16px; height: 16px; }
+.resize-ne, .resize-sw { cursor: nesw-resize; } .resize-nw, .resize-se { cursor: nwse-resize; }
+.resize-ne { top: -4px; right: -4px; } .resize-nw { top: -4px; left: -4px; }
+.resize-se { right: -3px; bottom: -3px; } .resize-sw { left: -4px; bottom: -4px; }
+.resize-se::after { content: ''; position: absolute; inset: 4px; background: repeating-linear-gradient(135deg, transparent 0 2px, var(--line) 2px 3px, transparent 3px 5px); clip-path: polygon(100% 0,100% 100%,0 100%); }
+.resize-se:focus-visible { outline: 2px solid var(--green); background: var(--panel); }
+.app-window.is-maximized .resize-handle { display: none; }
+#snap-preview { position: absolute; z-index: 70; pointer-events: none; display: grid; place-items: center; border: 2px solid var(--cyan); border-radius: 10px; background: color-mix(in srgb, var(--cyan) 16%, transparent); color: var(--ink); box-shadow: inset 0 0 0 2px #ffffff30; font-weight: 700; backdrop-filter: blur(3px); }
+#snap-preview[hidden] { display: none; }
+.task-button::after { opacity: 0; }
+.task-button.is-running::after { opacity: .8; background: var(--ink); box-shadow: none; }
+.task-button.is-minimized::after { background: transparent; outline: 1px solid var(--ink); }
+.task-button.is-active::after { opacity: 1; width: 14px; background: var(--green); box-shadow: 0 0 8px color-mix(in srgb, var(--green) 50%, transparent); }
+.task-button.is-active { background: color-mix(in srgb, var(--panel) 42%, transparent); }
+.task-button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+[data-dropdown-panel="desktop"] { left: 0; right: auto; width: 280px; max-height: min(660px, calc(100dvh - 80px)); overflow-y: auto; }
+.menu-section-label, .menu-empty { display: block; padding: 8px 12px; font-size: 11px; color: var(--muted); }
+.menu-section-label { text-transform: uppercase; letter-spacing: .12em; }
+.menu-dropdown hr { margin: 5px 8px; border: 0; border-top: 1px solid var(--line); opacity: .4; }
+.menu-dropdown-item:disabled { opacity: .4; cursor: default; }
+.menu-dropdown-item:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+#window-list { display: grid; }
+.desktop-help { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 2px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); box-shadow: 0 24px 80px #0006; }
+.desktop-help::backdrop { background: #08121f70; backdrop-filter: blur(4px); }
+.desktop-help header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--panel-strong); }
+.desktop-help h2 { margin: 0; font-size: 26px; }
+.desktop-help header button { border: 1px solid var(--line); border-radius: 5px; background: var(--panel); padding: 3px 9px; }
+.desktop-help dl { margin: 0; padding: 20px; display: grid; grid-template-columns: 145px 1fr; gap: 16px; line-height: 1.5; font-size: 13px; }
+.desktop-help dt { font-weight: 700; } .desktop-help dd { margin: 0; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (min-width: 721px) and (prefers-reduced-motion: no-preference) {
+  .app-window.is-open { animation: window-appear 140ms ease-out; }
+  @keyframes window-appear { from { opacity: .4; } to { opacity: 1; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .task-button, .dock-label { transition: none; }
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
+@media (max-width: 720px) {
+  .app-window, .app-window.is-maximized { height: auto !important; max-height: none; margin-bottom: 16px; }
+  .app-window.is-open { display: none; }
+  .app-window.is-open.is-active { display: flex; }
+  .app-window .titlebar { min-height: 46px; }
+  .titlebar-controls button { width: 30px; height: 30px; }
+  .resize-handle, #snap-preview { display: none !important; }
+  .window-title { cursor: default; }
+  .app-window .window-content { overflow: auto; max-height: min(65dvh, 700px); padding: 18px; }
+  .desktop-help dl { grid-template-columns: 1fr; gap: 5px; }
+  .desktop-help dd { margin-bottom: 12px; }
+}
+
+.app-window.is-dragging { z-index: 71 !important; }
+
+
+/* The accepted world collection, ordered with both theme menus. */
+
+.os-shell[data-theme="sunflower-valley"] {
+  --bg: #e9cc75;
+  --ink: #594e2d;
+  --panel: #fff9df;
+  --panel-strong: color-mix(in srgb, #fff9df 84%, #8f662f);
+  --line: color-mix(in srgb, #594e2d 55%, #fff9df);
+  --muted: color-mix(in srgb, #594e2d 78%, #fff9df);
+  --green: #8f662f;
+  --cyan: #8f662f;
+  --pink: #8f662f;
+  --yellow: #8f662f;
+  --blue: #8f662f;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-sunflower-valley.png") center / cover;
+}
+
+.os-shell[data-theme="ember-foundry"] {
+  --bg: #1a101b;
+  --ink: #fff0da;
+  --panel: #2d1c2b;
+  --panel-strong: color-mix(in srgb, #2d1c2b 84%, #ffad60);
+  --line: color-mix(in srgb, #fff0da 55%, #2d1c2b);
+  --muted: color-mix(in srgb, #fff0da 78%, #2d1c2b);
+  --green: #ffad60;
+  --cyan: #ffad60;
+  --pink: #ffad60;
+  --yellow: #ffad60;
+  --blue: #ffad60;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-ember-foundry.png") center / cover;
+}
+
+.os-shell[data-theme="dune-observatory"] {
+  --bg: #b95f45;
+  --ink: #623b38;
+  --panel: #fff0d1;
+  --panel-strong: color-mix(in srgb, #fff0d1 84%, #466f81);
+  --line: color-mix(in srgb, #623b38 55%, #fff0d1);
+  --muted: color-mix(in srgb, #623b38 78%, #fff0d1);
+  --green: #466f81;
+  --cyan: #466f81;
+  --pink: #466f81;
+  --yellow: #466f81;
+  --blue: #466f81;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-dune-observatory.png") center / cover;
+}
+
+.os-shell[data-theme="maple-crossing"] {
+  --bg: #e0a073;
+  --ink: #57392e;
+  --panel: #fff2dc;
+  --panel-strong: color-mix(in srgb, #fff2dc 84%, #ac4c32);
+  --line: color-mix(in srgb, #57392e 55%, #fff2dc);
+  --muted: color-mix(in srgb, #57392e 78%, #fff2dc);
+  --green: #ac4c32;
+  --cyan: #ac4c32;
+  --pink: #ac4c32;
+  --yellow: #ac4c32;
+  --blue: #ac4c32;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-maple-crossing.png") center / cover;
+}
+
+.os-shell[data-theme="rosewater-citadel"] {
+  --bg: #e2b1c4;
+  --ink: #693e58;
+  --panel: #fff4f6;
+  --panel-strong: color-mix(in srgb, #fff4f6 84%, #9c5676);
+  --line: color-mix(in srgb, #693e58 55%, #fff4f6);
+  --muted: color-mix(in srgb, #693e58 78%, #fff4f6);
+  --green: #9c5676;
+  --cyan: #9c5676;
+  --pink: #9c5676;
+  --yellow: #9c5676;
+  --blue: #9c5676;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-rosewater-citadel.png") center / cover;
+}
+
+.os-shell[data-theme="amethyst-hollow"] {
+  --bg: #362149;
+  --ink: #fbedff;
+  --panel: #4a305c;
+  --panel-strong: color-mix(in srgb, #4a305c 84%, #d5a4ef);
+  --line: color-mix(in srgb, #fbedff 55%, #4a305c);
+  --muted: color-mix(in srgb, #fbedff 78%, #4a305c);
+  --green: #d5a4ef;
+  --cyan: #d5a4ef;
+  --pink: #d5a4ef;
+  --yellow: #d5a4ef;
+  --blue: #d5a4ef;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-amethyst-hollow.png") center / cover;
+}
+
+.os-shell[data-theme="lavender-highlands"] {
+  --bg: #afa4ce;
+  --ink: #494167;
+  --panel: #f8f3ff;
+  --panel-strong: color-mix(in srgb, #f8f3ff 84%, #73669b);
+  --line: color-mix(in srgb, #494167 55%, #f8f3ff);
+  --muted: color-mix(in srgb, #494167 78%, #f8f3ff);
+  --green: #73669b;
+  --cyan: #73669b;
+  --pink: #73669b;
+  --yellow: #73669b;
+  --blue: #73669b;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-lavender-highlands.png") center / cover;
+}
+
+.os-shell[data-theme="moonlit-library"] {
+  --bg: #171b38;
+  --ink: #f4eddd;
+  --panel: #242b4b;
+  --panel-strong: color-mix(in srgb, #242b4b 84%, #b4b4e4);
+  --line: color-mix(in srgb, #f4eddd 55%, #242b4b);
+  --muted: color-mix(in srgb, #f4eddd 78%, #242b4b);
+  --green: #b4b4e4;
+  --cyan: #b4b4e4;
+  --pink: #b4b4e4;
+  --yellow: #b4b4e4;
+  --blue: #b4b4e4;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-moonlit-library.png") center / cover;
+}
+
+.os-shell[data-theme="rainy-rooftops"] {
+  --bg: #142b4f;
+  --ink: #eff9ff;
+  --panel: #203654;
+  --panel-strong: color-mix(in srgb, #203654 84%, #81c7de);
+  --line: color-mix(in srgb, #eff9ff 55%, #203654);
+  --muted: color-mix(in srgb, #eff9ff 78%, #203654);
+  --green: #81c7de;
+  --cyan: #81c7de;
+  --pink: #81c7de;
+  --yellow: #81c7de;
+  --blue: #81c7de;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-rainy-rooftops.png") center / cover;
+}
+
+.os-shell[data-theme="coral-circuit"] {
+  --bg: #061f35;
+  --ink: #e8fbff;
+  --panel: #102f43;
+  --panel-strong: color-mix(in srgb, #102f43 84%, #ff9582);
+  --line: color-mix(in srgb, #e8fbff 55%, #102f43);
+  --muted: color-mix(in srgb, #e8fbff 78%, #102f43);
+  --green: #ff9582;
+  --cyan: #ff9582;
+  --pink: #ff9582;
+  --yellow: #ff9582;
+  --blue: #ff9582;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-coral-circuit.png") center / cover;
+}
+
+.os-shell[data-theme="cloud-harbor"] {
+  --bg: #9ecad3;
+  --ink: #24474c;
+  --panel: #fff7e6;
+  --panel-strong: color-mix(in srgb, #fff7e6 84%, #975f42);
+  --line: color-mix(in srgb, #24474c 55%, #fff7e6);
+  --muted: color-mix(in srgb, #24474c 78%, #fff7e6);
+  --green: #975f42;
+  --cyan: #975f42;
+  --pink: #975f42;
+  --yellow: #975f42;
+  --blue: #975f42;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-cloud-harbor.png") center / cover;
+}
+
+.os-shell[data-theme="tideglass-isles"] {
+  --bg: #9ad8d0;
+  --ink: #235c5b;
+  --panel: #f5fff4;
+  --panel-strong: color-mix(in srgb, #f5fff4 84%, #2b7d84);
+  --line: color-mix(in srgb, #235c5b 55%, #f5fff4);
+  --muted: color-mix(in srgb, #235c5b 78%, #f5fff4);
+  --green: #2b7d84;
+  --cyan: #2b7d84;
+  --pink: #2b7d84;
+  --yellow: #2b7d84;
+  --blue: #2b7d84;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-tideglass-isles.png") center / cover;
+}
+
+.os-shell[data-theme="aurora-outpost"] {
+  --bg: #091c35;
+  --ink: #f0fbff;
+  --panel: #132c48;
+  --panel-strong: color-mix(in srgb, #132c48 84%, #88dfcc);
+  --line: color-mix(in srgb, #f0fbff 55%, #132c48);
+  --muted: color-mix(in srgb, #f0fbff 78%, #132c48);
+  --green: #88dfcc;
+  --cyan: #88dfcc;
+  --pink: #88dfcc;
+  --yellow: #88dfcc;
+  --blue: #88dfcc;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-aurora-outpost.png") center / cover;
+}
+
+.os-shell[data-theme="starlight-conservatory"] {
+  --bg: #102c33;
+  --ink: #e8f7e8;
+  --panel: #1c3b43;
+  --panel-strong: color-mix(in srgb, #1c3b43 84%, #8bc9b2);
+  --line: color-mix(in srgb, #e8f7e8 55%, #1c3b43);
+  --muted: color-mix(in srgb, #e8f7e8 78%, #1c3b43);
+  --green: #8bc9b2;
+  --cyan: #8bc9b2;
+  --pink: #8bc9b2;
+  --yellow: #8bc9b2;
+  --blue: #8bc9b2;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-starlight-conservatory.png") center / cover;
+}
+
+.os-shell[data-theme="firefly-grove"] {
+  --bg: #0d2929;
+  --ink: #f1ffe4;
+  --panel: #193f38;
+  --panel-strong: color-mix(in srgb, #193f38 84%, #c5e77c);
+  --line: color-mix(in srgb, #f1ffe4 55%, #193f38);
+  --muted: color-mix(in srgb, #f1ffe4 78%, #193f38);
+  --green: #c5e77c;
+  --cyan: #c5e77c;
+  --pink: #c5e77c;
+  --yellow: #c5e77c;
+  --blue: #c5e77c;
+  --wallpaper-shade: linear-gradient(transparent, #00000018);
+  --wallpaper-art: url("assets/wallpaper-firefly-grove.png") center / cover;
+}
+
+.os-shell[data-theme="mosslight-ruins"] {
+  --bg: #203e35;
+  --ink: #eff7d5;
+  --panel: #294f43;
+  --panel-strong: color-mix(in srgb, #294f43 84%, #b4cc83);
+  --line: color-mix(in srgb, #eff7d5 55%, #294f43);
+  --muted: color-mix(in srgb, #eff7d5 78%, #294f43);
+  --green: #b4cc83;
+  --cyan: #b4cc83;
+  --pink: #b4cc83;
+  --yellow: #b4cc83;
+  --blue: #b4cc83;
+  --wallpaper-shade: linear-gradient(transparent, #00000010);
+  --wallpaper-art: url("assets/wallpaper-mosslight-ruins.png") center / cover;
+}
+
+/* Keep every world reachable without expanding beyond the viewport. */
+[data-dropdown-panel="theme"] {
+  left: auto;
+  right: 0;
+  width: 294px;
+  max-width: calc(100vw - 24px);
+  max-height: min(620px, calc(100dvh - 100px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+[data-dropdown-panel="theme"] [data-theme-choice] { flex-shrink: 0; }
+.theme-thumbnail { grid-row: span 2; display: block; width: 96px; height: 54px; object-fit: cover; border: 1px solid var(--line); border-radius: 5px; }
+.theme-order-note { font-size: 12px; }
+@media (max-width: 720px) {
+  .theme-thumbnail { width: 76px; height: 54px; }
+  .theme-choice { padding: 9px; gap: 4px 9px; }
+  .theme-choice strong { overflow-wrap: anywhere; }
+  .menu-links { position: relative; overflow: visible; flex-wrap: wrap; }
+  .menu-links .menu-item { position: static; }
+  .menu-links .menu-dropdown { left: 0; right: auto; max-width: 100%; }
+  [data-dropdown-panel="theme"] { max-height: min(540px, calc(100dvh - 180px)); }
 }

@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
-  <path fill="#43ffd2" d="M8 24h16v5H8z"/>
-  <path fill="#080a18" d="M12 3h6v11h1V9h5v5h1v-3h5v11h-2v5H10v-3H7v-8h4V5h1z"/>
-  <path fill="#ffcf56" d="M14 5h2v13h5v-7h1v7h4v-5h2v8h-2v4H11v-3H9v-4h4V5z"/>
-  <path fill="#fff8d6" d="M16 6h1v10h2v2h-3z"/>
-  <path fill="#ff7edb" d="M11 25h15v2H11z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><title>Mint Edge pointer</title><path d="M12 17V6C12 2 17 2 17 6V13C17 10 21 10 21 14C22 11 25 12 25 15C28 13 30 15 29 18L28 23C27 27 24 29 20 29H17C14 29 12 27 10 24L6 19C4 16 7 14 9 16L12 19Z" fill="#aff6d8" stroke="#133b36" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>

@@ -15,17 +15,34 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Jersey+15&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=photo-grid-4col" />
+    <link rel="stylesheet" href="styles.css?v=all-worlds-20260928" />
+    <link rel="stylesheet" href="theme-icons.css?v=pixel-worlds-20260928" />
   </head>
   <body>
-    <div class="os-shell" data-theme="paper">
+    <div class="os-shell" data-theme="cherry">
       <header class="menubar" aria-label="Desktop menu bar">
-        <button class="start-menu" type="button" data-reset-desktop>
+        <div class="menu-item desktop-menu">
+        <button class="start-menu" type="button" data-dropdown="desktop" aria-haspopup="menu" aria-expanded="false">
           <span class="start-mark" aria-hidden="true">
             <img src="assets/hack-club-sticker.png" alt="" />
           </span>
           <span>Hack Club</span>
         </button>
+          <div class="menu-dropdown" data-dropdown-panel="desktop" role="menu" aria-label="Desktop controls">
+            <span class="menu-section-label">Open windows</span>
+            <div id="window-list" role="group" aria-label="Running apps"></div>
+            <hr />
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-window-action="left">Tile window left</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-window-action="right">Tile window right</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-window-action="maximize">Maximize / restore</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-window-action="minimize">Minimize window</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-window-action="close">Close window</button>
+            <hr />
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-show-desktop>Show desktop</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-desktop-help>Desktop controls…</button>
+            <button class="menu-dropdown-item" type="button" role="menuitem" data-reset-layout>Reset window layout</button>
+          </div>
+        </div>
 
         <nav class="menu-links" aria-label="System menu">
           <button type="button" data-open="about">About</button>
@@ -44,12 +61,29 @@
           <div class="menu-item">
             <button type="button" class="menu-trigger" data-dropdown="theme" aria-haspopup="true" aria-expanded="false">Theme</button>
             <div class="menu-dropdown" data-dropdown-panel="theme" role="menu">
-              <button class="menu-dropdown-item" type="button" data-theme-choice="paper" role="menuitem" style="--swatch:#ff7f50">Paper</button>
-              <button class="menu-dropdown-item" type="button" data-theme-choice="orbit" role="menuitem" style="--swatch:#b4a7ff">Orbit</button>
-              <button class="menu-dropdown-item" type="button" data-theme-choice="arcade" role="menuitem" style="--swatch:#ff2bd6">Arcade</button>
-              <button class="menu-dropdown-item" type="button" data-theme-choice="matrix" role="menuitem" style="--swatch:#a6ff64">Matrix</button>
-              <button class="menu-dropdown-item" type="button" data-theme-choice="candy" role="menuitem" style="--swatch:#ff7ab6">Candy</button>
-              <button class="menu-dropdown-item" type="button" data-theme-choice="mono" role="menuitem" style="--swatch:#38bdf8">Mono</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="paper" role="menuitemradio" aria-checked="false" style="--swatch:#e8d9ad">Workshop</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="sunflower-valley" role="menuitemradio" aria-checked="false" style="--swatch:#dfbe62">Sunflower Valley</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="ember-foundry" role="menuitemradio" aria-checked="false" style="--swatch:#d88b47">Ember Foundry</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="dune-observatory" role="menuitemradio" aria-checked="false" style="--swatch:#c77c65">Dune Observatory</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="maple-crossing" role="menuitemradio" aria-checked="false" style="--swatch:#b9543f">Maple Crossing</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="rosewater-citadel" role="menuitemradio" aria-checked="false" style="--swatch:#d291a7">Rosewater Citadel</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="cherry" role="menuitemradio" aria-checked="true" style="--swatch:#e3aec8">Cherry Blossom</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="candy" role="menuitemradio" aria-checked="false" style="--swatch:#f47dba">Candy</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="arcade" role="menuitemradio" aria-checked="false" style="--swatch:#dc53d1">Arcade</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="amethyst-hollow" role="menuitemradio" aria-checked="false" style="--swatch:#aa74c9">Amethyst Hollow</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="lavender-highlands" role="menuitemradio" aria-checked="false" style="--swatch:#aea0cd">Lavender Highlands</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="orbit" role="menuitemradio" aria-checked="false" style="--swatch:#8a84c8">Orbit</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="moonlit-library" role="menuitemradio" aria-checked="false" style="--swatch:#6575b1">Moonlit Library</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="rainy-rooftops" role="menuitemradio" aria-checked="false" style="--swatch:#557eac">Rainy Rooftops</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="frosted" role="menuitemradio" aria-checked="false" style="--swatch:#bdd1e5">Frosted Dawn</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="coral-circuit" role="menuitemradio" aria-checked="false" style="--swatch:#327896">Coral Circuit</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="cloud-harbor" role="menuitemradio" aria-checked="false" style="--swatch:#94c9d4">Cloud Harbor</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="tideglass-isles" role="menuitemradio" aria-checked="false" style="--swatch:#74c7c4">Tideglass Isles</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="aurora-outpost" role="menuitemradio" aria-checked="false" style="--swatch:#68b4a2">Aurora Outpost</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="starlight-conservatory" role="menuitemradio" aria-checked="false" style="--swatch:#3d7972">Starlight Conservatory</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="firefly-grove" role="menuitemradio" aria-checked="false" style="--swatch:#528b6b">Firefly Grove</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="mosslight-ruins" role="menuitemradio" aria-checked="false" style="--swatch:#526c4b">Mosslight Ruins</button>
+              <button class="menu-dropdown-item" type="button" data-theme-choice="mono" role="menuitemradio" aria-checked="false" style="--swatch:#87929c">Mono</button>
             </div>
           </div>
         </nav>
@@ -67,6 +101,7 @@
 
       <main class="desktop" id="top" aria-label="Hack Club LHS desktop">
         <div class="desktop-grid" aria-hidden="true"></div>
+        <div id="snap-preview" aria-hidden="true" hidden></div>
 
         <section class="boot-card" aria-label="Boot status">
           <p>hackclub@lexington:~$ boot HackClubOS</p>
@@ -137,7 +172,7 @@
         </nav>
 
         <section
-          class="app-window is-open"
+          class="app-window is-open is-active"
           data-window="welcome"
           style="--x: 3vw; --y: 5vh; --w: 500px;"
           aria-label="Welcome window"
@@ -329,7 +364,7 @@
         </section>
 
         <section
-          class="app-window is-open"
+          class="app-window"
           data-window="lexhack"
           style="--x: 51vw; --y: 45vh; --w: 590px; z-index: 6;"
           aria-label="LexHack '26 window"
@@ -420,7 +455,7 @@
         </section>
 
         <section
-          class="app-window is-open"
+          class="app-window"
           data-window="gallery"
           style="--x: 33vw; --y: 5vh; --w: 480px;"
           aria-label="Gallery window"
@@ -526,7 +561,7 @@
         </section>
 
         <section
-          class="app-window is-open is-active"
+          class="app-window"
           data-window="sponsors"
           style="--x: 25vw; --y: 43vh; --w: 720px;"
           aria-label="Sponsors window"
@@ -622,68 +657,142 @@
           </div>
           <div class="window-content theme-content">
             <h2>Choose theme</h2>
-            <div class="theme-grid" role="list" aria-label="Available themes">
-              <button class="theme-choice is-selected" type="button" data-theme-choice="paper" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #fff4c2"></i>
-                  <i style="--swatch: #ff7f50"></i>
-                  <i style="--swatch: #2ec4b6"></i>
-                </span>
-                <strong>Paper</strong>
-                <span>notebook collage + soft OS</span>
+            <p class="theme-order-note">23 worlds, arranged by color. Cherry Blossom is the default.</p>
+            <div class="theme-grid" role="group" aria-label="Available themes">
+              <button class="theme-choice" type="button" data-theme-choice="paper" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-paper-workshop.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Workshop</strong>
+                <span>Cream notebook paper, teal and coral terminal frames, taped pixel sketches, and a campus maker-workshop atmosphere.</span>
               </button>
-              <button class="theme-choice" type="button" data-theme-choice="orbit" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #b4a7ff"></i>
-                  <i style="--swatch: #43ffd2"></i>
-                  <i style="--swatch: #ffcf56"></i>
-                </span>
-                <strong>Orbit</strong>
-                <span>space console + starfield</span>
+              <button class="theme-choice" type="button" data-theme-choice="sunflower-valley" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-sunflower-valley.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Sunflower Valley</strong>
+                <span>Golden sunflower terraces, white windmills, and a tiny hillside village under a summer sky.</span>
               </button>
-              <button class="theme-choice" type="button" data-theme-choice="arcade" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #adff2f"></i>
-                  <i style="--swatch: #ff2bd6"></i>
-                  <i style="--swatch: #24f6ff"></i>
-                </span>
-                <strong>Arcade</strong>
-                <span>neon cabinet + pixel arena</span>
+              <button class="theme-choice" type="button" data-theme-choice="ember-foundry" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-ember-foundry.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Ember Foundry</strong>
+                <span>A maker forge in basalt cliffs, copper machinery, glowing workshops, and rivers of amber lava.</span>
               </button>
-              <button class="theme-choice" type="button" data-theme-choice="matrix" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #a6ff64"></i>
-                  <i style="--swatch: #6de0ff"></i>
-                  <i style="--swatch: #ff5e8a"></i>
-                </span>
-                <strong>Matrix</strong>
-                <span>terminal wallpaper + green glow</span>
+              <button class="theme-choice" type="button" data-theme-choice="dune-observatory" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-dune-observatory.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Dune Observatory</strong>
+                <span>Terracotta mesas, cream observatory domes, a tiny rover, and a wide apricot dusk sky.</span>
               </button>
-              <button class="theme-choice" type="button" data-theme-choice="candy" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #ff7ab6"></i>
-                  <i style="--swatch: #ffe66d"></i>
-                  <i style="--swatch: #8cf6ff"></i>
-                </span>
+              <button class="theme-choice" type="button" data-theme-choice="maple-crossing" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-maple-crossing.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Maple Crossing</strong>
+                <span>An autumn mountain railway threading through red maple woods, with a cozy riverside station.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="rosewater-citadel" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-rosewater-citadel.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Rosewater Citadel</strong>
+                <span>A rose-colored canal city with graceful towers, flowered balconies, and petal-strewn waterways.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="cherry" aria-pressed="true">
+                <img class="theme-thumbnail" src="assets/wallpaper-cherry-blossom.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Cherry Blossom</strong>
+                <span>Default · A sakura village with treehouse workshops, wooden bridges, a reflective pond, and drifting pink petals.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="candy" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-candy-mixtape.png" width="96" height="54" loading="lazy" alt="" />
                 <strong>Candy</strong>
-                <span>sticker stripes + bright Y2K</span>
+                <span>Dark plum desktop collage with pink, mint, and yellow pixel windows, cassette stickers, and a sunset panel.</span>
               </button>
-              <button class="theme-choice" type="button" data-theme-choice="mono" role="listitem">
-                <span class="theme-swatches" aria-hidden="true">
-                  <i style="--swatch: #f8fafc"></i>
-                  <i style="--swatch: #94a3b8"></i>
-                  <i style="--swatch: #38bdf8"></i>
-                </span>
+              <button class="theme-choice" type="button" data-theme-choice="arcade" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-arcade-afterhours.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Arcade</strong>
+                <span>Neon pixel cabinets, cyan and magenta game panels, a synthwave horizon, and lime circuit accents.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="amethyst-hollow" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-amethyst-hollow.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Amethyst Hollow</strong>
+                <span>An underground village among giant amethyst crystals, glowing streams, and suspended bridges.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="lavender-highlands" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-lavender-highlands.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Lavender Highlands</strong>
+                <span>Rolling lavender fields, a hilltop hamlet, and drifting clouds around distant violet peaks.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="orbit" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-orbit-station.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Orbit</strong>
+                <span>Navy starfield, violet orbital hardware, cyan console outlines, and pixel mission stickers.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="moonlit-library" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-moonlit-library.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Moonlit Library</strong>
+                <span>A vast cliffside library under a silver moon, with arched windows and bridges across a quiet lake.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="rainy-rooftops" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-rainy-rooftops.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Rainy Rooftops</strong>
+                <span>A rainy blue city of rooftop gardens, tram bridges, and warm windows reflected in canals.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="frosted" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-frosted-dawn.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Frosted Dawn</strong>
+                <span>A crystalline lakeside village at sunrise, with frosted pines, glass-roof workshops, icy bridges, and lavender-pink mountains.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="coral-circuit" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-coral-circuit.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Coral Circuit</strong>
+                <span>Glass-domed ocean labs, glowing reef life, pink coral, and midnight-blue water.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="cloud-harbor" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-cloud-harbor.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Cloud Harbor</strong>
+                <span>A floating maker city above cream clouds, with sky bridges, teal rooftops, and a brass airship dock.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="tideglass-isles" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-tideglass-isles.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Tideglass Isles</strong>
+                <span>Turquoise lagoons and white island villages, linked by piers above clear shallow water.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="aurora-outpost" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-aurora-outpost.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Aurora Outpost</strong>
+                <span>Polar cabins, crystalline ice, a snow rover, and mint-and-lavender northern lights.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="starlight-conservatory" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-starlight-conservatory.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Starlight Conservatory</strong>
+                <span>Luminous glass gardens on a tiny moon, with silver walkways and a distant ringed planet.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="firefly-grove" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-firefly-grove.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Firefly Grove</strong>
+                <span>Treehouse workshops, rope bridges, luminous mushrooms, and fireflies in a mossy forest.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="mosslight-ruins" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-mosslight-ruins.png" width="96" height="54" loading="lazy" alt="" />
+                <strong>Mosslight Ruins</strong>
+                <span>An ancient emerald city reclaimed by moss, with waterfalls, vine bridges, and quiet jade pools.</span>
+              </button>
+              <button class="theme-choice" type="button" data-theme-choice="mono" aria-pressed="false">
+                <img class="theme-thumbnail" src="assets/wallpaper-mono-draft.png" width="96" height="54" loading="lazy" alt="" />
                 <strong>Mono</strong>
-                <span>gray grid + clean blue accent</span>
+                <span>Charcoal graph paper, silver terminal outlines, campus sketches, and a few icy blue pixels.</span>
               </button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer class="taskbar" aria-label="Open apps">
-        <button class="task-button is-active" type="button" data-open="welcome">
+    <dialog class="desktop-help" id="desktop-help" aria-labelledby="desktop-help-title">
+      <header><h2 id="desktop-help-title">Make yourself at home.</h2><button type="button" data-close-help aria-label="Close desktop controls">×</button></header>
+      <dl>
+        <dt>Open an app</dt><dd>Double-click a desktop icon, or tap once on a phone. Enter and Space work too.</dd>
+        <dt>Switch or minimize</dt><dd>Click an app in the dock. Click the focused app again to minimize it. A dot means running; a hollow dot means minimized.</dd>
+        <dt>Move and tile</dt><dd>Drag the title bar. Drop at the left or right edge to tile, or at the top to maximize.</dd>
+        <dt>Resize and restore</dt><dd>Drag any window edge or corner. Double-click the title bar to maximize or restore its previous size.</dd>
+        <dt>Use your keyboard</dt><dd>Focus a window title, then use arrows to move or Shift + arrows to resize. Enter maximizes; Escape closes. Alt + backtick cycles running apps.</dd>
+        <dt>Find your desktop</dt><dd>Open the Hack Club menu to switch apps, show the desktop, restore your windows, or reset the window layout.</dd>
+      </dl>
+    </dialog>
+
+      <footer class="taskbar" aria-label="App dock">
+        <button class="task-button" type="button" data-open="welcome">
           <span class="icon-art icon-terminal" aria-hidden="true"></span>
           <span class="dock-label">Welcome</span>
         </button>
@@ -691,7 +800,7 @@
           <span class="icon-art icon-exe" aria-hidden="true"></span>
           <span class="dock-label">Join.exe</span>
         </button>
-        <button class="task-button is-active" type="button" data-open="schedule">
+        <button class="task-button" type="button" data-open="schedule">
           <span class="icon-art icon-calendar" aria-hidden="true"></span>
           <span class="dock-label">Schedule</span>
         </button>
@@ -707,7 +816,7 @@
           <span class="icon-art icon-leaders" aria-hidden="true"></span>
           <span class="dock-label">Leaders</span>
         </button>
-        <button class="task-button is-active" type="button" data-open="gallery">
+        <button class="task-button" type="button" data-open="gallery">
           <span class="icon-art icon-gallery" aria-hidden="true"></span>
           <span class="dock-label">Gallery</span>
         </button>
@@ -719,7 +828,7 @@
           <span class="icon-art icon-theme" aria-hidden="true"></span>
           <span class="dock-label">Themes</span>
         </button>
-        <button class="task-button is-active" type="button" data-open="lexhack">
+        <button class="task-button" type="button" data-open="lexhack">
           <span class="icon-art icon-chip" aria-hidden="true"></span>
           <span class="dock-label">LexHack '26</span>
         </button>
@@ -731,7 +840,7 @@
           <span class="icon-art icon-slack" aria-hidden="true"></span>
           <span class="dock-label">Hack Club Slack</span>
         </button>
-        <button class="task-button is-active" type="button" data-open="sponsors">
+        <button class="task-button" type="button" data-open="sponsors">
           <span class="icon-art icon-sponsors" aria-hidden="true"></span>
           <span class="dock-label">Sponsors</span>
         </button>
@@ -746,7 +855,7 @@
       </footer>
     </div>
 
-    <div class="lightbox" data-lightbox hidden>
+    <div class="lightbox" data-lightbox role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
       <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close photo viewer">&times;</button>
       <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Previous photo">&lsaquo;</button>
       <figure class="lightbox-figure">
@@ -756,6 +865,12 @@
       <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Next photo">&rsaquo;</button>
     </div>
 
-    <script src="script.js?v=gallery-dock-anchor"></script>
+
+    <p class="sr-only" id="window-keyboard-help">On desktop, arrow keys move the window. Shift and arrows resize. Alt makes one-pixel adjustments. Enter maximizes or restores. Escape closes the window.</p>
+    <div class="sr-only" id="desktop-status" role="status" aria-live="polite"></div>
+
+
+    <script src="window-layout.js?v=os-interactions-v2-20260928"></script>
+    <script src="script.js?v=os-interactions-v2-20260928"></script>
   </body>
 </html>

@@ -1,0 +1,45 @@
+/* Theme-specific pixel sprites: Join, Schedule, Projects, Hackathon, Leaders, Gallery, FAQ, Themes. */
+.os-shell { --theme-icon-sheet: url("assets/theme-icons/cherry.png"); }
+.os-shell[data-theme="paper"] { --theme-icon-sheet: url("assets/theme-icons/paper.png"); }
+.os-shell[data-theme="sunflower-valley"] { --theme-icon-sheet: url("assets/theme-icons/sunflower-valley.png"); }
+.os-shell[data-theme="ember-foundry"] { --theme-icon-sheet: url("assets/theme-icons/ember-foundry.png"); }
+.os-shell[data-theme="dune-observatory"] { --theme-icon-sheet: url("assets/theme-icons/dune-observatory.png"); }
+.os-shell[data-theme="maple-crossing"] { --theme-icon-sheet: url("assets/theme-icons/maple-crossing.png"); }
+.os-shell[data-theme="rosewater-citadel"] { --theme-icon-sheet: url("assets/theme-icons/rosewater-citadel.png"); }
+.os-shell[data-theme="cherry"] { --theme-icon-sheet: url("assets/theme-icons/cherry.png"); }
+.os-shell[data-theme="candy"] { --theme-icon-sheet: url("assets/theme-icons/candy.png"); }
+.os-shell[data-theme="arcade"] { --theme-icon-sheet: url("assets/theme-icons/arcade.png"); }
+.os-shell[data-theme="amethyst-hollow"] { --theme-icon-sheet: url("assets/theme-icons/amethyst-hollow.png"); }
+.os-shell[data-theme="lavender-highlands"] { --theme-icon-sheet: url("assets/theme-icons/lavender-highlands.png"); }
+.os-shell[data-theme="orbit"] { --theme-icon-sheet: url("assets/theme-icons/orbit.png"); }
+.os-shell[data-theme="moonlit-library"] { --theme-icon-sheet: url("assets/theme-icons/moonlit-library.png"); }
+.os-shell[data-theme="rainy-rooftops"] { --theme-icon-sheet: url("assets/theme-icons/rainy-rooftops.png"); }
+.os-shell[data-theme="frosted"] { --theme-icon-sheet: url("assets/theme-icons/frosted.png"); }
+.os-shell[data-theme="coral-circuit"] { --theme-icon-sheet: url("assets/theme-icons/coral-circuit.png"); }
+.os-shell[data-theme="cloud-harbor"] { --theme-icon-sheet: url("assets/theme-icons/cloud-harbor.png"); }
+.os-shell[data-theme="tideglass-isles"] { --theme-icon-sheet: url("assets/theme-icons/tideglass-isles.png"); }
+.os-shell[data-theme="aurora-outpost"] { --theme-icon-sheet: url("assets/theme-icons/aurora-outpost.png"); }
+.os-shell[data-theme="starlight-conservatory"] { --theme-icon-sheet: url("assets/theme-icons/starlight-conservatory.png"); }
+.os-shell[data-theme="firefly-grove"] { --theme-icon-sheet: url("assets/theme-icons/firefly-grove.png"); }
+.os-shell[data-theme="mosslight-ruins"] { --theme-icon-sheet: url("assets/theme-icons/mosslight-ruins.png"); }
+.os-shell[data-theme="mono"] { --theme-icon-sheet: url("assets/theme-icons/mono.png"); }
+.os-shell .icon-art:is(.icon-exe, .icon-calendar, .icon-folder, .icon-hackathon, .icon-leaders, .icon-gallery, .icon-note, .icon-theme) {
+  background-image: var(--theme-icon-sheet);
+  background-size: 400% 200%;
+  background-position: var(--sprite-x) var(--sprite-y);
+  background-repeat: no-repeat;
+  border-radius: 0;
+  image-rendering: pixelated;
+}
+.icon-exe { --sprite-x: 0.000000%; --sprite-y: 0%; }
+.icon-calendar { --sprite-x: 33.333333%; --sprite-y: 0%; }
+.icon-folder { --sprite-x: 66.666667%; --sprite-y: 0%; }
+.icon-hackathon { --sprite-x: 100.000000%; --sprite-y: 0%; }
+.icon-leaders { --sprite-x: 0.000000%; --sprite-y: 100%; }
+.icon-gallery { --sprite-x: 33.333333%; --sprite-y: 100%; }
+.icon-note { --sprite-x: 66.666667%; --sprite-y: 100%; }
+.icon-theme { --sprite-x: 100.000000%; --sprite-y: 100%; }
+
+/* Compensate for sprite padding so custom icons match the existing dock artwork. */
+.os-shell .desktop-icon .icon-art:is(.icon-exe, .icon-calendar, .icon-folder, .icon-hackathon, .icon-leaders, .icon-gallery, .icon-note, .icon-theme) { transform: scale(1.12); }
+.os-shell .task-button .icon-art:is(.icon-exe, .icon-calendar, .icon-folder, .icon-hackathon, .icon-leaders, .icon-gallery, .icon-note, .icon-theme) { transform: scale(.8); }

@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
-  <path fill="#ffcf56" d="M9 21h17v5H9z" opacity=".75"/>
-  <path fill="#080a18" d="M8 9h4V6h5v3h2V7h5v3h2V8h4v13h-2v6H10v-3H7V12h1z"/>
-  <path fill="#43ffd2" d="M11 11h2V8h2v9h2v-6h2v6h2V9h1v9h2v-7h2v9h-2v4H11v-3H9v-7h2z"/>
-  <path fill="#ffffff" d="M14 9h1v6h1v2h-2z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><title>Mint Edge grab</title><path d="M8 18L6 11C5 8 9 7 10 10L12 16L11 6C11 3 15 3 15 6L16 15L17 5C17 2 21 3 21 6L21 15L23 8C24 5 28 7 27 10L25 19L27 17C29 15 31 18 29 20L25 26C23 29 15 29 12 26L7 22C4 20 6 17 8 18Z" fill="#aff6d8" stroke="#133b36" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>

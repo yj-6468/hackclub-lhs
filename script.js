@@ -1,343 +1,432 @@
-const shell = document.querySelector(".os-shell");
-const windows = [...document.querySelectorAll("[data-window]")];
-const desktopIcons = [...document.querySelectorAll(".desktop-icon")];
-const desktopOpeners = [...document.querySelectorAll(".desktop-icon[data-open]")];
-const desktopExternalOpeners = [...document.querySelectorAll(".desktop-icon[data-external]")];
-const openers = [...document.querySelectorAll("[data-open]:not(.desktop-icon)")];
-const taskButtons = [...document.querySelectorAll(".task-button")];
-const taskWindowButtons = [...document.querySelectorAll(".task-button[data-open]")];
-const taskExternalOpeners = [...document.querySelectorAll(".task-button[data-external]")];
-const themeChoices = [...document.querySelectorAll("[data-theme-choice]")];
-const taskbar = document.querySelector(".taskbar");
-let topZ = 40;
-
-const STORAGE_KEY = "hackclub-os-state";
+const shell = document.querySelector('.os-shell');
+const desktop = document.querySelector('.desktop');
+const windows = [...document.querySelectorAll('[data-window]')];
+const windowByName = new Map(windows.map(win => [win.dataset.window, win]));
+const desktopIcons = [...document.querySelectorAll('.desktop-icon')];
+const taskButtons = [...document.querySelectorAll('.task-button')];
+const taskWindowButtons = taskButtons.filter(button => button.dataset.open);
+const themeChoices = [...document.querySelectorAll('[data-theme-choice]')];
+const taskbar = document.querySelector('.taskbar');
+const normalBounds = new Map();
+const returnFocus = new Map();
+const modes = new Set(['normal', 'left', 'right', 'maximized']);
+const STORAGE_KEY = 'hackclub-os-state';
+const DEFAULT_THEME = 'cherry';
+const compactLayout = () => window.matchMedia('(max-width: 720px)').matches;
+const isVisible = win => win.classList.contains('is-open');
+const isRunning = win => isVisible(win) || win.classList.contains('is-minimized');
+const appName = win => win.getAttribute('aria-label').replace(/ window$/, '');
+let activeName = '', focusOrder = [], desktopSnapshot = [], interaction = null;
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
+  } catch { return {}; }
 }
-
 function saveState(patch) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...loadState(), ...patch }));
-  } catch {
-    // localStorage unavailable (private mode, disabled, quota) -- ignore
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...loadState(), ...patch })); } catch { /* Storage may be disabled. */ }
+}
+function saveWindowState(name, patch) {
+  const saved = loadState();
+  saveState({ windows: { ...saved.windows, [name]: { ...saved.windows?.[name], ...patch } } });
+}
+function persistWindow(win) {
+  saveWindowState(win.dataset.window, { open: isRunning(win), minimized: win.classList.contains('is-minimized'),
+    mode: win.dataset.mode || 'normal', bounds: normalBounds.get(win.dataset.window) });
+}
+function workArea() {
+  const rect = desktop.getBoundingClientRect();
+  const bottom = Math.min(rect.bottom, taskbar.getBoundingClientRect().top);
+  return { x: 12, y: 12, width: Math.max(1, rect.width - 24), height: Math.max(1, bottom - rect.top - 24) };
+}
+function readBounds(win) {
+  return { x: win.offsetLeft, y: win.offsetTop, width: win.offsetWidth, height: win.offsetHeight };
+}
+function writeBounds(win, rect) {
+  win.style.left = `${rect.x}px`; win.style.top = `${rect.y}px`;
+  win.style.width = `${rect.width}px`; win.style.height = `${rect.height}px`;
+}
+function updateDockTop() {
+  document.documentElement.style.setProperty('--dock-top', `${taskbar.getBoundingClientRect().top}px`);
+}
+function clampWindowToDock(win) {
+  if (compactLayout() || !isVisible(win)) return;
+  const name = win.dataset.window;
+  const bounds = DesktopLayout.fit(normalBounds.get(name) || readBounds(win), workArea());
+  normalBounds.set(name, bounds);
+  writeBounds(win, win.dataset.mode === 'normal' ? bounds : DesktopLayout.snap(win.dataset.mode, workArea()));
+}
+function announce(text) { document.querySelector('#desktop-status').textContent = text; }
+function updateWindowControls(win) {
+  const button = win.querySelector('[data-maximize]');
+  const expanded = win.dataset.mode !== 'normal';
+  button.setAttribute('aria-label', `${expanded ? 'Restore' : 'Maximize'} ${appName(win)}`);
+  button.setAttribute('aria-pressed', String(expanded));
+  button.title = expanded ? 'Restore window size' : 'Maximize window';
+  button.disabled = compactLayout();
+}
+function syncDesktop() {
+  taskWindowButtons.forEach(button => {
+    const win = windowByName.get(button.dataset.open);
+    const focused = isVisible(win) && win.dataset.window === activeName;
+    button.classList.toggle('is-running', isRunning(win));
+    button.classList.toggle('is-minimized', win.classList.contains('is-minimized'));
+    button.classList.toggle('is-active', focused);
+    button.setAttribute('aria-pressed', String(focused));
+    button.setAttribute('aria-controls', win.id);
+    const name = button.querySelector('.dock-label').textContent;
+    button.title = `${name} — ${focused ? 'click to minimize' : isRunning(win) ? 'click to restore' : 'click to open'}`;
+  });
+  const list = document.querySelector('#window-list');
+  list.replaceChildren();
+  windows.filter(isRunning).forEach(win => {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'menu-dropdown-item'; button.setAttribute('role', 'menuitem');
+    button.dataset.switchWindow = win.dataset.window;
+    button.textContent = `${win.dataset.window === activeName ? '● ' : win.classList.contains('is-minimized') ? '− ' : '○ '}${appName(win)}`;
+    list.append(button);
+  });
+  if (!list.children.length) {
+    const empty = document.createElement('span'); empty.className = 'menu-empty'; empty.textContent = 'No open windows'; list.append(empty);
+  }
+  document.querySelectorAll('[data-window-action]').forEach(button => {
+    button.disabled = !activeName || (compactLayout() && ['left', 'right', 'maximize'].includes(button.dataset.windowAction));
+  });
+  document.querySelector('[data-show-desktop]').textContent = desktopSnapshot.length ? 'Restore windows' : 'Show desktop';
+}
+function setActive(name, focus = false) {
+  const win = windowByName.get(name);
+  activeName = win && isVisible(win) ? name : '';
+  if (activeName) focusOrder = [...focusOrder.filter(id => id !== activeName), activeName];
+  // Bounded stacking keeps windows below menus, the dock, and the photo viewer.
+  focusOrder.forEach((id, index) => { windowByName.get(id).style.zIndex = String(10 + index); });
+  windows.forEach(item => item.classList.toggle('is-active', item.dataset.window === activeName));
+  syncDesktop(); saveState({ active: activeName, order: focusOrder });
+  if (focus && win) win.querySelector('.window-title').focus({ preventScroll: true });
+}
+function nextWindow(excluded, focus = true) {
+  const next = [...focusOrder].reverse().map(id => windowByName.get(id)).find(win => win !== excluded && isVisible(win));
+  setActive(next?.dataset.window || '', focus);
+  if (!next && focus) {
+    const opener = returnFocus.get(excluded?.dataset.window);
+    const fallback = taskWindowButtons.find(button => button.dataset.open === excluded?.dataset.window) || document.querySelector('.start-menu');
+    (opener?.isConnected && !opener.closest('.app-window:not(.is-open)') && opener.getClientRects().length ? opener : fallback).focus({ preventScroll: true });
   }
 }
-
-function saveWindowState(name, patch) {
-  const state = loadState();
-  const windowState = { ...state.windows?.[name], ...patch };
-  saveState({ windows: { ...state.windows, [name]: windowState } });
+function openWindow(name, detail, opener) {
+  const win = windowByName.get(name); if (!win) return;
+  const wasRunning = isRunning(win);
+  if (opener) returnFocus.set(name, opener);
+  win.classList.remove('is-minimized'); win.classList.add('is-open');
+  clampWindowToDock(win); setActive(name, true); persistWindow(win);
+  if (!wasRunning || detail?.galleryView) win.dispatchEvent(new CustomEvent('app-open', { detail }));
+  if (compactLayout()) win.scrollIntoView({ behavior: 'auto', block: 'start' });
 }
-
-function setActive(name) {
-  windows.forEach((win) => win.classList.toggle("is-active", win.dataset.window === name));
-  taskWindowButtons.forEach((button) => {
-    const win = document.querySelector(`[data-window="${button.dataset.open}"]`);
-    button.classList.toggle("is-active", Boolean(win?.classList.contains("is-open")));
-  });
-  saveState({ active: name });
+function minimizeWindow(win) {
+  if (!win || !isVisible(win)) return;
+  win.classList.remove('is-open', 'is-active'); win.classList.add('is-minimized');
+  persistWindow(win); nextWindow(win); announce(`${appName(win)} minimized to the dock.`);
 }
-
-function openWindow(name, detail) {
-  const win = document.querySelector(`[data-window="${name}"]`);
-  if (!win) return;
-  win.classList.add("is-open");
-  win.classList.remove("is-minimized");
-  win.style.zIndex = String(++topZ);
-  setActive(name);
-  saveWindowState(name, { open: true });
-  clampWindowToDock(win);
-  win.dispatchEvent(new CustomEvent("app-open", { detail }));
-}
-
-function updateDockTop() {
-  if (!taskbar) return;
-  document.documentElement.style.setProperty("--dock-top", `${taskbar.getBoundingClientRect().top}px`);
-}
-
-function clampWindowToDock(win) {
-  if (!taskbar || !win.classList.contains("is-open")) return;
-  const dockTop = taskbar.getBoundingClientRect().top;
-  const margin = 12;
-  const rect = win.getBoundingClientRect();
-  if (rect.bottom <= dockTop - margin) return;
-  const desktopRect = win.offsetParent.getBoundingClientRect();
-  const currentTop = rect.top - desktopRect.top;
-  const overflow = rect.bottom - (dockTop - margin);
-  win.style.top = `${Math.max(12, currentTop - overflow)}px`;
-}
-
-function clampAllWindowsToDock() {
-  windows.forEach(clampWindowToDock);
-}
-
 function closeWindow(win) {
-  win.classList.remove("is-open", "is-active");
-  saveWindowState(win.dataset.window, { open: false });
-  const next = [...document.querySelectorAll(".app-window.is-open")].pop();
-  if (next) setActive(next.dataset.window);
-  else setActive("");
+  const focused = activeName === win.dataset.window;
+  win.classList.remove('is-open', 'is-active', 'is-minimized');
+  desktopSnapshot = desktopSnapshot.filter(name => name !== win.dataset.window);
+  persistWindow(win);
+  if (focused) nextWindow(win); else syncDesktop();
+  announce(`${appName(win)} closed.`);
 }
-
-openers.forEach((opener) => {
-  opener.addEventListener("click", () => openWindow(opener.dataset.open, { galleryView: opener.dataset.galleryView }));
+function setWindowMode(win, mode) {
+  if (compactLayout() || !win) return;
+  if (win.dataset.mode === 'normal') normalBounds.set(win.dataset.window, DesktopLayout.fit(readBounds(win), workArea()));
+  win.dataset.mode = mode; win.classList.toggle('is-maximized', mode === 'maximized');
+  clampWindowToDock(win); updateWindowControls(win); setActive(win.dataset.window); persistWindow(win);
+}
+function toggleMaximize(win) { setWindowMode(win, win.dataset.mode === 'normal' ? 'maximized' : 'normal'); }
+function selectDesktopIcon(icon) {
+  desktopIcons.forEach(item => item.classList.toggle('is-selected', item === icon));
+}
+function activateIcon(icon) {
+  if (icon.dataset.open) openWindow(icon.dataset.open, { galleryView: icon.dataset.galleryView }, icon);
+  else window.open(icon.dataset.external, '_blank', 'noopener,noreferrer');
+}
+// Mouse double-click mirrors a desktop; touch and native keyboard button clicks open directly.
+desktopIcons.forEach(icon => {
+  icon.title = 'Double-click to open · tap on touch screens';
+  icon.addEventListener('click', event => {
+    selectDesktopIcon(icon);
+    if (event.detail === 0 || event.pointerType === 'touch' || event.pointerType === 'pen' || compactLayout()) activateIcon(icon);
+  });
+  icon.addEventListener('dblclick', event => { if (!compactLayout() && event.pointerType !== 'touch') activateIcon(icon); });
 });
 
+document.querySelectorAll('[data-open]:not(.desktop-icon):not(.task-button)').forEach(opener => {
+  opener.addEventListener('click', () => openWindow(opener.dataset.open, { galleryView: opener.dataset.galleryView }, opener));
+});
+taskWindowButtons.forEach(button => button.addEventListener('click', () => {
+  const win = windowByName.get(button.dataset.open);
+  if (activeName === win.dataset.window && isVisible(win)) minimizeWindow(win);
+  else openWindow(win.dataset.window, undefined, button);
+}));
+taskButtons.filter(button => button.dataset.external).forEach(button => button.addEventListener('click', () => {
+  window.open(button.dataset.external, '_blank', 'noopener,noreferrer');
+}));
 function clampDockLabel(button) {
-  const label = button.querySelector(".dock-label");
-  if (!label) return;
-  label.style.setProperty("--dock-shift", "0px");
-  const btn = button.getBoundingClientRect();
-  const center = btn.left + btn.width / 2;
-  const half = label.offsetWidth / 2;
-  const margin = 8;
-  let shift = 0;
-  if (center + half > window.innerWidth - margin) shift = window.innerWidth - margin - (center + half);
-  else if (center - half < margin) shift = margin - (center - half);
-  if (shift) label.style.setProperty("--dock-shift", `${shift}px`);
+  const label = button.querySelector('.dock-label'); label.style.setProperty('--dock-shift', '0px');
+  const rect = button.getBoundingClientRect(), center = rect.left + rect.width / 2, half = label.offsetWidth / 2;
+  const shift = center + half > innerWidth - 8 ? innerWidth - 8 - center - half : center - half < 8 ? 8 - center + half : 0;
+  label.style.setProperty('--dock-shift', `${shift}px`);
 }
-
-taskButtons.forEach((button) => {
-  button.addEventListener("pointerenter", () => {
-    button.classList.add("is-hovered");
-    clampDockLabel(button);
+taskButtons.forEach((button, index) => {
+  button.addEventListener('pointerenter', () => { button.classList.add('is-hovered'); clampDockLabel(button); });
+  button.addEventListener('focus', () => clampDockLabel(button));
+  button.addEventListener('pointerleave', () => button.classList.remove('is-hovered'));
+  button.addEventListener('blur', () => button.classList.remove('is-hovered'));
+  button.addEventListener('keydown', event => {
+    let next;
+    if (event.key === 'ArrowRight') next = (index + 1) % taskButtons.length;
+    if (event.key === 'ArrowLeft') next = (index - 1 + taskButtons.length) % taskButtons.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = taskButtons.length - 1;
+    if (next !== undefined) { event.preventDefault(); taskButtons[next].focus(); }
   });
-  button.addEventListener("pointerleave", () => button.classList.remove("is-hovered"));
-  button.addEventListener("blur", () => button.classList.remove("is-hovered"));
 });
 
-taskExternalOpeners.forEach((opener) => {
-  opener.addEventListener("click", () => {
-    window.open(opener.dataset.external, "_blank", "noopener,noreferrer");
-  });
-});
-
-function selectDesktopIcon(selectedIcon) {
-  desktopIcons.forEach((opener) => {
-    opener.classList.toggle("is-selected", opener === selectedIcon);
-  });
+const snapPreview = document.querySelector('#snap-preview');
+function snapTarget(event) {
+  const rect = desktop.getBoundingClientRect(), area = workArea();
+  if (event.clientY <= rect.top + 22) return 'maximized';
+  if (event.clientY > rect.top + area.y + area.height) return null;
+  if (event.clientX <= rect.left + 24) return 'left';
+  if (event.clientX >= rect.right - 24) return 'right';
+  return null;
 }
+function showSnap(mode) {
+  snapPreview.hidden = !mode;
+  if (mode) { writeBounds(snapPreview, DesktopLayout.snap(mode, workArea())); snapPreview.textContent = mode === 'maximized' ? 'Maximize' : `Tile ${mode}`; }
+}
+function beginInteraction(event, win, edge) {
+  if (event.button !== 0 || compactLayout() || interaction) return;
+  if (!edge && event.target.closest('button')) return;
+  event.preventDefault();
+  setActive(win.dataset.window);
+  const target = event.currentTarget;
+  (edge === 'se' ? target : win.querySelector('.window-title')).focus({ preventScroll: true });
+  interaction = { win, target, pointerId: event.pointerId, edge, startX: event.clientX, startY: event.clientY,
+    origin: readBounds(win), originalMode: win.dataset.mode, originalNormal: { ...normalBounds.get(win.dataset.window) }, moved: false, snap: null };
+  target.setPointerCapture(event.pointerId);
+}
+function moveInteraction(event) {
+  const drag = interaction;
+  if (!drag || event.pointerId !== drag.pointerId) return;
+  const dx = event.clientX - drag.startX, dy = event.clientY - drag.startY;
+  if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+  if (!drag.moved) {
+    drag.moved = true;
+    drag.win.classList.add(drag.edge ? 'is-resizing' : 'is-dragging');
+    shell.classList.add('is-grabbing');
+    if (drag.originalMode !== 'normal') {
+      drag.win.dataset.mode = 'normal'; drag.win.classList.remove('is-maximized');
+      if (!drag.edge) {
+        const restored = DesktopLayout.fit(drag.originalNormal, workArea());
+        const ratio = Math.max(0, Math.min(1, (drag.startX - desktop.getBoundingClientRect().left - drag.origin.x) / drag.origin.width));
+        drag.origin = { ...restored, x: drag.startX - desktop.getBoundingClientRect().left - restored.width * ratio,
+          y: drag.startY - desktop.getBoundingClientRect().top - 20 };
+      }
+    }
+  }
+  const rect = drag.edge ? DesktopLayout.resize(drag.origin, dx, dy, drag.edge, workArea())
+    : DesktopLayout.fit({ ...drag.origin, x: drag.origin.x + dx, y: drag.origin.y + dy }, workArea());
+  writeBounds(drag.win, rect);
+  if (!drag.edge) { drag.snap = snapTarget(event); showSnap(drag.snap); }
+}
+function endInteraction(cancel = false) {
+  const drag = interaction; if (!drag) return;
+  interaction = null;
+  if (drag.target.hasPointerCapture(drag.pointerId)) drag.target.releasePointerCapture(drag.pointerId);
+  drag.win.classList.remove('is-dragging', 'is-resizing'); shell.classList.remove('is-grabbing'); showSnap(null);
+  if (!drag.moved) return;
+  if (cancel) {
+    normalBounds.set(drag.win.dataset.window, drag.originalNormal); drag.win.dataset.mode = drag.originalMode;
+    drag.win.classList.toggle('is-maximized', drag.originalMode === 'maximized'); clampWindowToDock(drag.win);
+  } else {
+    normalBounds.set(drag.win.dataset.window, readBounds(drag.win));
+    if (drag.snap) setWindowMode(drag.win, drag.snap);
+  }
+  updateWindowControls(drag.win); persistWindow(drag.win);
+}
+window.addEventListener('pointermove', moveInteraction);
+window.addEventListener('pointerup', event => { if (interaction?.pointerId === event.pointerId) endInteraction(); });
+window.addEventListener('pointercancel', () => endInteraction(true));
+window.addEventListener('blur', () => endInteraction(true));
 
-desktopOpeners.forEach((opener) => {
-  opener.addEventListener("click", () => selectDesktopIcon(opener));
-  opener.addEventListener("dblclick", () => {
-    selectDesktopIcon(opener);
-    openWindow(opener.dataset.open, { galleryView: opener.dataset.galleryView });
+function keyboardGeometry(event, win, resize = false) {
+  if (compactLayout() || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+  event.preventDefault(); event.stopPropagation();
+  if (win.dataset.mode !== 'normal') setWindowMode(win, 'normal');
+  const step = event.altKey ? 1 : 10;
+  const dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0;
+  const dy = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
+  const rect = readBounds(win);
+  const next = resize || event.shiftKey ? DesktopLayout.resize(rect, dx, dy, 'se', workArea())
+    : DesktopLayout.fit({ ...rect, x: rect.x + dx, y: rect.y + dy }, workArea());
+  writeBounds(win, next); normalBounds.set(win.dataset.window, next); persistWindow(win);
+}
+windows.forEach(win => {
+  win.id = `app-${win.dataset.window}`; win.dataset.mode = 'normal'; win.setAttribute('role', 'dialog');
+  const titlebar = win.querySelector('.titlebar'), title = titlebar.querySelector(':scope > span');
+  title.classList.add('window-title'); title.tabIndex = 0; title.id = `title-${win.dataset.window}`;
+  title.setAttribute('aria-describedby', 'window-keyboard-help');
+  titlebar.title = 'Drag to move · double-click to maximize · drag to an edge to tile';
+  titlebar.addEventListener('pointerdown', event => beginInteraction(event, win));
+  titlebar.addEventListener('dblclick', event => { if (!event.target.closest('button')) toggleMaximize(win); });
+  title.addEventListener('keydown', event => {
+    keyboardGeometry(event, win);
+    if (event.key === 'Enter') { event.preventDefault(); toggleMaximize(win); }
   });
-  opener.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    selectDesktopIcon(opener);
-    openWindow(opener.dataset.open, { galleryView: opener.dataset.galleryView });
+  win.addEventListener('pointerdown', event => {
+    if (activeName !== win.dataset.window) setActive(win.dataset.window);
+    if (!event.target.closest('button,a,input,select,textarea,[tabindex],[contenteditable]')) win.querySelector('.window-title').focus({ preventScroll: true });
   });
-});
-
-desktopExternalOpeners.forEach((opener) => {
-  opener.addEventListener("click", () => selectDesktopIcon(opener));
-  opener.addEventListener("dblclick", () => {
-    selectDesktopIcon(opener);
-    window.open(opener.dataset.external, "_blank", "noopener,noreferrer");
+  win.addEventListener('focusin', () => { if (activeName !== win.dataset.window) setActive(win.dataset.window); });
+  win.querySelector('[data-close]').addEventListener('click', () => closeWindow(win));
+  win.querySelector('[data-minimize]').addEventListener('click', () => minimizeWindow(win));
+  win.querySelector('[data-maximize]').addEventListener('click', () => toggleMaximize(win));
+  ['×', '−', '□'].forEach((symbol, index) => {
+    const button = win.querySelectorAll('.titlebar-controls button')[index];
+    const mark = document.createElement('span'); mark.textContent = symbol; mark.setAttribute('aria-hidden', 'true'); button.append(mark);
+    button.title = button.getAttribute('aria-label');
   });
-  opener.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    selectDesktopIcon(opener);
-    window.open(opener.dataset.external, "_blank", "noopener,noreferrer");
-  });
-});
-
-windows.forEach((win) => {
-  win.addEventListener("pointerdown", () => {
-    win.style.zIndex = String(++topZ);
-    setActive(win.dataset.window);
-  });
-
-  win.querySelector("[data-close]")?.addEventListener("click", () => closeWindow(win));
-  win.querySelector("[data-minimize]")?.addEventListener("click", () => {
-    win.classList.remove("is-open");
-    saveWindowState(win.dataset.window, { open: false });
-    setActive("");
-  });
-  win.querySelector("[data-maximize]")?.addEventListener("click", () => {
-    win.classList.toggle("is-maximized");
-    win.style.zIndex = String(++topZ);
-    setActive(win.dataset.window);
-  });
+  for (const edge of ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw']) {
+    const handle = document.createElement(edge === 'se' ? 'button' : 'span');
+    handle.className = `resize-handle resize-${edge}`; handle.dataset.resize = edge;
+    if (edge === 'se') {
+      handle.type = 'button'; handle.setAttribute('aria-label', `Resize ${appName(win)} window`);
+      handle.title = 'Drag to resize · use arrow keys when focused';
+      handle.addEventListener('keydown', event => keyboardGeometry(event, win, true));
+    } else handle.setAttribute('aria-hidden', 'true');
+    handle.addEventListener('pointerdown', event => beginInteraction(event, win, edge)); win.append(handle);
+  }
+  updateWindowControls(win);
 });
 
 function applyTheme(theme) {
-  if (!shell) return;
-  shell.dataset.theme = theme;
-  themeChoices.forEach((choice) => {
-    choice.classList.toggle("is-selected", choice.dataset.themeChoice === theme);
+  const selectedTheme = themeChoices.some(choice => choice.dataset.themeChoice === theme) ? theme : DEFAULT_THEME;
+  shell.dataset.theme = selectedTheme;
+  themeChoices.forEach(choice => {
+    const selected = choice.dataset.themeChoice === selectedTheme; choice.classList.toggle('is-selected', selected);
+    choice.setAttribute(choice.getAttribute('role') === 'menuitemradio' ? 'aria-checked' : 'aria-pressed', String(selected));
   });
-  saveState({ theme });
+  saveState({ theme: selectedTheme });
 }
-
-themeChoices.forEach((choice) => {
-  choice.addEventListener("click", () => applyTheme(choice.dataset.themeChoice));
-});
-
-const clock = document.querySelector("[data-clock]");
-
-function updateClock() {
-  if (!clock) return;
-  const now = new Date();
-  clock.textContent = new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(now);
-}
-
-updateClock();
-window.setInterval(updateClock, 30000);
-
-function makeDraggable(win) {
-  const titlebar = win.querySelector(".titlebar");
-  if (!titlebar) return;
-
-  let startX = 0;
-  let startY = 0;
-  let originX = 0;
-  let originY = 0;
-  let dragging = false;
-  let dockLimitY = Infinity;
-
-  titlebar.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("button") || window.matchMedia("(max-width: 720px)").matches) return;
-    dragging = true;
-    win.classList.add("is-dragging");
-    shell?.classList.add("is-grabbing");
-    win.classList.remove("is-maximized");
-    const rect = win.getBoundingClientRect();
-    const desktopRect = win.offsetParent.getBoundingClientRect();
-    startX = event.clientX;
-    startY = event.clientY;
-    originX = rect.left - desktopRect.left;
-    originY = rect.top - desktopRect.top;
-    dockLimitY = taskbar ? taskbar.getBoundingClientRect().top - desktopRect.top - 12 : Infinity;
-    win.style.left = `${originX}px`;
-    win.style.top = `${originY}px`;
-    win.style.zIndex = String(++topZ);
-    setActive(win.dataset.window);
-    titlebar.setPointerCapture(event.pointerId);
-  });
-
-  titlebar.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
-    const desktop = win.offsetParent;
-    const maxX = Math.max(12, desktop.clientWidth - win.offsetWidth - 12);
-    const maxYRaw = Math.max(12, desktop.clientHeight - win.offsetHeight - 12);
-    const maxY = Math.min(maxYRaw, dockLimitY - win.offsetHeight);
-    const nextX = Math.max(12, Math.min(maxX, originX + event.clientX - startX));
-    const nextY = Math.max(12, Math.min(maxY, originY + event.clientY - startY));
-    win.style.left = `${nextX}px`;
-    win.style.top = `${nextY}px`;
-  });
-
-  function stopDragging(event) {
-    if (!dragging) return;
-    dragging = false;
-    win.classList.remove("is-dragging");
-    shell?.classList.remove("is-grabbing");
-    saveWindowState(win.dataset.window, { open: true, left: win.style.left, top: win.style.top });
-    if (event?.pointerId != null && titlebar.hasPointerCapture(event.pointerId)) {
-      titlebar.releasePointerCapture(event.pointerId);
-    }
-  }
-
-  titlebar.addEventListener("pointerup", stopDragging);
-  window.addEventListener("pointerup", stopDragging);
-
-  titlebar.addEventListener("pointercancel", stopDragging);
-  window.addEventListener("blur", stopDragging);
-}
-
-windows.forEach(makeDraggable);
-updateDockTop();
-
+themeChoices.forEach(choice => choice.addEventListener('click', () => applyTheme(choice.dataset.themeChoice)));
 function restoreState() {
-  const state = loadState();
-  applyTheme(state.theme || shell?.dataset.theme || "paper");
-
-  const savedWindows = state.windows || {};
-  windows.forEach((win) => {
-    const saved = savedWindows[win.dataset.window];
-    if (!saved) return;
-    win.classList.toggle("is-open", Boolean(saved.open));
-    if (saved.left && saved.top) {
-      win.style.left = saved.left;
-      win.style.top = saved.top;
+  const saved = loadState(); applyTheme(saved.theme || DEFAULT_THEME);
+  focusOrder = Array.isArray(saved.order) ? [...new Set(saved.order.filter(name => windowByName.has(name)))] : [];
+  windows.forEach(win => {
+    const item = saved.windows?.[win.dataset.window];
+    if (item && typeof item === 'object') {
+      win.classList.toggle('is-open', Boolean(item.open && !item.minimized));
+      win.classList.toggle('is-minimized', Boolean(item.open && item.minimized));
+      win.dataset.mode = modes.has(item.mode) ? item.mode : 'normal';
+      win.classList.toggle('is-maximized', win.dataset.mode === 'maximized');
+      if (item.bounds && ['x', 'y', 'width', 'height'].every(key => Number.isFinite(item.bounds[key]))) normalBounds.set(win.dataset.window, item.bounds);
+      else if (item.left && item.top) { win.style.left = item.left; win.style.top = item.top; }
     }
+    if (!focusOrder.includes(win.dataset.window)) focusOrder.push(win.dataset.window);
+    clampWindowToDock(win); updateWindowControls(win);
   });
-
-  const fallbackActive = [...document.querySelectorAll(".app-window.is-open")].pop()?.dataset.window || "";
-  const savedActiveIsOpen = document.querySelector(`[data-window="${state.active}"]`)?.classList.contains("is-open");
-  setActive(savedActiveIsOpen ? state.active : fallbackActive);
+  const target = windowByName.get(saved.active);
+  const initialActive = windows.find(win => isVisible(win) && win.classList.contains('is-active'));
+  setActive(target && isVisible(target) ? target.dataset.window : initialActive?.dataset.window || [...focusOrder].reverse().find(name => isVisible(windowByName.get(name))) || '');
 }
-
-restoreState();
-clampAllWindowsToDock();
-
-window.addEventListener("resize", () => {
-  updateDockTop();
-  clampAllWindowsToDock();
+updateDockTop(); restoreState();
+window.addEventListener('resize', () => {
+  endInteraction(true); updateDockTop();
+  windows.forEach(win => { clampWindowToDock(win); updateWindowControls(win); }); syncDesktop();
 });
 
-document.querySelector("[data-reset-desktop]")?.addEventListener("click", () => {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // ignore
-  }
-  window.location.reload();
-});
+const clock = document.querySelector('[data-clock]');
+function updateClock() {
+  clock.textContent = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date());
+}
+updateClock(); window.setInterval(updateClock, 30000);
 
-
-// Menu bar dropdowns (Sponsors, Theme)
-const dropdownTriggers = [...document.querySelectorAll("[data-dropdown]")];
-
+const dropdownTriggers = [...document.querySelectorAll('[data-dropdown]')];
 function closeDropdowns(except) {
-  dropdownTriggers.forEach((trigger) => {
-    const item = trigger.closest(".menu-item");
-    if (item && item !== except) {
-      item.classList.remove("is-open");
-      trigger.setAttribute("aria-expanded", "false");
-    }
+  dropdownTriggers.forEach(trigger => {
+    const item = trigger.closest('.menu-item');
+    if (item !== except) { item.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); }
   });
 }
-
-dropdownTriggers.forEach((trigger) => {
-  trigger.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const item = trigger.closest(".menu-item");
-    if (!item) return;
-    const willOpen = !item.classList.contains("is-open");
-    closeDropdowns(item);
-    item.classList.toggle("is-open", willOpen);
-    trigger.setAttribute("aria-expanded", String(willOpen));
+dropdownTriggers.forEach(trigger => {
+  trigger.addEventListener('click', event => {
+    event.stopPropagation(); const item = trigger.closest('.menu-item'), opening = !item.classList.contains('is-open');
+    closeDropdowns(item); item.classList.toggle('is-open', opening); trigger.setAttribute('aria-expanded', String(opening));
+    if (opening && event.detail === 0) item.querySelector('.menu-dropdown button:not(:disabled), .menu-dropdown a')?.focus();
+  });
+  trigger.addEventListener('keydown', event => { if (event.key === 'ArrowDown') { event.preventDefault(); if (trigger.getAttribute('aria-expanded') !== 'true') trigger.click(); trigger.closest('.menu-item').querySelector('.menu-dropdown button:not(:disabled), .menu-dropdown a')?.focus(); } });
+});
+document.querySelectorAll('.menu-dropdown').forEach(panel => {
+  panel.addEventListener('click', event => { if (event.target.closest('button, a')) closeDropdowns(); });
+  panel.addEventListener('keydown', event => {
+    const choices = [...panel.querySelectorAll('button:not(:disabled), a')];
+    const index = choices.indexOf(document.activeElement); let next;
+    if (event.key === 'ArrowDown') next = (index + 1) % choices.length;
+    if (event.key === 'ArrowUp') next = (index - 1 + choices.length) % choices.length;
+    if (event.key === 'Home') next = 0; if (event.key === 'End') next = choices.length - 1;
+    if (next !== undefined) { event.preventDefault(); choices[next]?.focus(); }
   });
 });
-
-document.querySelectorAll(".menu-dropdown").forEach((panel) => {
-  panel.addEventListener("click", (event) => {
-    if (event.target.closest("[data-theme-choice], a")) closeDropdowns();
-  });
+document.addEventListener('click', event => {
+  closeDropdowns();
+  if (event.target === desktop || event.target.closest('.boot-card')) selectDesktopIcon(null);
 });
-
-document.addEventListener("click", () => closeDropdowns());
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeDropdowns();
+document.querySelector('#window-list').addEventListener('click', event => {
+  const button = event.target.closest('[data-switch-window]');
+  if (button) openWindow(button.dataset.switchWindow, undefined, document.querySelector('.start-menu'));
 });
-
+document.querySelectorAll('[data-window-action]').forEach(button => button.addEventListener('click', () => {
+  const win = windowByName.get(activeName); if (!win) return;
+  const action = button.dataset.windowAction;
+  if (action === 'minimize') minimizeWindow(win);
+  else if (action === 'close') closeWindow(win);
+  else { if (action === 'maximize') toggleMaximize(win); else setWindowMode(win, action); win.querySelector('.window-title').focus({ preventScroll: true }); }
+}));
+document.querySelector('[data-show-desktop]').addEventListener('click', () => {
+  if (desktopSnapshot.length) {
+    const restore = desktopSnapshot; desktopSnapshot = [];
+    restore.forEach(name => { const win = windowByName.get(name); if (isRunning(win)) openWindow(name); });
+  } else {
+    desktopSnapshot = focusOrder.filter(name => isVisible(windowByName.get(name)));
+    desktopSnapshot.forEach(name => { const win = windowByName.get(name); win.classList.remove('is-open', 'is-active'); win.classList.add('is-minimized'); persistWindow(win); });
+    setActive(''); document.querySelector('.start-menu').focus();
+  }
+  syncDesktop();
+});
+const desktopHelp = document.querySelector('#desktop-help');
+document.querySelector('[data-desktop-help]').addEventListener('click', () => desktopHelp.showModal());
+document.querySelector('[data-close-help]').addEventListener('click', () => desktopHelp.close());
+desktopHelp.addEventListener('close', () => document.querySelector('.start-menu').focus());
+document.querySelector('[data-reset-layout]').addEventListener('click', () => {
+  saveState({ windows: {}, active: 'welcome', order: [] }); window.location.reload();
+});
+document.addEventListener('keydown', event => {
+  if (desktopHelp.open || document.querySelector('[data-lightbox]:not([hidden])')) return;
+  if (event.key === 'Escape') {
+    if (interaction) { event.preventDefault(); endInteraction(true); return; }
+    const trigger = dropdownTriggers.find(button => button.getAttribute('aria-expanded') === 'true');
+    if (trigger) { event.preventDefault(); closeDropdowns(); trigger.focus(); return; }
+    const win = event.target.closest('.app-window');
+    if (win && !event.target.closest('input,textarea,select,[contenteditable="true"]')) { event.preventDefault(); closeWindow(win); }
+  }
+  if (event.altKey && event.code === 'Backquote') {
+    const running = windows.filter(isRunning); if (!running.length) return;
+    event.preventDefault(); const index = running.findIndex(win => win.dataset.window === activeName);
+    const next = (index + (event.shiftKey ? -1 : 1) + running.length) % running.length;
+    openWindow(running[next].dataset.window);
+  }
+});
 
 // ---------------- Gallery ----------------
 const GALLERY_FILES = {
@@ -633,6 +722,7 @@ if (galleryWindow) {
   const galleryCrumbs = galleryWindow.querySelector("[data-gallery-crumbs]");
   let currentSetKey = null;
   let lightboxIndex = 0;
+  let photoOpener = null;
 
   function showGalleryPanel(name) {
     Object.entries(galleryPanels).forEach(([key, el]) => {
@@ -745,11 +835,16 @@ if (galleryWindow) {
     currentSetKey = setKey;
     lightboxIndex = index;
     updateLightbox();
+    photoOpener = document.activeElement;
     lightbox.hidden = false;
+    shell.inert = true;
+    lightbox.querySelector('[data-lightbox-close]').focus();
   }
 
   function closeLightbox() {
     lightbox.hidden = true;
+    shell.inert = false;
+    photoOpener?.focus({ preventScroll: true });
   }
 
   function stepLightbox(delta) {
@@ -766,8 +861,15 @@ if (galleryWindow) {
   });
   document.addEventListener("keydown", (event) => {
     if (lightbox?.hidden) return;
-    if (event.key === "Escape") closeLightbox();
-    if (event.key === "ArrowLeft") stepLightbox(-1);
-    if (event.key === "ArrowRight") stepLightbox(1);
+    if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(event.key)) event.preventDefault();
+    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'ArrowLeft') stepLightbox(-1);
+    if (event.key === 'ArrowRight') stepLightbox(1);
+    if (event.key === 'Tab') {
+      const controls = [...lightbox.querySelectorAll('button')];
+      const index = controls.indexOf(document.activeElement);
+      event.preventDefault();
+      controls[(index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length].focus();
+    }
   });
 }
