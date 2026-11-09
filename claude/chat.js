@@ -34,10 +34,13 @@
     const label = document.createElement('h3');
     label.className = 'message-label';
     label.textContent = role === 'user' ? 'You' : 'Claude';
-    const text = document.createElement('p');
+    const text = document.createElement(role === 'assistant' ? 'div' : 'p');
     text.className = 'message-body';
-    // Render both user input and model output as text, never executable HTML.
-    text.textContent = content;
+    if (role === 'assistant' && window.ChatMarkdown) {
+      window.ChatMarkdown.render(text, content);
+    } else {
+      text.textContent = content;
+    }
     article.append(label, text);
     messages.append(article);
     messages.scrollTop = messages.scrollHeight;

@@ -2,6 +2,7 @@ const { createServer } = require('node:http');
 const { readFile } = require('node:fs/promises');
 const { resolve, extname } = require('node:path');
 const handler = require('../api/claude.js');
+const vendors = require('./vendor.cjs');
 const root = resolve(__dirname, '..');
 const publicFiles = new Set(['index.html', 'styles.css', 'script.js', 'window-layout.js', 'theme-cursors.css', 'theme-icons.css']);
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp' };
@@ -12,9 +13,14 @@ createServer(async (req, res) => {
     if (url.pathname === '/api/claude') return await handler(req, res);
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405); return res.end(); }
     if (url.pathname === '/claude') { res.writeHead(308, { Location: '/claude/' }); return res.end(); }
+    if (Object.hasOwn(vendors, url.pathname)) {
+      const data = await readFile(vendors[url.pathname]);
+      res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
+      return res.end(req.method === 'HEAD' ? undefined : data);
+    }
     const name = decodeURIComponent(url.pathname).replace(/^\/+/, '').replace(/\/$/, '/index.html') || 'index.html';
     if (name.split('/').some((part) => part.startsWith('.')) || name.includes('\\') ||
-      (!publicFiles.has(name) && !name.startsWith('assets/') && !['claude/index.html', 'claude/styles.css', 'claude/chat.js'].includes(name))) {
+      (!publicFiles.has(name) && !name.startsWith('assets/') && !['claude/index.html', 'claude/styles.css', 'claude/chat.js', 'claude/markdown.js'].includes(name))) {
       res.writeHead(404); return res.end('Not found');
     }
     const data = await readFile(resolve(root, name));

@@ -64,6 +64,41 @@ input { width: 100%; color: var(--ink); border: 1px solid var(--line); backgroun
 .message-body { white-space: pre-wrap; font-size: 13px; line-height: 1.8; margin: 0; }
 .message.user { background: #f6e8f0; border: 1px solid #e7cedc; padding: 15px 18px; border-radius: 5px; }
 .message.assistant { padding: 2px 4px; }
+.markdown-body { white-space: normal; font: 14px/1.75 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.markdown-body > :first-child { margin-top: 0; }
+.markdown-body > :last-child { margin-bottom: 0; }
+.markdown-body p { margin: 0 0 1em; }
+.markdown-body strong, .markdown-body b { font-weight: 750; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4,
+.markdown-body h5, .markdown-body h6 { color: var(--ink); line-height: 1.35; margin: 1.4em 0 .6em; font-weight: 700; text-wrap: pretty; }
+.markdown-body h1 { font-size: 1.65em; }
+.markdown-body h2 { font-size: 1.35em; }
+.markdown-body h3 { font-size: 1.15em; }
+.markdown-body h4, .markdown-body h5, .markdown-body h6 { font-size: 1em; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.65em; margin: .6em 0 1em; }
+.markdown-body li { padding-left: .15em; margin: .4em 0; }
+.markdown-body li::marker { color: var(--pink); }
+.markdown-body li > p { margin: .35em 0; }
+.markdown-body li > ul, .markdown-body li > ol { margin: .3em 0 .6em; }
+.markdown-body blockquote { margin: 1em 0; padding: .2em 0 .2em 1em; border-left: 3px solid var(--line); color: var(--muted); }
+.markdown-body blockquote > :last-child { margin-bottom: 0; }
+.markdown-body a { color: #883b61; text-decoration: underline; text-underline-offset: 3px; }
+.markdown-body a:hover { color: #562140; }
+.markdown-body hr { border: 0; border-top: 1px solid #dec4d1; margin: 1.5em 0; }
+.markdown-body code { font: .9em/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace; padding: .15em .35em; border-radius: 3px; background: #f2e3ec; }
+.markdown-body pre { max-width: 100%; overflow-x: auto; white-space: pre; padding: 16px; margin: 1em 0; border: 1px solid #dec4d1; border-radius: 5px; background: #f7edf3; tab-size: 2; }
+.markdown-body pre code { padding: 0; border-radius: 0; background: transparent; white-space: pre; }
+.markdown-table { max-width: 100%; overflow-x: auto; margin: 1em 0; border: 1px solid #dec4d1; border-radius: 5px; }
+.markdown-table:focus-visible { outline: 3px solid #426b80; outline-offset: 3px; }
+.markdown-body table { border-collapse: collapse; width: 100%; font-size: .95em; }
+.markdown-body th, .markdown-body td { padding: 9px 12px; border-bottom: 1px solid #dec4d1; border-right: 1px solid #dec4d1; text-align: left; vertical-align: top; min-width: 110px; }
+.markdown-body th { font-weight: 700; background: #f2dfe9; }
+.markdown-body td { background: #fffafd; }
+.markdown-body tr:nth-child(even) td { background: #faf1f6; }
+.markdown-body th:last-child, .markdown-body td:last-child { border-right: 0; }
+.markdown-body tbody tr:last-child td { border-bottom: 0; }
+.markdown-body [align="center"] { text-align: center; }
+.markdown-body [align="right"] { text-align: right; }
 .composer { margin: 0 26px; padding: 15px; border: 1px solid var(--line); border-radius: 5px; background: white; box-shadow: 0 3px 0 #f0dfe8; }
 .composer label { color: var(--muted); font-size: 10px; }
 textarea { display: block; width: 100%; border: 0; resize: vertical; min-height: 60px; max-height: 180px; padding: 3px 0; color: var(--ink); background: transparent; font-size: 13px; line-height: 1.6; }
