@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Claude · Hack Club LHS</title>
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/claude/styles.css" />
+    <script src="/claude/chat.js" defer></script>
+  </head>
+  <body>
+    <header class="menubar">
+      <a href="/" class="club"><img src="/assets/hack-club-sticker.png" alt="" />Hack Club LHS</a>
+      <span class="location">members / claude</span>
+      <span class="menubar-note">A little help building big ideas.</span>
+    </header>
+    <main class="workspace">
+      <section class="chat-window" aria-labelledby="app-title">
+        <header class="titlebar">
+          <span class="window-dot" aria-hidden="true"></span>
+          <h1 id="app-title">Claude.exe</h1>
+          <span class="titlebar-label">Hack Club workspace</span>
+        </header>
+        <div class="app-body">
+          <aside class="sidebar">
+            <div class="app-icon" aria-hidden="true">✳</div>
+            <h2>Your next idea<br />starts here.</h2>
+            <p>A space to untangle bugs, learn something new, and make things you're proud of.</p>
+            <button id="new-chat" class="secondary" type="button" disabled>＋ New chat</button>
+            <div class="sidebar-bottom">
+              <span class="badge">Powered by Claude</span>
+              <p>Chats stay in this tab's memory. Messages are sent to Anthropic for replies.</p>
+              <button id="lock-chat" class="text-button" type="button" hidden>Sign out &amp; clear chat</button>
+            </div>
+          </aside>
+          <div class="chat-pane">
+            <section id="access-panel" class="access-panel" aria-labelledby="access-title">
+              <span class="eyebrow">HACK CLUB LHS / MEMBERS</span>
+              <h2 id="access-title">Hello, builder.</h2>
+              <p>Bring your questions, half-finished projects, and “why won't this work?” moments.</p>
+              <form id="access-form" method="post">
+                <fieldset id="login-fields" disabled>
+                <div class="access-fields">
+                  <div>
+                    <label for="user-id">Member ID</label>
+                    <input id="user-id" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="64" pattern="[A-Za-z0-9_.\-]+" placeholder="Your member ID" />
+                  </div>
+                  <div>
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="128" placeholder="Your password" />
+                  </div>
+                  <button id="unlock" class="primary" type="submit">Sign in <span aria-hidden="true">↗</span></button>
+                </div>
+                </fieldset>
+                <p id="access-status" class="status" role="status" aria-live="polite">Sign-in is loading. If this persists, open the website instead of the HTML file.</p>
+              </form>
+              <p class="fine-print">Ask a club leader for your ID and password.</p>
+            </section>
+            <section id="conversation" class="conversation" aria-label="Chat with Claude" hidden>
+              <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
+                <div id="welcome" class="welcome">
+                  <span class="eyebrow">A BLANK CANVAS, A NEW IDEA</span>
+                  <h2>What are we making?</h2>
+                  <p>Ask a question, paste a bug, or start with a spark.</p>
+                  <div class="prompts">
+                    <button type="button" data-prompt="Help me brainstorm a small coding project I can build at Hack Club.">Dream up a project <span aria-hidden="true">↗</span></button>
+                    <button type="button" data-prompt="Help me debug my code. Ask me what I am building and what is going wrong.">Untangle a bug <span aria-hidden="true">↗</span></button>
+                    <button type="button" data-prompt="Teach me a useful programming concept with a small example I can try.">Learn something new <span aria-hidden="true">↗</span></button>
+                  </div>
+                </div>
+              </div>
+              <form id="chat-form" class="composer" method="post">
+                <label for="message">Message Claude</label>
+                <textarea id="message" name="message" rows="3" maxlength="4000" placeholder="Let's figure it out together…" required></textarea>
+                <div class="composer-footer">
+                  <span>Enter to send · Shift + Enter for a new line</span>
+                  <button id="send" class="primary" type="submit">Send <span aria-hidden="true">↑</span></button>
+                </div>
+              </form>
+              <p id="chat-status" class="status chat-status" role="status" aria-live="polite"></p>
+              <p class="chat-note">Claude can make mistakes. Check code before running it. Don't share secrets.</p>
+            </section>
+          </div>
+        </div>
+        <footer class="window-footer"><span><span class="status-dot" aria-hidden="true"></span><span id="connection-status">Signed out</span></span><span>make things. learn things.</span></footer>
+      </section>
+      <noscript>This workspace needs JavaScript enabled to chat with Claude.</noscript>
+    </main>
+  </body>
+</html>

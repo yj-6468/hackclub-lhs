@@ -1,2 +1,35 @@
 .DS_Store
 **/.DS_Store
+node_modules/
+public/
+.vercel/
+.env*
+.env.example
+.env.local
+
+# Local Claude/Codex instructions, notes, and assistant state
+.[Cc][Ll][Aa][Uu][Dd][Ee]/
+.[Cc][Oo][Dd][Ee][Xx]/
+.agents/
+.[Cc][Ll][Aa][Uu][Dd][Ee].*
+.[Cc][Oo][Dd][Ee][Xx].*
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.[Mm][Dd]
+*[Cc][Oo][Dd][Ee][Xx]*.[Mm][Dd]
+[Aa][Gg][Ee][Nn][Tt][Ss].[Mm][Dd]
+[Aa][Gg][Ee][Nn][Tt][Ss].*.[Mm][Dd]
+**/*[Cc][Ll][Aa][Uu][Dd][Ee]*/**/*.[Mm][Dd]
+**/*[Cc][Oo][Dd][Ee][Xx]*/**/*.[Mm][Dd]
+
+# Claude/Codex logs, session exports, traces, and clipboard captures
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.log*
+*[Cc][Oo][Dd][Ee][Xx]*.log*
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.jsonl
+*[Cc][Oo][Dd][Ee][Xx]*.jsonl
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.trace*
+*[Cc][Oo][Dd][Ee][Xx]*.trace*
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.txt
+*[Cc][Oo][Dd][Ee][Xx]*.txt
+*[Cc][Ll][Aa][Uu][Dd][Ee]*.json
+*[Cc][Oo][Dd][Ee][Xx]*.json
+[Cc][Ll][Aa][Uu][Dd][Ee]-clipboard-*
+[Cc][Oo][Dd][Ee][Xx]-clipboard-*
