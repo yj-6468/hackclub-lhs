@@ -54,6 +54,19 @@ test('both ID and its matching password are required, and legacy shared codes ar
   assert.equal(unlocked.headers['Cache-Control'], 'no-store');
 });
 
+test('8-11 character passwords can sign in, while passwords outside 8-128 cannot enable an account', async () => {
+  for (const password of ['testpass', 'testpass9', 'testpass10', 'testpass123']) {
+    const handler = createHandler({ env: { ...env, CLAUDE_USER_1_PASSWORD: password }, fetchImpl: () => assert.fail('sign-in must not call Claude') });
+    const result = await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_1_ID, password) } });
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.body, { ok: true, userId: env.CLAUDE_USER_1_ID });
+  }
+  for (const password of ['test123', 'x'.repeat(129)]) {
+    const handler = createHandler({ env: { ...env, CLAUDE_USER_1_PASSWORD: password }, fetchImpl: () => assert.fail('must not call Claude') });
+    assert.equal((await request(handler, { method: 'GET' })).status, 503);
+  }
+});
+
 test('all ten account slots can sign in without returning the account list or passwords', async () => {
   const config = { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY };
   for (let slot = 1; slot <= 10; slot++) {

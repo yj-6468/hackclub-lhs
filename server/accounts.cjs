@@ -11,7 +11,7 @@ function loadAccounts(env) {
     const password = env[`CLAUDE_USER_${slot}_PASSWORD`] || '';
     // Unused slots can be omitted or left completely empty.
     if (!id && !password) continue;
-    if (!validId(id) || password.length < 12 || password.length > 128 || ids.has(id)) return null;
+    if (!validId(id) || password.length < 8 || password.length > 128 || ids.has(id)) return null;
     ids.add(id);
     accounts.push({ id, idDigest: digest(id), passwordDigest: digest(password) });
   }
