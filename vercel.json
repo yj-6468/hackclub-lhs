@@ -7,12 +7,22 @@
     "api/claude.js": { "maxDuration": 60 }
   },
   "redirects": [
+    { "source": "/claude/", "destination": "/clubhelper/", "permanent": true },
     { "source": "/claude/:path*", "destination": "/clubhelper/:path*", "permanent": true }
   ],
   "rewrites": [
     { "source": "/api/clubhelper", "destination": "/api/claude" }
   ],
   "headers": [
+    {
+      "source": "/clubhelper/",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" }
+      ]
+    },
     {
       "source": "/clubhelper/:path*",
       "headers": [
