@@ -10,9 +10,13 @@ const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
 createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
-    if (url.pathname === '/api/claude') return await handler(req, res);
+    if (['/api/claude', '/api/clubhelper'].includes(url.pathname)) return await handler(req, res);
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405); return res.end(); }
-    if (url.pathname === '/claude') { res.writeHead(308, { Location: '/claude/' }); return res.end(); }
+    if (url.pathname === '/claude' || url.pathname.startsWith('/claude/')) {
+      res.writeHead(308, { Location: url.pathname.replace(/^\/claude/, '/clubhelper') + url.search });
+      return res.end();
+    }
+    if (url.pathname === '/clubhelper') { res.writeHead(308, { Location: '/clubhelper/' + url.search }); return res.end(); }
     if (Object.hasOwn(vendors, url.pathname)) {
       const data = await readFile(vendors[url.pathname]);
       res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
@@ -20,7 +24,7 @@ createServer(async (req, res) => {
     }
     const name = decodeURIComponent(url.pathname).replace(/^\/+/, '').replace(/\/$/, '/index.html') || 'index.html';
     if (name.split('/').some((part) => part.startsWith('.')) || name.includes('\\') ||
-      (!publicFiles.has(name) && !name.startsWith('assets/') && !['claude/index.html', 'claude/styles.css', 'claude/chat.js', 'claude/markdown.js'].includes(name))) {
+      (!publicFiles.has(name) && !name.startsWith('assets/') && !['clubhelper/index.html', 'clubhelper/styles.css', 'clubhelper/chat.js', 'clubhelper/markdown.js'].includes(name))) {
       res.writeHead(404); return res.end('Not found');
     }
     const data = await readFile(resolve(root, name));
@@ -28,5 +32,5 @@ createServer(async (req, res) => {
     res.end(req.method === 'HEAD' ? undefined : data);
   } catch { res.writeHead(404); res.end('Not found'); }
 }).listen(Number(process.env.PORT) || 3000, '127.0.0.1', () => {
-  console.log(`Local: http://127.0.0.1:${Number(process.env.PORT) || 3000}/claude/`);
+  console.log(`Local: http://127.0.0.1:${Number(process.env.PORT) || 3000}/clubhelper/`);
 });

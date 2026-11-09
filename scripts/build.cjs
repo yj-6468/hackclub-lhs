@@ -8,7 +8,7 @@ rmSync(output, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 })
 mkdirSync(output);
 // Explicitly copy public assets: server code, environment files, and tests stay private.
 for (const entry of ['index.html', 'styles.css', 'script.js', 'window-layout.js',
-  'theme-cursors.css', 'theme-icons.css', 'assets', 'claude']) {
+  'theme-cursors.css', 'theme-icons.css', 'assets', 'clubhelper']) {
   cpSync(resolve(root, entry), resolve(output, entry), { recursive: true });
 }
 for (const [url, source] of Object.entries(vendors)) {

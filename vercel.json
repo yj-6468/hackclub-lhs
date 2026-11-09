@@ -6,9 +6,15 @@
   "functions": {
     "api/claude.js": { "maxDuration": 60 }
   },
+  "redirects": [
+    { "source": "/claude/:path*", "destination": "/clubhelper/:path*", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/api/clubhelper", "destination": "/api/claude" }
+  ],
   "headers": [
     {
-      "source": "/claude/:path*",
+      "source": "/clubhelper/:path*",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
         { "key": "Referrer-Policy", "value": "no-referrer" },

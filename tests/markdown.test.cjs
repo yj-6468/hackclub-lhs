@@ -3,10 +3,10 @@ const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const marked = require('marked');
 const createDOMPurify = require('dompurify');
-const createRenderer = require('../claude/markdown.js');
+const createRenderer = require('../clubhelper/markdown.js');
 
 function setup() {
-  const { window } = new JSDOM('<div class="message-body"></div>', { url: 'https://club.example/claude/' });
+  const { window } = new JSDOM('<div class="message-body"></div>', { url: 'https://club.example/clubhelper/' });
   const element = window.document.querySelector('div');
   const renderer = createRenderer(marked, createDOMPurify(window));
   return { element, render: (text) => renderer.render(element, text) };

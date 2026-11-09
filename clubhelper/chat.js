@@ -10,7 +10,7 @@
   let busy = false;
 
   async function api(method, body, credentials = authorization) {
-    const response = await fetch('/api/claude', {
+    const response = await fetch('/api/clubhelper', {
       method,
       headers: { Authorization: credentials, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined,
@@ -33,7 +33,7 @@
     article.className = `message ${role}`;
     const label = document.createElement('h3');
     label.className = 'message-label';
-    label.textContent = role === 'user' ? 'You' : 'Claude';
+    label.textContent = role === 'user' ? 'You' : 'Club helper';
     const text = document.createElement(role === 'assistant' ? 'div' : 'p');
     text.className = 'message-body';
     if (role === 'assistant' && window.ChatMarkdown) {
@@ -43,7 +43,8 @@
     }
     article.append(label, text);
     messages.append(article);
-    messages.scrollTop = messages.scrollHeight;
+    if (role === 'assistant') article.scrollIntoView({ block: 'start' });
+    else messages.scrollTop = messages.scrollHeight;
     return article;
   }
 
@@ -53,8 +54,8 @@
     byId('new-chat').disabled = value;
     byId('lock-chat').disabled = value;
     messageInput.disabled = value;
-    byId('send').textContent = value ? 'Thinking…' : 'Send ↑';
-    byId('connection-status').textContent = value ? 'Claude is thinking…' : `Signed in as ${signedInId}`;
+    byId('send').setAttribute('aria-label', value ? 'Waiting for reply' : 'Send message');
+    byId('connection-status').textContent = `Signed in as ${signedInId}`;
   }
 
   function clearChat() {
@@ -115,7 +116,7 @@
     byId('welcome').hidden = true;
     const userMessage = addMessage('user', content);
     messageInput.value = '';
-    byId('chat-status').textContent = 'Claude is thinking…';
+    byId('chat-status').textContent = 'Thinking…';
     setBusy(true);
     let shouldLock = false;
     try {
@@ -123,7 +124,7 @@
       if (typeof result.reply !== 'string' || !result.reply.trim()) throw new Error('Claude returned no text. Please try again.');
       history = [...pending, { role: 'assistant', content: result.reply }];
       addMessage('assistant', result.reply);
-      byId('chat-status').textContent = result.truncated ? 'Reply reached the length limit. Ask Claude to continue.' : '';
+      byId('chat-status').textContent = result.truncated ? 'Reply reached the length limit. Ask me to continue.' : '';
     } catch (error) {
       userMessage.remove();
       messageInput.value = content;

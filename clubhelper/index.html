@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Club helper · Hack Club LHS</title>
+    <link rel="icon" href="/assets/favicon.png" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=workspace-20261109" />
+    <script src="/clubhelper/vendor/marked.js" defer></script>
+    <script src="/clubhelper/vendor/dompurify.js" defer></script>
+    <script src="/clubhelper/markdown.js?v=workspace-20261109" defer></script>
+    <script src="/clubhelper/chat.js?v=workspace-20261109" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Workspace">
+        <a class="workspace-brand" href="/">
+          <span class="brand-mark" aria-hidden="true">H</span>
+          <span>Hack Club LHS</span>
+        </a>
+        <nav class="workspace-nav" aria-label="Workspace pages">
+          <p class="nav-label">Workspace</p>
+          <span class="nav-item current" aria-current="page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+            Club helper
+          </span>
+          <a class="nav-item" href="/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-7h6v7"/></svg>
+            Club website
+            <span class="external-mark" aria-hidden="true">↗</span>
+          </a>
+        </nav>
+        <div class="sidebar-bottom">
+          <p class="privacy-note">A little help for your next idea.<br />Chats stay in this tab and clear on refresh.</p>
+          <div class="account">
+            <span class="account-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="3"/><path d="M5 21v-3a7 7 0 0 1 14 0v3"/></svg>
+            </span>
+            <span><span id="connection-status">Signed out</span><span class="account-caption">Members workspace</span></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb-parent">Hack Club LHS</span>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>
+            <span>Club helper</span>
+          </nav>
+          <div class="toolbar">
+            <button id="new-chat" class="quiet-button" type="button" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              New chat
+            </button>
+            <button id="lock-chat" class="quiet-button sign-out" type="button" title="Sign out and clear this chat" hidden>Sign out</button>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <section id="access-panel" class="access-panel" aria-labelledby="access-title">
+            <div class="page-icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><rect x="8" y="4" width="25" height="32" rx="3"/><path d="M14 13h13M14 19h13M14 25h8M4 11h8M4 20h8M4 29h8"/></svg>
+            </div>
+            <h1 id="access-title">Club helper</h1>
+            <p class="page-description">A space to ask questions, work through ideas, and figure things out.</p>
+            <form id="access-form" method="post">
+              <fieldset id="login-fields" disabled>
+                <div class="access-fields">
+                  <div>
+                    <label for="user-id">Member ID</label>
+                    <input id="user-id" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="64" pattern="[A-Za-z0-9_.\-]+" placeholder="Enter your member ID" />
+                  </div>
+                  <div>
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="128" placeholder="Enter your password" />
+                  </div>
+                  <button id="unlock" class="primary-button" type="submit">Continue <span aria-hidden="true">→</span></button>
+                </div>
+              </fieldset>
+              <p id="access-status" class="status" role="status" aria-live="polite">Sign-in is loading. If this persists, open the website instead of the HTML file.</p>
+            </form>
+            <p class="access-help">Need an account? Ask a club leader.</p>
+            <p class="provider-note">Powered by Claude <span aria-hidden="true">·</span> For Hack Club members</p>
+          </section>
+
+          <section id="conversation" class="conversation" aria-label="Chat with Club helper" hidden>
+            <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
+              <div id="welcome" class="welcome">
+                <div class="page-icon" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><rect x="8" y="4" width="25" height="32" rx="3"/><path d="M14 13h13M14 19h13M14 25h8M4 11h8M4 20h8M4 29h8"/></svg>
+                </div>
+                <h1>What's on your mind?</h1>
+                <p class="page-description">Start with a question, a rough idea, or something you're working on.</p>
+                <div class="prompts">
+                  <button type="button" data-prompt="Help me turn a rough project idea into a simple plan. Start by asking what I want to build.">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v3M4 7l2 2M20 7l-2 2M9 18h6M10 21h4"/><path d="M8 15a6 6 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3Z"/></svg>
+                    <span><strong>Make a plan</strong><span>Turn an idea into a next step</span></span>
+                    <span class="prompt-arrow" aria-hidden="true">↗</span>
+                  </button>
+                  <button type="button" data-prompt="Help me understand a topic. Ask me what I am learning and explain it with a clear example.">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v16M12 6C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 2Z"/></svg>
+                    <span><strong>Explain something</strong><span>Make a tricky topic a little clearer</span></span>
+                    <span class="prompt-arrow" aria-hidden="true">↗</span>
+                  </button>
+                  <button type="button" data-prompt="Help me debug my code. Ask me what I am building and what is going wrong.">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m7 6-6 6 6 6M17 6l6 6-6 6M14 3l-4 18"/></svg>
+                    <span><strong>Work through a problem</strong><span>Find the bug or the missing piece</span></span>
+                    <span class="prompt-arrow" aria-hidden="true">↗</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="composer-wrap">
+              <form id="chat-form" class="composer" method="post">
+                <label class="sr-only" for="message">Message Club helper</label>
+                <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Ask anything, or paste something to work on…" required></textarea>
+                <div class="composer-footer">
+                  <span>Shift + Enter for a new line</span>
+                  <button id="send" class="send-button" type="submit" aria-label="Send message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+                  </button>
+                </div>
+              </form>
+              <p id="chat-status" class="status chat-status" role="status" aria-live="polite"></p>
+              <p class="chat-note">Powered by Claude. Responses can be imperfect—check what matters.</p>
+            </div>
+          </section>
+          <noscript>Enable JavaScript to sign in and use Club helper.</noscript>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
