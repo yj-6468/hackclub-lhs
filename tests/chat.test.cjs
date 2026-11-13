@@ -1,0 +1,35 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {JSDOM}=require('jsdom');
+const fs=require('node:fs');
+test('image paste, web toggle, failed-send recovery and new chat work without welcome elements',async()=>{
+  const {window:w}=new JSDOM(fs.readFileSync('clubhelper/index.html','utf8'),{url:'https://club.example/clubhelper/',runScripts:'outside-only'});
+  w.TextEncoder=TextEncoder; w.AbortSignal=AbortSignal;
+  w.HTMLElement.prototype.scrollIntoView=()=>{};
+  w.createImageBitmap=async()=>({width:20,height:20,close(){}});
+  w.HTMLCanvasElement.prototype.getContext=()=>({fillRect(){},drawImage(){}});
+  w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/jpeg;base64,/9j/AAAA';
+  let sent; let fail=true;
+  w.fetch=async(_,init)=>{
+    if(init.method==='GET') return Response.json({userId:'tester'});
+    sent=JSON.parse(init.body);
+    return fail ? Response.json({error:'Try again'},{status:502}) : Response.json({reply:'An answer',sources:[{url:'https://example.com',title:'Example'}]});
+  };
+  w.eval(fs.readFileSync('clubhelper/chat.js','utf8'));
+  const el=id=>w.document.getElementById(id);
+  const tick=()=>new Promise(resolve=>setTimeout(resolve,10));
+  el('user-id').value='tester'; el('password').value='test-password'; el('access-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
+  assert.equal(el('conversation').hidden,false);
+  const paste=new w.Event('paste',{cancelable:true}); Object.defineProperty(paste,'clipboardData',{value:{files:[{type:'image/png',size:10}]}});
+  el('message').dispatchEvent(paste); await tick();
+  assert.equal(el('attachments').querySelectorAll('img').length,1);
+  el('use-web').click(); el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
+  assert.equal(sent.web,true); assert.equal(sent.messages[0].images.length,1);
+  assert.equal(el('attachments').querySelectorAll('img').length,1);
+  fail=false; el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
+  assert.equal(el('attachments').children.length,0); assert.equal(w.document.querySelectorAll('.sent-images img').length,1);
+  assert.equal(w.document.querySelector('.sources a').href,'https://example.com/');
+  el('new-chat').click(); assert.equal(el('messages').children.length,0);
+  el('lock-chat').click(); assert.equal(el('conversation').hidden,true);
+  w.close();
+});

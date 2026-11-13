@@ -7,17 +7,16 @@
     <meta name="referrer" content="no-referrer" />
     <title>Club helper · Hack Club LHS</title>
     <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/clubhelper/styles.css?v=workspace-20261109" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=attachments-20261113" />
     <script src="/clubhelper/vendor/marked.js" defer></script>
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
-    <script src="/clubhelper/markdown.js?v=workspace-20261109" defer></script>
-    <script src="/clubhelper/chat.js?v=workspace-20261109" defer></script>
+    <script src="/clubhelper/markdown.js?v=attachments-20261113" defer></script>
+    <script src="/clubhelper/chat.js?v=attachments-20261113" defer></script>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="Workspace">
         <a class="workspace-brand" href="/">
-          <span class="brand-mark" aria-hidden="true">H</span>
           <span>Hack Club LHS</span>
         </a>
         <nav class="workspace-nav" aria-label="Workspace pages">
@@ -62,11 +61,7 @@
 
         <div class="page-content">
           <section id="access-panel" class="access-panel" aria-labelledby="access-title">
-            <div class="page-icon" aria-hidden="true">
-              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><rect x="8" y="4" width="25" height="32" rx="3"/><path d="M14 13h13M14 19h13M14 25h8M4 11h8M4 20h8M4 29h8"/></svg>
-            </div>
             <h1 id="access-title">Club helper</h1>
-            <p class="page-description">A space to ask questions, work through ideas, and figure things out.</p>
             <form id="access-form" method="post">
               <fieldset id="login-fields" disabled>
                 <div class="access-fields">
@@ -84,49 +79,25 @@
               <p id="access-status" class="status" role="status" aria-live="polite">Sign-in is loading. If this persists, open the website instead of the HTML file.</p>
             </form>
             <p class="access-help">Need an account? Ask a club leader.</p>
-            <p class="provider-note">Powered by Claude <span aria-hidden="true">·</span> For Hack Club members</p>
           </section>
 
           <section id="conversation" class="conversation" aria-label="Chat with Club helper" hidden>
             <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
-              <div id="welcome" class="welcome">
-                <div class="page-icon" aria-hidden="true">
-                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor"><rect x="8" y="4" width="25" height="32" rx="3"/><path d="M14 13h13M14 19h13M14 25h8M4 11h8M4 20h8M4 29h8"/></svg>
-                </div>
-                <h1>What's on your mind?</h1>
-                <p class="page-description">Start with a question, a rough idea, or something you're working on.</p>
-                <div class="prompts">
-                  <button type="button" data-prompt="Help me turn a rough project idea into a simple plan. Start by asking what I want to build.">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v3M4 7l2 2M20 7l-2 2M9 18h6M10 21h4"/><path d="M8 15a6 6 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3Z"/></svg>
-                    <span><strong>Make a plan</strong><span>Turn an idea into a next step</span></span>
-                    <span class="prompt-arrow" aria-hidden="true">↗</span>
-                  </button>
-                  <button type="button" data-prompt="Help me understand a topic. Ask me what I am learning and explain it with a clear example.">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v16M12 6C9 3 5 3 2 4v15c3-1 7-1 10 2 3-3 7-3 10-2V4c-3-1-7-1-10 2Z"/></svg>
-                    <span><strong>Explain something</strong><span>Make a tricky topic a little clearer</span></span>
-                    <span class="prompt-arrow" aria-hidden="true">↗</span>
-                  </button>
-                  <button type="button" data-prompt="Help me debug my code. Ask me what I am building and what is going wrong.">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m7 6-6 6 6 6M17 6l6 6-6 6M14 3l-4 18"/></svg>
-                    <span><strong>Work through a problem</strong><span>Find the bug or the missing piece</span></span>
-                    <span class="prompt-arrow" aria-hidden="true">↗</span>
-                  </button>
-                </div>
-              </div>
             </div>
             <div class="composer-wrap">
               <form id="chat-form" class="composer" method="post">
                 <label class="sr-only" for="message">Message Club helper</label>
-                <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Ask anything, or paste something to work on…" required></textarea>
+                <div id="attachments" class="attachments" aria-label="Attached images"></div>
+                <input id="image-files" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden />
+                <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Write a message or paste an image…"></textarea>
                 <div class="composer-footer">
-                  <span>Shift + Enter for a new line</span>
+                  <div class="composer-tools"><button id="attach-image" class="quiet-button" type="button">+ Image</button><button id="use-web" class="quiet-button" type="button" aria-pressed="false" title="Search the web and read public links">Web</button></div>
                   <button id="send" class="send-button" type="submit" aria-label="Send message">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
                   </button>
                 </div>
               </form>
               <p id="chat-status" class="status chat-status" role="status" aria-live="polite"></p>
-              <p class="chat-note">Powered by Claude. Responses can be imperfect—check what matters.</p>
             </div>
           </section>
           <noscript>Enable JavaScript to sign in and use Club helper.</noscript>

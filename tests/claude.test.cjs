@@ -116,8 +116,8 @@ test('rejects malformed and oversized histories before spending credits', async 
     assert.equal((await request(handler, { body: { messages } })).status, 400);
   }
   assert.equal((await request(handler, { body: '{' })).status, 400);
-  assert.equal((await request(handler, { body: 'x'.repeat(65537) })).status, 413);
-  assert.equal((await request(handler, { chunks: ['x'.repeat(40000), 'x'.repeat(40000)] })).status, 413);
+  assert.equal((await request(handler, { body: 'x'.repeat(3000001) })).status, 413);
+  assert.equal((await request(handler, { chunks: ['x'.repeat(1600000), 'x'.repeat(1600000)] })).status, 413);
 });
 
 test('forwards conversation but fixes model, token limit, credentials, and system prompt on server', async () => {
@@ -189,4 +189,34 @@ test('throttles repeated incorrect sign-in attempts', async () => {
   const handler = createHandler({ env, fetchImpl: () => assert.fail('must not call Claude') });
   for (let index = 0; index < 120; index++) assert.equal((await request(handler, { headers: { authorization: '' } })).status, 401);
   assert.equal((await request(handler, { headers: { authorization: '' } })).status, 429);
+});
+
+const png = {media_type: 'image/png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a/NsAAAAASUVORK5CYII='};
+test('validates images and forwards only canonical image content blocks', async () => {
+  let received;
+  const handler = createHandler({env, fetchImpl: async (_, init) => { received = JSON.parse(init.body); return success(); }});
+  assert.equal((await request(handler, {body: {messages:[{role:'user',content:'Describe',images:[{...png, url:'https://ignored.example'}]}]}})).status,200);
+  assert.deepEqual(received.messages[0].content[0], {type:'image',source:{type:'base64',...png}});
+  assert.equal(received.tools, undefined);
+  const reject = createHandler({env,fetchImpl:()=>assert.fail('Invalid images must not reach provider')});
+  for (const images of [[{...png,media_type:'image/svg+xml'}],[{...png,data:'AAAA'}],Array(4).fill(png),[{...png,data:'a'.repeat(700004)}]])
+    assert.equal((await request(reject,{body:{messages:[{role:'user',content:'Describe',images}]}})).status,400);
+});
+test('web tools are bounded, resume paused turns, and return safe source links', async () => {
+  let calls = 0;
+  const paused = [{type:'server_tool_use',id:'tool1',name:'web_search',input:{query:'example'}}];
+  const handler = createHandler({env,fetchImpl:async (_, init)=>{
+    const body = JSON.parse(init.body); calls++;
+    assert.equal(body.tools.length,2); assert.equal(body.tools[0].max_uses,3);
+    if(calls === 1) return Response.json({content:paused,stop_reason:'pause_turn'});
+    assert.deepEqual(body.messages.at(-1),{role:'assistant',content:paused});
+    return Response.json({content:[{type:'text',text:'An answer.',citations:[{url:'https://example.com',title:'Example'},{url:'javascript:alert(1)',title:'unsafe'}]}],stop_reason:'end_turn'});
+  }});
+  const result = await request(handler,{body:{messages:question,web:true}});
+  assert.equal(result.status,200); assert.equal(calls,2);
+  assert.deepEqual(result.body.sources,[{url:'https://example.com',title:'Example'}]);
+});
+test('web errors are surfaced without exposing raw provider details',async()=>{
+  const handler=createHandler({env,fetchImpl:async()=>Response.json({content:[{type:'web_search_tool_result',content:{type:'web_search_tool_result_error',error_code:'unavailable'}},{type:'text',text:'Could not search.'}],stop_reason:'end_turn'})});
+  assert.match((await request(handler,{body:{messages:question,web:true}})).body.warning,/could not be accessed/);
 });
