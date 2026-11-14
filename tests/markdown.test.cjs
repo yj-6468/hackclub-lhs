@@ -8,7 +8,7 @@ const createRenderer = require('../clubhelper/markdown.js');
 function setup() {
   const { window } = new JSDOM('<div class="message-body"></div>', { url: 'https://club.example/clubhelper/' });
   const element = window.document.querySelector('div');
-  const renderer = createRenderer(marked, createDOMPurify(window));
+  const renderer = createRenderer(marked, createDOMPurify(window), require('katex'));
   return { element, render: (text) => renderer.render(element, text) };
 }
 
@@ -67,4 +67,44 @@ test('falls back to literal text if the parser or sanitizer is unavailable or fa
     assert.equal(element.children.length, 0);
     assert.equal(element.classList.contains('markdown-body'), false);
   }
+});
+
+test('renders inline and display TeX before Markdown alters its syntax', () => {
+  const {element,render}=setup();
+  render(String.raw`Inline \(x_1^2 + \alpha\) and $\frac{a}{b}$.
+
+\[
+x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
+\]
+
+$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+
+\[
+\begin{pmatrix}
+1 & 2 \\
+-3 & 4
+\end{pmatrix}
+\]`);
+  assert.equal(element.querySelectorAll('math').length,5);
+  assert.equal(element.querySelectorAll('.math-display').length,3);
+  assert.ok(element.querySelector('mfrac'));
+  assert.ok(element.querySelector('msqrt'));
+  assert.ok(element.querySelector('mtable'));
+  assert.match(element.querySelector('annotation').textContent,/x_1/);
+});
+
+test('preserves literal code and currency and falls back for malformed math', () => {
+  const {element,render}=setup();
+  render('Price $5 and $10. `\\(x^2\\)`\n\n```tex\n$$x^2$$\n```\n\n\\(\\badcommand{x}\\)');
+  assert.equal(element.querySelectorAll('math').length,0);
+  assert.match(element.textContent,/Price \$5 and \$10/);
+  assert.equal(element.querySelector('pre code').textContent,'$$x^2$$\n');
+  assert.match(element.textContent,/\\badcommand/);
+});
+
+test('math cannot create external images, unsafe links, HTML, or unbounded macros', () => {
+  const {element,render}=setup();
+  render(String.raw`\(\href{javascript:alert(1)}{click}\) \(\includegraphics{https://evil.example/pixel}\) \(\htmlClass{bad}{x}\) \(\def\a{\a}\a\)`);
+  assert.equal(element.querySelector('a,img,script,iframe,.bad'),null);
+  assert.match(element.textContent,/\\def/);
 });

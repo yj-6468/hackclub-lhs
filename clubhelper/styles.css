@@ -180,3 +180,7 @@ noscript { padding: 16px; color: #bd4242; font-size: 13px; }
 .sent-images img { max-width: min(240px, 100%); max-height: 240px; object-fit: contain; border-radius: 6px; }
 .sources { margin-top: 16px; font-size: 12px; line-height: 1.7; color: var(--muted); }
 .sources a { display: inline-block; margin-right: 14px; overflow-wrap: anywhere; }
+
+.math-inline { font-size: 1.1em; }
+.math-display { display: block; max-width: 100%; overflow-x: auto; padding: 12px 2px; margin: 12px 0; font-size: 1.15em; }
+.math-display math { margin: 0 auto; }
