@@ -1,10 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
+  "fluid": true,
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "functions": {
-    "api/claude.js": { "maxDuration": 60 }
+    "api/claude.js": { "maxDuration": 240 }
   },
   "redirects": [
     { "source": "/claude/", "destination": "/clubhelper/", "permanent": true },

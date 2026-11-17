@@ -112,7 +112,7 @@ test('rejects malformed and oversized histories before spending credits', async 
     [{ role: 'user', content: ' ' }], [{ role: 'user', content: 'x'.repeat(4001) }],
     [...question, ...question, ...question], [...question, { role: 'assistant', content: 'prefill' }],
     Array.from({ length: 23 }, (_, index) => ({ role: index % 2 ? 'assistant' : 'user', content: 'a' })),
-    Array.from({ length: 9 }, (_, index) => ({ role: index % 2 ? 'assistant' : 'user', content: 'a'.repeat(3000) }))]) {
+    Array.from({ length: 9 }, (_, index) => ({ role: index % 2 ? 'assistant' : 'user', content: 'a'.repeat(index % 2 ? 30000 : 3000) }))]) {
     assert.equal((await request(handler, { body: { messages } })).status, 400);
   }
   assert.equal((await request(handler, { body: '{' })).status, 400);
@@ -130,7 +130,7 @@ test('forwards conversation but fixes model, token limit, credentials, and syste
     assert.ok(init.signal instanceof AbortSignal);
     const body = JSON.parse(init.body);
     assert.equal(body.model, 'claude-sonnet-5-5');
-    assert.equal(body.max_tokens, 2048);
+    assert.equal(body.max_tokens, 10240);
     assert.match(body.system, /Hack Club/);
     assert.deepEqual(body.messages, messages);
     assert.ok(!init.body.includes(env.CLAUDE_USER_1_PASSWORD));
@@ -219,4 +219,20 @@ test('web tools are bounded, resume paused turns, and return safe source links',
 test('web errors are surfaced without exposing raw provider details',async()=>{
   const handler=createHandler({env,fetchImpl:async()=>Response.json({content:[{type:'web_search_tool_result',content:{type:'web_search_tool_result_error',error_code:'unavailable'}},{type:'text',text:'Could not search.'}],stop_reason:'end_turn'})});
   assert.match((await request(handler,{body:{messages:question,web:true}})).body.warning,/could not be accessed/);
+});
+
+test('preserves replies five times longer and accepts them in follow-up history', async () => {
+  const longReply = 'x'.repeat(80000);
+  const handler = createHandler({env,fetchImpl:async()=>Response.json({content:[{type:'text',text:longReply}],stop_reason:'end_turn'})});
+  const result=await request(handler);
+  assert.equal(result.body.reply,longReply);
+  assert.equal(result.body.truncated,false);
+  const messages=[...question,{role:'assistant',content:result.body.reply},{role:'user',content:'Continue.'}];
+  assert.equal((await request(handler,{body:{messages}})).status,200);
+  messages[1].content += 'x';
+  assert.equal((await request(handler,{body:{messages}})).status,400);
+  const clipped=createHandler({env,fetchImpl:async()=>Response.json({content:[{type:'text',text:longReply+'x'}],stop_reason:'end_turn'})});
+  const capped=await request(clipped);
+  assert.equal(capped.body.reply.length,80000);
+  assert.equal(capped.body.truncated,true);
 });

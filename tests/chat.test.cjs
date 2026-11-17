@@ -13,7 +13,7 @@ test('image paste, web toggle, failed-send recovery and new chat work without we
   w.fetch=async(_,init)=>{
     if(init.method==='GET') return Response.json({userId:'tester'});
     sent=JSON.parse(init.body);
-    return fail ? Response.json({error:'Try again'},{status:502}) : Response.json({reply:'An answer',sources:[{url:'https://example.com',title:'Example'}]});
+    return fail ? Response.json({error:'Try again'},{status:502}) : Response.json({reply:'x'.repeat(80000),sources:[{url:'https://example.com',title:'Example'}]});
   };
   w.eval(fs.readFileSync('clubhelper/chat.js','utf8'));
   const el=id=>w.document.getElementById(id);
@@ -29,6 +29,10 @@ test('image paste, web toggle, failed-send recovery and new chat work without we
   fail=false; el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
   assert.equal(el('attachments').children.length,0); assert.equal(w.document.querySelectorAll('.sent-images img').length,1);
   assert.equal(w.document.querySelector('.sources a').href,'https://example.com/');
+  el('message').value='Continue.'; el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
+  assert.equal(sent.messages.length,3); assert.equal(sent.messages[1].content.length,80000);
+  el('message').value='And then?'; el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
+  assert.equal(sent.messages.length,3); assert.equal(sent.messages[0].content,'Continue.');
   el('new-chat').click(); assert.equal(el('messages').children.length,0);
   el('lock-chat').click(); assert.equal(el('conversation').hidden,true);
   w.close();

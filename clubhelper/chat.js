@@ -87,7 +87,7 @@
       method,
       headers: { Authorization: credentials, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(55000),
+      signal: AbortSignal.timeout(method === 'POST' ? 235000 : 55000),
       cache: 'no-store'
     });
     let result;
@@ -203,7 +203,7 @@
     const sentImages = attachments.slice();
     // Keep whole pairs and bound both the message count and history size.
     const recent = history.slice(-20);
-    while (recent.length && recent.reduce((total, message) => total + message.content.length, content.length) > 24000) recent.splice(0, 2);
+    while (recent.length && recent.reduce((total, message) => total + message.content.length, content.length) > 120000) recent.splice(0, 2);
     const nextMessage = {role: 'user', content, ...(sentImages.length ? {images: sentImages} : {})};
     const imageSize = list => list.reduce((sum, message) => sum + (message.images || []).reduce((n, image) => n + image.data.length, 0), 0);
     const imageCount = list => list.reduce((sum, message) => sum + (message.images?.length || 0), 0);
