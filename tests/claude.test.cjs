@@ -67,19 +67,19 @@ test('8-11 character passwords can sign in, while passwords outside 8-128 cannot
   }
 });
 
-test('all ten account slots can sign in without returning the account list or passwords', async () => {
+test('all 25 account slots can sign in without returning the account list or passwords', async () => {
   const config = { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY };
-  for (let slot = 1; slot <= 10; slot++) {
+  for (let slot = 1; slot <= 25; slot++) {
     config[`CLAUDE_USER_${slot}_ID`] = `member${slot}`;
     config[`CLAUDE_USER_${slot}_PASSWORD`] = `unique-test-password-${slot}`;
   }
   const handler = createHandler({ env: config, fetchImpl: () => assert.fail('sign-in must not call Claude') });
-  for (let slot = 1; slot <= 10; slot++) {
+  for (let slot = 1; slot <= 25; slot++) {
     const result = await request(handler, { method: 'GET', headers: { authorization: credentials(`member${slot}`, `unique-test-password-${slot}`) } });
     assert.equal(result.status, 200);
     assert.deepEqual(result.body, { ok: true, userId: `member${slot}` });
   }
-  assert.equal((await request(handler, { method: 'GET', headers: { authorization: credentials('member11', 'unique-test-password-11') } })).status, 401);
+  assert.equal((await request(handler, { method: 'GET', headers: { authorization: credentials('member26', 'unique-test-password-26') } })).status, 401);
 });
 
 test('empty slots are disabled and removing a pair revokes that member', async () => {
@@ -235,4 +235,18 @@ test('preserves replies five times longer and accepts them in follow-up history'
   const capped=await request(clipped);
   assert.equal(capped.body.reply.length,80000);
   assert.equal(capped.body.truncated,true);
+});
+
+test('new account slots require complete unique credentials and matching passwords', async () => {
+  for (const extra of [
+    {CLAUDE_USER_25_ID:'member25'},
+    {CLAUDE_USER_25_PASSWORD:'test-password-25'},
+    {CLAUDE_USER_25_ID:env.CLAUDE_USER_1_ID,CLAUDE_USER_25_PASSWORD:'test-password-25'}
+  ]) {
+    const handler=createHandler({env:{...env,...extra},fetchImpl:()=>assert.fail('No provider call')});
+    assert.equal((await request(handler,{method:'GET'})).status,503);
+  }
+  const handler=createHandler({env:{...env,CLAUDE_USER_25_ID:'member25',CLAUDE_USER_25_PASSWORD:'test-password-25'},fetchImpl:()=>assert.fail('No provider call')});
+  assert.equal((await request(handler,{method:'GET',headers:{authorization:credentials('member25','test-password-25')}})).status,200);
+  assert.equal((await request(handler,{method:'GET',headers:{authorization:credentials('member25',env.CLAUDE_USER_1_PASSWORD)}})).status,401);
 });

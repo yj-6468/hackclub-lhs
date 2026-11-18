@@ -6,7 +6,7 @@ const digest = (value) => createHash('sha256').update(value).digest();
 function loadAccounts(env) {
   const accounts = [];
   const ids = new Set();
-  for (let slot = 1; slot <= 10; slot++) {
+  for (let slot = 1; slot <= 25; slot++) {
     const id = env[`CLAUDE_USER_${slot}_ID`]?.trim() || '';
     const password = env[`CLAUDE_USER_${slot}_PASSWORD`] || '';
     // Unused slots can be omitted or left completely empty.
