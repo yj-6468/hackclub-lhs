@@ -4,6 +4,8 @@
   const chatForm = byId('chat-form');
   const messageInput = byId('message');
   const messages = byId('messages');
+  const modelPicker = byId('chat-model');
+  const modelLabels = { sonnet: 'Sonnet', haiku: 'Haiku', opus: 'Opus' };
   let authorization = '';
   let signedInId = '';
   let history = [];
@@ -140,6 +142,7 @@
     busy = value;
     byId('attach-image').disabled = value;
     byId('use-web').disabled = value;
+    modelPicker.disabled = value;
     renderAttachments();
     byId('send').disabled = value;
     byId('new-chat').disabled = value;
@@ -162,6 +165,7 @@
     clearChat();
     authorization = '';
     signedInId = '';
+    modelPicker.replaceChildren(new Option('Sonnet', 'sonnet'));
     byId('user-id').value = '';
     byId('password').value = '';
     byId('access-panel').hidden = false;
@@ -184,6 +188,9 @@
       const result = await api('GET', undefined, credentials);
       authorization = credentials;
       signedInId = result.userId;
+      const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['sonnet'];
+      modelPicker.replaceChildren(...allowedModels.filter(model => Object.hasOwn(modelLabels, model))
+        .map(model => new Option(modelLabels[model], model)));
       byId('password').value = '';
       byId('access-panel').hidden = true;
       byId('conversation').hidden = false;
@@ -216,7 +223,7 @@
     setBusy(true);
     let shouldLock = false;
     try {
-      const result = await api('POST', { messages: pending, web });
+      const result = await api('POST', { messages: pending, web, model: modelPicker.value });
       if (typeof result.reply !== 'string' || !result.reply.trim()) throw new Error('Claude returned no text. Please try again.');
       history = [...pending, { role: 'assistant', content: result.reply }];
       addMessage('assistant', result.reply, [], result.sources || []);

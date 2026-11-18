@@ -13,7 +13,7 @@ function loadAccounts(env) {
     if (!id && !password) continue;
     if (!validId(id) || password.length < 8 || password.length > 128 || ids.has(id)) return null;
     ids.add(id);
-    accounts.push({ id, idDigest: digest(id), passwordDigest: digest(password) });
+    accounts.push({ id, slot, idDigest: digest(id), passwordDigest: digest(password) });
   }
   return accounts.length ? accounts : null;
 }
@@ -30,14 +30,14 @@ function authenticate(authorization, accounts) {
   if (!validId(id) || password.length > 128) return null;
   const idDigest = digest(id);
   const passwordDigest = digest(password);
-  let authenticatedId = null;
+  let authenticatedAccount = null;
   // Check every account and both fields; do not reveal which field was wrong.
   for (const account of accounts) {
     const idMatches = timingSafeEqual(idDigest, account.idDigest);
     const passwordMatches = timingSafeEqual(passwordDigest, account.passwordDigest);
-    if (idMatches && passwordMatches) authenticatedId = account.id;
+    if (idMatches && passwordMatches) authenticatedAccount = account;
   }
-  return authenticatedId;
+  return authenticatedAccount;
 }
 
 module.exports = { loadAccounts, authenticate };

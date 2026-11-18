@@ -50,7 +50,7 @@ test('both ID and its matching password are required, and legacy shared codes ar
   }
   const unlocked = await request(handler, { method: 'GET' });
   assert.equal(unlocked.status, 200);
-  assert.deepEqual(unlocked.body, { ok: true, userId: env.CLAUDE_USER_1_ID });
+  assert.deepEqual(unlocked.body, { ok: true, userId: env.CLAUDE_USER_1_ID, allowedModels: ['sonnet', 'haiku', 'opus'] });
   assert.equal(unlocked.headers['Cache-Control'], 'no-store');
 });
 
@@ -59,7 +59,7 @@ test('8-11 character passwords can sign in, while passwords outside 8-128 cannot
     const handler = createHandler({ env: { ...env, CLAUDE_USER_1_PASSWORD: password }, fetchImpl: () => assert.fail('sign-in must not call Claude') });
     const result = await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_1_ID, password) } });
     assert.equal(result.status, 200);
-    assert.deepEqual(result.body, { ok: true, userId: env.CLAUDE_USER_1_ID });
+    assert.equal(result.body.userId, env.CLAUDE_USER_1_ID);
   }
   for (const password of ['test123', 'x'.repeat(129)]) {
     const handler = createHandler({ env: { ...env, CLAUDE_USER_1_PASSWORD: password }, fetchImpl: () => assert.fail('must not call Claude') });
@@ -77,7 +77,8 @@ test('all 25 account slots can sign in without returning the account list or pas
   for (let slot = 1; slot <= 25; slot++) {
     const result = await request(handler, { method: 'GET', headers: { authorization: credentials(`member${slot}`, `unique-test-password-${slot}`) } });
     assert.equal(result.status, 200);
-    assert.deepEqual(result.body, { ok: true, userId: `member${slot}` });
+    const allowedModels = [1, 3, 6, 7].includes(slot) ? ['sonnet', 'haiku', 'opus'] : ['sonnet', 'haiku'];
+    assert.deepEqual(result.body, { ok: true, userId: `member${slot}`, allowedModels });
   }
   assert.equal((await request(handler, { method: 'GET', headers: { authorization: credentials('member26', 'unique-test-password-26') } })).status, 401);
 });
@@ -137,11 +138,39 @@ test('forwards conversation but fixes model, token limit, credentials, and syste
     assert.ok(!JSON.stringify(init.headers).includes(env.CLAUDE_USER_1_ID));
     return success();
   } });
-  const result = await request(handler, { body: { messages, model: 'expensive-model', max_tokens: 999999, system: 'override' }, headers: { origin: 'https://club.example' } });
+  const result = await request(handler, { body: { messages, max_tokens: 999999, system: 'override' }, headers: { origin: 'https://club.example' } });
   assert.equal(result.status, 200);
   assert.deepEqual(result.body, { reply: 'Here is an example.', truncated: false });
   assert.equal(calls, 1);
   assert.ok(!JSON.stringify(result).includes(env.ANTHROPIC_API_KEY));
+});
+
+test('only the authenticated slots can request Opus and client model IDs are rejected', async () => {
+  const config = { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY, ANTHROPIC_MODEL: 'claude-opus-5-5' };
+  for (let slot = 1; slot <= 25; slot++) {
+    // IDs deliberately don't match their slot numbers.
+    config[`CLAUDE_USER_${slot}_ID`] = `member${26 - slot}`;
+    config[`CLAUDE_USER_${slot}_PASSWORD`] = `test-password-${slot}`;
+  }
+  const forwardedModels = [];
+  const handler = createHandler({ env: config, fetchImpl: async (_, init) => {
+    forwardedModels.push(JSON.parse(init.body).model);
+    return success();
+  } });
+  for (let slot = 1; slot <= 25; slot++) {
+    const headers = { authorization: credentials(`member${26 - slot}`, `test-password-${slot}`) };
+    const result = await request(handler, { headers, body: { messages: question, model: 'opus', slot: 1 } });
+    assert.equal(result.status, [1, 3, 6, 7].includes(slot) ? 200 : 403);
+  }
+  const headers = { authorization: credentials('member24', 'test-password-2') };
+  assert.equal((await request(handler, { headers, body: { messages: question, model: 'haiku' } })).status, 200);
+  assert.equal((await request(handler, { headers })).status, 200);
+  for (const model of ['claude-opus-5-5', 'constructor', ['opus'], null]) {
+    assert.equal((await request(handler, { headers, body: { messages: question, model } })).status, 400);
+  }
+  assert.deepEqual(forwardedModels, [
+    ...Array(4).fill('claude-opus-5-5'), 'claude-haiku-5-5', 'claude-sonnet-5-5'
+  ]);
 });
 
 test('accepts streamed JSON from local server and parsed JSON from Vercel', async () => {

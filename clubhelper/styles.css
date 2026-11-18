@@ -168,7 +168,9 @@ noscript { padding: 16px; color: #bd4242; font-size: 13px; }
   button, a { transition: background-color .15s, color .15s; }
 }
 
-.composer-tools { display: flex; gap: 8px; }
+.composer-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.model-picker { font-family: inherit; }
+.model-picker:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 #use-web[aria-pressed="true"] { background: #e8f2fc; color: #1764a5; border-color: #99c4eb; }
 .attachments, .sent-images { display: flex; flex-wrap: wrap; gap: 10px; }
 .attachments:empty { display: none; }
