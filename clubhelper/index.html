@@ -7,12 +7,12 @@
     <meta name="referrer" content="no-referrer" />
     <title>Club helper · Hack Club LHS</title>
     <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/clubhelper/styles.css?v=model-picker" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=message-tools" />
     <script src="/clubhelper/vendor/marked.js" defer></script>
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=model-picker" defer></script>
+    <script src="/clubhelper/chat.js?v=message-tools" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -88,23 +88,31 @@
             <div class="composer-wrap">
               <form id="chat-form" class="composer" method="post">
                 <label class="sr-only" for="message">Message Club helper</label>
-                <div id="attachments" class="attachments" aria-label="Attached images"></div>
+                <div id="edit-banner" class="edit-banner" hidden>
+                  <span>Editing a message. Resending replaces the conversation from here.</span>
+                  <button id="cancel-edit" class="quiet-button" type="button">Cancel</button>
+                </div>
+                <div id="attachments" class="attachments" aria-label="Attachments"></div>
                 <input id="image-files" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden />
+                <input id="pdf-file" type="file" accept="application/pdf,.pdf" hidden />
                 <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Write a message or paste an image…"></textarea>
                 <div class="composer-footer">
                   <div class="composer-tools">
                     <button id="attach-image" class="quiet-button" type="button">+ Image</button>
+                    <button id="attach-pdf" class="quiet-button" type="button" title="Attach one PDF up to 2 MB">+ PDF</button>
                     <button id="use-web" class="quiet-button" type="button" aria-pressed="false" title="Search the web and read public links">Web</button>
                     <select id="chat-model" class="quiet-button model-picker" aria-label="Claude model">
                       <option value="sonnet">Sonnet</option>
                     </select>
                   </div>
                   <button id="send" class="send-button" type="submit" aria-label="Send message">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+                    <svg id="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+                    <span id="resend-label" hidden>Resend</span>
                   </button>
                 </div>
               </form>
               <p id="chat-status" class="status chat-status" role="status" aria-live="polite"></p>
+              <p id="copy-status" class="sr-only" role="status"></p>
             </div>
           </section>
           <noscript>Enable JavaScript to sign in and use Club helper.</noscript>

@@ -117,8 +117,8 @@ test('rejects malformed and oversized histories before spending credits', async 
     assert.equal((await request(handler, { body: { messages } })).status, 400);
   }
   assert.equal((await request(handler, { body: '{' })).status, 400);
-  assert.equal((await request(handler, { body: 'x'.repeat(3000001) })).status, 413);
-  assert.equal((await request(handler, { chunks: ['x'.repeat(1600000), 'x'.repeat(1600000)] })).status, 413);
+  assert.equal((await request(handler, { body: 'x'.repeat(4000001) })).status, 413);
+  assert.equal((await request(handler, { chunks: ['x'.repeat(2100000), 'x'.repeat(2100000)] })).status, 413);
 });
 
 test('forwards conversation but fixes model, token limit, credentials, and system prompt on server', async () => {
@@ -230,6 +230,29 @@ test('validates images and forwards only canonical image content blocks', async 
   const reject = createHandler({env,fetchImpl:()=>assert.fail('Invalid images must not reach provider')});
   for (const images of [[{...png,media_type:'image/svg+xml'}],[{...png,data:'AAAA'}],Array(4).fill(png),[{...png,data:'a'.repeat(700004)}]])
     assert.equal((await request(reject,{body:{messages:[{role:'user',content:'Describe',images}]}})).status,400);
+});
+
+test('forwards PDF and image blocks together and rejects invalid PDF payloads before contacting Claude', async () => {
+  const pdf = Buffer.from('%PDF-1.7\n%%EOF').toString('base64');
+  const user = { role: 'user', content: 'Compare these', images: [png], pdf };
+  let calls = 0;
+  const handler = createHandler({ env, fetchImpl: async (_, init) => {
+    calls++;
+    assert.deepEqual(JSON.parse(init.body).messages, [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', ...png } },
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdf } },
+      { type: 'text', text: user.content }
+    ] }]);
+    return success();
+  } });
+  assert.equal((await request(handler, { body: { messages: [user] } })).status, 200);
+  const largePDF = Buffer.alloc(2_000_001);
+  largePDF.write('%PDF-');
+  for (const invalid of ['http://example.com/test.pdf', 'AAAA', largePDF.toString('base64'), null]) {
+    assert.equal((await request(handler, { body: { messages: [{ ...user, pdf: invalid }] } })).status, 400);
+  }
+  assert.equal((await request(handler, { body: { messages: [user, { role: 'assistant', content: 'Reply', pdf }, user] } })).status, 400);
+  assert.equal(calls, 1);
 });
 test('web tools are bounded, resume paused turns, and return safe source links', async () => {
   let calls = 0;

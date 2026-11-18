@@ -83,10 +83,11 @@ input:hover { border-color: #c7c7c2; }
 .prompts strong + span { display: block; color: #a09f99; font-size: 12px; }
 .prompt-arrow { margin-left: auto; color: #aaa99f; font-size: 15px; }
 .message { margin-bottom: 32px; overflow-wrap: anywhere; scroll-margin-top: 32px; }
-.message-label { font-size: 11px; color: #96958f; font-weight: 500; margin: 0 0 12px; }
+.message-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.message-label { font-size: 11px; color: #96958f; font-weight: 500; margin: 0; }
+.message-action { padding: 4px 7px; background: transparent; font-size: 11px; }
 .message-body { white-space: pre-wrap; font-size: 15px; line-height: 1.75; margin: 0; }
 .message.user { margin-left: auto; width: fit-content; max-width: 90%; background: var(--surface); padding: 14px 18px; border-radius: 8px; }
-.message.user .message-label { margin-bottom: 6px; }
 .message.assistant { padding: 6px 0; }
 .markdown-body { white-space: normal; }
 .markdown-body > :first-child { margin-top: 0; }
@@ -128,9 +129,11 @@ textarea { display: block; width: 100%; border: 0; resize: vertical; min-height:
 textarea:focus-visible { outline: 0; }
 .composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
 .composer-footer > span { color: #aaa9a1; font-size: 11px; }
-.send-button { width: 30px; height: 30px; display: grid; place-items: center; padding: 0; color: #fff; background: #37352f; border: 0; border-radius: 6px; }
+.send-button { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; padding: 0; color: #fff; background: #37352f; border: 0; border-radius: 6px; }
 .send-button:hover:enabled { background: #1f1e1a; }
 .send-button svg { width: 18px; height: 18px; stroke-width: 2; }
+.send-button.resend-button { width: auto; padding: 0 10px; font: inherit; font-size: 12px; }
+.edit-banner { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
 .chat-status { margin: 9px 0 0; }
 .chat-note { text-align: center; margin: 12px 0 0; color: #a7a69f; font-size: 11px; line-height: 1.5; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
@@ -176,6 +179,8 @@ noscript { padding: 16px; color: #bd4242; font-size: 13px; }
 .attachments:empty { display: none; }
 .attachments { margin-bottom: 14px; }
 .attachments > div { position: relative; }
+.pdf-chip { display: inline-block; max-width: min(220px, 100%); padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: 12px; overflow-wrap: anywhere; }
+.attachments > div { max-width: 100%; }
 .attachments img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .attachments button { position: absolute; right: -5px; top: -5px; border: 1px solid var(--line); border-radius: 50%; background: white; width: 22px; height: 22px; padding: 0; }
 .sent-images { margin-top: 12px; }
