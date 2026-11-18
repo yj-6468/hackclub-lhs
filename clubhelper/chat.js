@@ -207,7 +207,7 @@
     modelPicker.disabled = busy;
     messageInput.disabled = busy;
     byId('edit-banner').hidden = !editing;
-    byId('send-icon').hidden = !!editing;
+    byId('send-icon').toggleAttribute('hidden', !!editing);
     byId('resend-label').hidden = !editing;
     byId('send').classList.toggle('resend-button', !!editing);
     byId('send').setAttribute('aria-label', busy ? 'Waiting for reply' : editing ? 'Resend message' : 'Send message');

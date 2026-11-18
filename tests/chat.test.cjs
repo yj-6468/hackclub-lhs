@@ -92,6 +92,7 @@ test('uploads a PDF, copies the reply, and replaces a conversation branch only a
     el('message').value = 'Unsent draft';
     doc.querySelector('.edit-message').click();
     assert.equal(el('edit-banner').hidden, false);
+    assert.equal(el('send-icon').hasAttribute('hidden'), true);
     assert.equal(el('message').value, '');
     assert.match(el('attachments').textContent, /club-notes\.pdf/);
     el('cancel-edit').click();
@@ -113,6 +114,7 @@ test('uploads a PDF, copies the reply, and replaces a conversation branch only a
     assert.equal(doc.querySelector('.user .message-body').textContent, 'Extract the dates instead');
     assert.equal(el('message').value, 'Unsent draft');
     assert.equal(el('edit-banner').hidden, true);
+    assert.equal(el('send-icon').hasAttribute('hidden'), false);
   } finally {
     w.close();
   }
