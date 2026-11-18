@@ -26,11 +26,16 @@ async function request(handler, { method = 'POST', body = { messages: question }
 }
 
 test('missing configuration fails closed before any paid request', async () => {
+  const singleAccount = {
+    ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY,
+    CLAUDE_USER_1_ID: env.CLAUDE_USER_1_ID,
+    CLAUDE_USER_1_PASSWORD: env.CLAUDE_USER_1_PASSWORD
+  };
   for (const config of [{}, { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY },
-    { ...env, CLAUDE_USER_1_PASSWORD: 'short' }, { ...env, ANTHROPIC_API_KEY: '' },
-    { ...env, CLAUDE_USER_1_PASSWORD: '' }, { ...env, CLAUDE_USER_1_ID: '' },
+    { ...singleAccount, CLAUDE_USER_1_PASSWORD: 'short' }, { ...env, ANTHROPIC_API_KEY: '' },
+    { ...singleAccount, CLAUDE_USER_1_PASSWORD: '' }, { ...singleAccount, CLAUDE_USER_1_ID: '' },
     { ...env, CLAUDE_USER_2_ID: env.CLAUDE_USER_1_ID },
-    { ...env, CLAUDE_USER_1_ID: 'invalid:id' }]) {
+    { ...singleAccount, CLAUDE_USER_1_ID: 'invalid:id' }]) {
     const handler = createHandler({ env: config, fetchImpl: () => assert.fail('must not call Claude') });
     assert.equal((await request(handler)).status, 503);
   }
@@ -63,7 +68,8 @@ test('8-11 character passwords can sign in, while passwords outside 8-128 cannot
   }
   for (const password of ['test123', 'x'.repeat(129)]) {
     const handler = createHandler({ env: { ...env, CLAUDE_USER_1_PASSWORD: password }, fetchImpl: () => assert.fail('must not call Claude') });
-    assert.equal((await request(handler, { method: 'GET' })).status, 503);
+    assert.equal((await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_1_ID, password) } })).status, 401);
+    assert.equal((await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) } })).status, 200);
   }
 });
 
@@ -289,16 +295,34 @@ test('preserves replies five times longer and accepts them in follow-up history'
   assert.equal(capped.body.truncated,true);
 });
 
-test('new account slots require complete unique credentials and matching passwords', async () => {
+test('misconfigured slots are disabled while unrelated accounts can still sign in', async () => {
   for (const extra of [
     {CLAUDE_USER_25_ID:'member25'},
     {CLAUDE_USER_25_PASSWORD:'test-password-25'},
-    {CLAUDE_USER_25_ID:env.CLAUDE_USER_1_ID,CLAUDE_USER_25_PASSWORD:'test-password-25'}
+    {CLAUDE_USER_25_ID:'member25',CLAUDE_USER_25_PASSWORD:'short'},
+    {CLAUDE_USER_25_ID:'invalid:id',CLAUDE_USER_25_PASSWORD:'test-password-25'}
   ]) {
     const handler=createHandler({env:{...env,...extra},fetchImpl:()=>assert.fail('No provider call')});
-    assert.equal((await request(handler,{method:'GET'})).status,503);
+    assert.equal((await request(handler,{method:'GET'})).status,200);
+    assert.equal((await request(handler, {method:'GET', headers:{authorization:credentials(extra.CLAUDE_USER_25_ID || 'member25', extra.CLAUDE_USER_25_PASSWORD || '')}})).status,401);
   }
   const handler=createHandler({env:{...env,CLAUDE_USER_25_ID:'member25',CLAUDE_USER_25_PASSWORD:'test-password-25'},fetchImpl:()=>assert.fail('No provider call')});
   assert.equal((await request(handler,{method:'GET',headers:{authorization:credentials('member25','test-password-25')}})).status,200);
   assert.equal((await request(handler,{method:'GET',headers:{authorization:credentials('member25',env.CLAUDE_USER_1_PASSWORD)}})).status,401);
+});
+
+test('duplicate IDs cannot log into either slot or change another account’s model access', async () => {
+  for (const duplicatePassword of ['test-password-25', '']) {
+    const handler = createHandler({
+      env: { ...env, CLAUDE_USER_25_ID: env.CLAUDE_USER_1_ID, CLAUDE_USER_25_PASSWORD: duplicatePassword },
+      fetchImpl: () => assert.fail('No provider call')
+    });
+    for (const password of [env.CLAUDE_USER_1_PASSWORD, duplicatePassword]) {
+      const result = await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_1_ID, password) } });
+      assert.equal(result.status, 401);
+    }
+    const result = await request(handler, { method: 'GET', headers: { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) } });
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.body.allowedModels, ['sonnet', 'haiku']);
+  }
 });

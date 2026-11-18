@@ -4,17 +4,19 @@ const validId = (id) => /^[A-Za-z0-9_.-]{1,64}$/.test(id);
 const digest = (value) => createHash('sha256').update(value).digest();
 
 function loadAccounts(env) {
-  const accounts = [];
-  const ids = new Set();
+  const accountsById = new Map();
   for (let slot = 1; slot <= 25; slot++) {
     const id = env[`CLAUDE_USER_${slot}_ID`]?.trim() || '';
     const password = env[`CLAUDE_USER_${slot}_PASSWORD`] || '';
-    // Unused slots can be omitted or left completely empty.
-    if (!id && !password) continue;
-    if (!validId(id) || password.length < 8 || password.length > 128 || ids.has(id)) return null;
-    ids.add(id);
-    accounts.push({ id, slot, idDigest: digest(id), passwordDigest: digest(password) });
+    if (!validId(id)) continue;
+    // A duplicate ID disables every matching slot, including any privileged slot.
+    if (accountsById.has(id) || password.length < 8 || password.length > 128) {
+      accountsById.set(id, null);
+      continue;
+    }
+    accountsById.set(id, { id, slot, idDigest: digest(id), passwordDigest: digest(password) });
   }
+  const accounts = Array.from(accountsById.values()).filter(Boolean);
   return accounts.length ? accounts : null;
 }
 
