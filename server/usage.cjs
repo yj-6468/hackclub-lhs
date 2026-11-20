@@ -45,8 +45,11 @@ function estimateCostNanos(model, usage) {
 }
 
 function createUsageStore(env, fetchImpl = fetch) {
-  const url = env.UPSTASH_REDIS_REST_URL?.trim();
-  const token = env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  const upstashUrl = env.UPSTASH_REDIS_REST_URL?.trim();
+  const upstashToken = env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  const [url, token] = upstashUrl && upstashToken
+    ? [upstashUrl, upstashToken]
+    : [env.KV_REST_API_URL?.trim(), env.KV_REST_API_TOKEN?.trim()];
   if (!token || !url) return null;
   const endpoint = new URL(url);
   if (endpoint.protocol !== 'https:' || !endpoint.hostname.endsWith('.upstash.io') ||

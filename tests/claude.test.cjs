@@ -333,8 +333,8 @@ test('only admin can read daily usage and chat history, and chat expires without
     ...env,
     CLAUDE_USER_1_ID: 'admin',
     CLAUDE_USER_3_ID: 'unconfigured-member',
-    UPSTASH_REDIS_REST_URL: 'https://test.upstash.io',
-    UPSTASH_REDIS_REST_TOKEN: 'test-redis-token'
+    KV_REST_API_URL: 'https://test.upstash.io',
+    KV_REST_API_TOKEN: 'test-redis-token'
   };
   let time = Date.parse('2026-11-19T02:00:00Z');
   const hashes = new Map();
