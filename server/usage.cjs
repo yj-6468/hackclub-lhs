@@ -1,9 +1,11 @@
-const { createHash } = require('node:crypto');
+const { createHash, randomUUID } = require('node:crypto');
 
 const metrics = ['requests', 'inputTokens', 'outputTokens'];
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
 const memberKey = id => createHash('sha256').update(id).digest('hex');
 const fields = id => metrics.map(metric => memberKey(id) + ':' + metric);
+const CHAT_TTL_SECONDS = 14 * 24 * 60 * 60;
+const CHAT_PAGE_SIZE = 20;
 const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
 function usageDay(timestamp) {
   const parts = Object.fromEntries(dayFormat.formatToParts(new Date(timestamp)).map(part => [part.type, part.value]));
@@ -46,11 +48,21 @@ function createUsageStore(env, fetchImpl = fetch) {
   }
 
   return {
-    async record(id, totals, timestamp) {
+    async record(id, totals, timestamp, chat) {
       const dayKey = key + ':day:' + usageDay(timestamp);
       const commands = [['HSETNX', key, 'since', timestamp]];
       for (const bucket of [key, dayKey]) {
         fields(id).forEach((field, index) => commands.push(['HINCRBY', bucket, field, totals[metrics[index]]]));
+      }
+      if (chat) {
+        const chatIndex = key + ':chat-index:' + memberKey(id) + ':' + usageDay(timestamp);
+        const entryKey = key + ':chat:' + randomUUID();
+        commands.push(
+          ['SET', entryKey, JSON.stringify({ timestamp, ...chat }), 'EX', CHAT_TTL_SECONDS],
+          ['ZADD', chatIndex, Date.parse(timestamp), entryKey],
+          ['ZREMRANGEBYSCORE', chatIndex, '-inf', Date.parse(timestamp) - CHAT_TTL_SECONDS * 1000],
+          ['EXPIRE', chatIndex, CHAT_TTL_SECONDS]
+        );
       }
       await transact(commands);
     },
@@ -72,6 +84,19 @@ function createUsageStore(env, fetchImpl = fetch) {
             outputTokens: count(Number(result[offset + 2]))
           };
         })
+      };
+    },
+    async readChats(id, date, offset) {
+      const chatIndex = key + ':chat-index:' + memberKey(id) + ':' + date;
+      const { result: keys } = await command('/', ['ZREVRANGE', chatIndex, offset, offset + CHAT_PAGE_SIZE]);
+      if (!Array.isArray(keys)) throw new Error('Chat history could not be read.');
+      const page = keys.slice(0, CHAT_PAGE_SIZE);
+      if (!page.length) return { entries: [], next: null };
+      const { result } = await command('/', ['MGET', ...page]);
+      if (!Array.isArray(result)) throw new Error('Chat history could not be read.');
+      return {
+        entries: result.filter(value => typeof value === 'string').map(value => JSON.parse(value)),
+        next: keys.length > CHAT_PAGE_SIZE ? offset + CHAT_PAGE_SIZE : null
       };
     }
   };

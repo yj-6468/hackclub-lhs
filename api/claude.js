@@ -1,5 +1,5 @@
 const { loadAccounts, authenticate, listConfiguredIds } = require('../server/accounts.cjs');
-const { createUsageStore, addClaudeUsage } = require('../server/usage.cjs');
+const { createUsageStore, addClaudeUsage, usageDay } = require('../server/usage.cjs');
 
 const MAX_BODY_BYTES = 4_000_000;
 const MAX_ATTACHMENT_CHARS = 3_100_000;
@@ -126,21 +126,32 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
       const params = new URL(req.url || '/', 'http://localhost').searchParams;
       const view = params.get('view');
       const date = params.get('date') || '';
-      if (view === 'usage') {
+      if (view === 'usage' || view === 'history') {
         if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) ||
             new Date(date).toISOString().slice(0, 10) !== date)) {
           return send(400, { error: 'Choose a valid date.' });
         }
         try {
-          if (!isAdmin) return send(403, { error: 'Usage is available to the Club helper admin.' });
-          const ids = listConfiguredIds(env);
-          if (!usageStore) return send(200, { storageConfigured: false, users: ids.map(id => ({ id })) });
-          return send(200, await usageStore.read(ids, date));
+          if (view === 'usage') {
+            if (!isAdmin) return send(403, { error: 'Usage is available to the Club helper admin.' });
+            const ids = listConfiguredIds(env);
+            if (!usageStore) return send(200, { storageConfigured: false, users: ids.map(id => ({ id })) });
+            return send(200, await usageStore.read(ids, date));
+          }
+          const member = params.get('member') || userId;
+          if (!isAdmin) return send(403, { error: 'Chat history is available to the Club helper admin.' });
+          if (member !== userId && !listConfiguredIds(env).includes(member)) return send(404, { error: 'Unknown member ID.' });
+          if (!usageStore) return send(503, { error: 'Connect storage to enable chat history.' });
+          const offset = Number(params.get('offset') || '0');
+          if (!Number.isSafeInteger(offset) || offset < 0) return send(400, { error: 'Invalid history page.' });
+          const history = await usageStore.readChats(member, date || usageDay(now()), offset);
+          return send(200, { ...history, members: listConfiguredIds(env) });
         } catch {
           return send(503, { error: 'Storage is unavailable. Please try again.' });
         }
       }
-      return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}) });
+      return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}),
+        ...(usageStore ? { chatHistoryAvailable: true } : {}) });
     }
     if (req.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
       return send(415, { error: 'Send a JSON request.' });
@@ -167,7 +178,8 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
     const startedAt = new Date(now()).toISOString();
     async function sendChat(status, payload) {
       if (usageStore) {
-        try { await usageStore.record(userId, totals, startedAt); }
+        const chat = status === 200 ? { message: body.messages.at(-1).content, reply: payload.reply } : undefined;
+        try { await usageStore.record(userId, totals, startedAt, chat); }
         catch { console.warn('Club helper could not save usage counters.'); }
       }
       return send(status, payload);

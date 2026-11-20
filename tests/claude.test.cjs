@@ -327,7 +327,7 @@ test('duplicate IDs cannot log into either slot or change another account’s mo
   }
 });
 
-test('only admin can read daily usage grouped by the configured member IDs', async () => {
+test('only admin can read daily usage and chat history, and chat expires without expiring usage', async () => {
   const { createUsageStore } = require('../server/usage.cjs');
   const config = {
     ...env,
@@ -338,11 +338,24 @@ test('only admin can read daily usage grouped by the configured member IDs', asy
   };
   let time = Date.parse('2026-11-19T02:00:00Z');
   const hashes = new Map();
+  const records = new Map();
+  const indexes = new Map();
   const store = createUsageStore(config, async (url, init) => {
     const commands = JSON.parse(init.body);
     if (url.endsWith('/multi-exec')) {
       assert.doesNotMatch(init.body, /member02|test-password/);
       return Response.json(commands.map(([command, key, field, value, ttl]) => {
+        if (command === 'SET') {
+          assert.equal(value, 'EX');
+          assert.equal(ttl, 14 * 24 * 60 * 60);
+          records.set(key, { value: field, expires: time + ttl * 1000 });
+          return { result: 'OK' };
+        }
+        if (command === 'ZADD') {
+          indexes.set(key, [value, ...(indexes.get(key) || [])]);
+          return { result: 1 };
+        }
+        if (command === 'ZREMRANGEBYSCORE' || command === 'EXPIRE') return { result: 1 };
         if (!hashes.has(key)) hashes.set(key, new Map());
         const hash = hashes.get(key);
         if (command === 'HSETNX') {
@@ -356,6 +369,13 @@ test('only admin can read daily usage grouped by the configured member IDs', asy
       }));
     }
     const [command, key, ...args] = commands;
+    if (command === 'MGET') {
+      return Response.json({ result: [key, ...args].map(entry => {
+        const record = records.get(entry);
+        return record?.expires > time ? record.value : null;
+      }) });
+    }
+    if (command === 'ZREVRANGE') return Response.json({ result: (indexes.get(key) || []).slice(args[0], args[1] + 1) });
     assert.equal(command, 'HMGET');
     return Response.json({ result: args.map(field => hashes.get(key)?.get(field) ?? null) });
   });
@@ -372,7 +392,8 @@ test('only admin can read daily usage grouped by the configured member IDs', asy
   const member = { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) };
   const adminGet = url => request(handler, { method: 'GET', url, headers: admin });
   const daily = '/api/clubhelper?view=usage&date=2026-11-18';
-  for (const url of [daily, '/api/clubhelper?view=usage']) {
+  const history = '/api/clubhelper?view=history&date=2026-11-18';
+  for (const url of [daily, history, history + '&member=member02']) {
     assert.equal((await request(handler, { method: 'GET', url, headers: { authorization: '' } })).status, 401);
     assert.equal((await request(handler, { method: 'GET', url, headers: member })).status, 403);
   }
@@ -388,6 +409,10 @@ test('only admin can read daily usage grouped by the configured member IDs', asy
   ]);
   assert.equal((await adminGet(daily.replace('11-18', '11-19'))).body.users[1].requests, 0);
   assert.equal((await adminGet(daily.replace('11-18', '99-99'))).status, 400);
+  const memberHistory = history + '&member=member02';
+  assert.equal((await adminGet(memberHistory)).body.entries[0].message, question[0].content);
+  time += 14 * 24 * 60 * 60 * 1000;
+  assert.deepEqual((await adminGet(memberHistory)).body.entries, []);
   assert.equal((await adminGet(daily)).body.users[1].requests, 1);
   assert.equal((await adminGet('/api/clubhelper?view=usage')).body.users[1].requests, 1);
   const missing = await request(createHandler({ env: config, usageStore: null }), { method: 'GET', url: daily, headers: admin });

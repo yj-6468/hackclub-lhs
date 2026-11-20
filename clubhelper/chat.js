@@ -11,7 +11,9 @@
   let authorization = '';
   let signedInId = '';
   let isAdmin = false;
-  let showingUsage = false;
+  let activeView = 'chat';
+  let historyAvailable = false;
+  let historyOffset = null;
   let usageLoad = 0;
   let history = [];
   let busy = false;
@@ -144,7 +146,7 @@
   }
 
   async function refreshUsage() {
-    if (!isAdmin || !showingUsage) return;
+    if (!isAdmin || activeView !== 'usage') return;
     const load = ++usageLoad;
     const refresh = byId('usage-refresh');
     refresh.disabled = true;
@@ -191,33 +193,100 @@
     }
   }
 
-  function setUsageView(requested) {
+  const eastern = { timeZone: 'America/New_York' };
+  const easternDay = () => new Intl.DateTimeFormat('sv-SE', eastern).format(new Date());
+
+  async function refreshHistory(offset = 0) {
+    if (!isAdmin || activeView !== 'history') return;
+    const load = ++usageLoad;
+    const entries = byId('history-entries');
+    const status = byId('history-status');
+    const more = byId('history-more');
+    const member = byId('history-member');
+    if (offset === 0) entries.replaceChildren();
+    more.disabled = true;
+    status.textContent = 'Loading history…';
+    const query = new URLSearchParams({
+      view: 'history', date: byId('history-date').value, member: member.value || signedInId, offset
+    });
+    try {
+      const result = await api('GET', undefined, authorization, '?' + query);
+      if (load !== usageLoad) return;
+      member.replaceChildren(...result.members.map(id => new Option(id, id)));
+      member.value = query.get('member');
+      for (const entry of result.entries) {
+        const article = document.createElement('article');
+        article.className = 'history-entry';
+        const time = document.createElement('time');
+        time.dateTime = entry.timestamp;
+        time.textContent = new Date(entry.timestamp).toLocaleTimeString('en-US', {
+          ...eastern, hour: 'numeric', minute: '2-digit'
+        });
+        article.append(time);
+        for (const [label, content] of [['Message', entry.message], ['Reply', entry.reply]]) {
+          const details = document.createElement('details');
+          const summary = document.createElement('summary');
+          summary.textContent = label;
+          const text = document.createElement('p');
+          text.textContent = content;
+          details.append(summary, text);
+          article.append(details);
+        }
+        entries.append(article);
+      }
+      historyOffset = result.next;
+      more.hidden = historyOffset === null;
+      status.textContent = entries.children.length ? '' : 'No saved chats for this day.';
+    } catch (error) {
+      if (load !== usageLoad) return;
+      if (error.status === 401) {
+        lock();
+        byId('access-status').textContent = 'Your sign-in is no longer valid. Please sign in again.';
+        return;
+      }
+      more.hidden = true;
+      status.textContent = error.message;
+    } finally {
+      if (load === usageLoad) more.disabled = false;
+    }
+  }
+
+  function setView(view) {
     usageLoad++;
-    showingUsage = requested && isAdmin;
-    byId('usage-panel').hidden = !showingUsage;
-    byId('conversation').hidden = showingUsage;
-    byId('usage-toggle').textContent = showingUsage ? 'Chat' : 'Usage';
-    byId('new-chat').hidden = showingUsage;
+    activeView = isAdmin && (view === 'usage' || (view === 'history' && historyAvailable)) ? view : 'chat';
+    for (const report of ['usage', 'history']) {
+      byId(report + '-panel').hidden = activeView !== report;
+      byId(report + '-toggle').textContent = activeView === report ? 'Chat' : report === 'usage' ? 'Usage' : 'History';
+    }
+    byId('conversation').hidden = activeView !== 'chat';
+    byId('new-chat').hidden = activeView !== 'chat';
     const url = new URL(window.location.href);
-    if (showingUsage) url.searchParams.set('view', 'usage');
-    else url.searchParams.delete('view');
+    if (activeView === 'chat') url.searchParams.delete('view');
+    else url.searchParams.set('view', activeView);
     window.history.replaceState(null, '', url);
-    if (showingUsage) {
+    if (activeView === 'usage') {
       byId('usage-title').focus();
       refreshUsage();
+    } else if (activeView === 'history') {
+      byId('history-date').value ||= easternDay();
+      byId('history-title').focus();
+      refreshHistory();
     } else {
-      usageLoad++;
       messageInput.focus();
     }
   }
 
-  byId('usage-toggle').addEventListener('click', () => setUsageView(!showingUsage));
+  byId('usage-toggle').addEventListener('click', () => setView(activeView === 'usage' ? 'chat' : 'usage'));
+  byId('history-toggle').addEventListener('click', () => setView(activeView === 'history' ? 'chat' : 'history'));
   byId('usage-refresh').addEventListener('click', refreshUsage);
-
   byId('usage-date').addEventListener('change', refreshUsage);
   byId('usage-all').addEventListener('click', () => {
     byId('usage-date').value = '';
     refreshUsage();
+  });
+  for (const id of ['history-date', 'history-member']) byId(id).addEventListener('change', () => refreshHistory());
+  byId('history-more').addEventListener('click', () => {
+    if (historyOffset !== null) refreshHistory(historyOffset);
   });
 
   function addMessage(role, content, files = [], sources = []) {
@@ -280,7 +349,7 @@
 
   function updateComposer() {
     const blocked = busy || preparingFiles;
-    for (const id of ['attach-image', 'attach-pdf', 'send', 'new-chat', 'lock-chat', 'cancel-edit', 'usage-toggle']) {
+    for (const id of ['attach-image', 'attach-pdf', 'send', 'new-chat', 'lock-chat', 'cancel-edit', 'usage-toggle', 'history-toggle']) {
       byId(id).disabled = blocked;
     }
     byId('use-web').disabled = busy;
@@ -352,10 +421,15 @@
     authorization = '';
     signedInId = '';
     isAdmin = false;
-    showingUsage = false;
+    activeView = 'chat';
+    historyAvailable = false;
     usageLoad++;
     byId('usage-toggle').hidden = true;
     byId('usage-panel').hidden = true;
+    byId('history-toggle').hidden = true;
+    byId('history-panel').hidden = true;
+    byId('history-entries').replaceChildren();
+    byId('history-member').replaceChildren();
     byId('usage-rows').replaceChildren();
     byId('new-chat').hidden = false;
     modelPicker.replaceChildren(new Option('Sonnet', 'sonnet'));
@@ -383,6 +457,10 @@
       signedInId = result.userId;
       isAdmin = result.isAdmin === true;
       byId('usage-toggle').hidden = !isAdmin;
+      historyAvailable = result.chatHistoryAvailable === true;
+      byId('history-toggle').hidden = !isAdmin || !historyAvailable;
+      byId('history-member').hidden = !isAdmin;
+      byId('history-member-label').hidden = !isAdmin;
       const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['sonnet'];
       modelPicker.replaceChildren(...allowedModels.filter(model => Object.hasOwn(modelLabels, model))
         .map(model => new Option(modelLabels[model], model)));
@@ -392,7 +470,7 @@
       byId('lock-chat').hidden = false;
       byId('access-status').textContent = '';
       setBusy(false);
-      setUsageView(new URL(window.location.href).searchParams.get('view') === 'usage');
+      setView(new URL(window.location.href).searchParams.get('view'));
     } catch (error) {
       byId('access-status').textContent = error.name === 'TimeoutError' ? 'The connection timed out. Please try again.' : error.message;
     } finally { byId('unlock').disabled = false; }

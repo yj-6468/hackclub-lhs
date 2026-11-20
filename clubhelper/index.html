@@ -7,12 +7,12 @@
     <meta name="referrer" content="no-referrer" />
     <title>Club helper · Hack Club LHS</title>
     <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/clubhelper/styles.css?v=daily-usage" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=usage-history" />
     <script src="/clubhelper/vendor/marked.js" defer></script>
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=daily-usage" defer></script>
+    <script src="/clubhelper/chat.js?v=usage-history" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -33,6 +33,7 @@
           </a>
         </nav>
         <div class="sidebar-bottom">
+          <p class="privacy-note">A little help for your next idea.<br />Your chat view clears on refresh.</p>
           <div class="account">
             <span class="account-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="3"/><path d="M5 21v-3a7 7 0 0 1 14 0v3"/></svg>
@@ -52,6 +53,7 @@
           </nav>
           <div class="toolbar">
             <button id="usage-toggle" class="quiet-button" type="button" hidden>Usage</button>
+            <button id="history-toggle" class="quiet-button" type="button" hidden>History</button>
             <button id="new-chat" class="quiet-button" type="button" disabled>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               New chat
@@ -99,6 +101,18 @@
                 <tbody id="usage-rows"></tbody>
               </table>
             </div>
+          </section>
+          <section id="history-panel" class="usage-panel" aria-labelledby="history-title" hidden>
+            <header class="usage-header"><h1 id="history-title" tabindex="-1">Chat history</h1></header>
+            <div class="report-controls">
+              <label for="history-date">Date (Eastern time)</label>
+              <input id="history-date" type="date" />
+              <label id="history-member-label" for="history-member" hidden>Member ID</label>
+              <select id="history-member" class="quiet-button" hidden></select>
+            </div>
+            <p id="history-status" role="status"></p>
+            <div id="history-entries"></div>
+            <button id="history-more" class="quiet-button" type="button" hidden>Load more</button>
           </section>
           <section id="conversation" class="conversation" aria-label="Chat with Club helper" hidden>
             <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
