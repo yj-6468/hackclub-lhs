@@ -403,9 +403,9 @@ test('only admin can read daily usage and chat history, and chat expires without
   const result = await adminGet(daily);
   assert.equal(result.status, 200);
   assert.deepEqual(result.body.users, [
-    { id: 'admin', requests: 0, inputTokens: 0, outputTokens: 0 },
-    { id: env.CLAUDE_USER_2_ID, requests: 1, inputTokens: 66, outputTokens: 6 },
-    { id: 'unconfigured-member', requests: 0, inputTokens: 0, outputTokens: 0 }
+    { id: 'admin', requests: 0, inputTokens: 0, outputTokens: 0, costNanos: 0, pricedRequests: 0 },
+    { id: env.CLAUDE_USER_2_ID, requests: 1, inputTokens: 66, outputTokens: 6, costNanos: 157400, pricedRequests: 1 },
+    { id: 'unconfigured-member', requests: 0, inputTokens: 0, outputTokens: 0, costNanos: 0, pricedRequests: 0 }
   ]);
   assert.equal((await adminGet(daily.replace('11-18', '11-19'))).body.users[1].requests, 0);
   assert.equal((await adminGet(daily.replace('11-18', '99-99'))).status, 400);
@@ -419,4 +419,19 @@ test('only admin can read daily usage and chat history, and chat expires without
   assert.deepEqual(missing.body, { storageConfigured: false, users: [
     { id: 'admin' }, { id: env.CLAUDE_USER_2_ID }, { id: 'unconfigured-member' }
   ] });
+});
+
+test('estimates model, cache, search, and long Haiku usage in integer USD nanodollars', () => {
+  const { estimateCostNanos } = require('../server/usage.cjs');
+  const base = { input_tokens: 1000, output_tokens: 500 };
+  assert.equal(estimateCostNanos('claude-sonnet-5-5', base), 7_000_000);
+  assert.equal(estimateCostNanos('claude-opus-5-5', base), 14_000_000);
+  assert.equal(estimateCostNanos('claude-haiku-5-5', base), 350_000);
+  assert.equal(estimateCostNanos('claude-haiku-5-5', {
+    ...base, cache_read_input_tokens: 100000, cache_creation_input_tokens: 20,
+    cache_creation: { ephemeral_1h_input_tokens: 12 },
+    server_tool_use: { web_search_requests: 1 }
+  }), 16_767_000);
+  assert.equal(estimateCostNanos('unpriced-model', base), null);
+  assert.equal(estimateCostNanos('claude-sonnet-5-5', undefined), null);
 });

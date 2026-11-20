@@ -158,6 +158,8 @@
       const result = await api('GET', undefined, authorization, '?' + query);
       if (load !== usageLoad) return;
       const format = new Intl.NumberFormat();
+      const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 4 });
+      let hasPartialCost = false;
       const rows = result.users.map(user => {
         const row = document.createElement('tr');
         const member = document.createElement('th');
@@ -169,9 +171,20 @@
           value.textContent = result.storageConfigured === false ? '—' : format.format(number);
           row.append(value);
         }
+        const cost = document.createElement('td');
+        const partial = user.pricedRequests < user.requests;
+        const hasEstimate = user.requests === 0 || user.pricedRequests > 0 || user.costNanos > 0;
+        if (result.storageConfigured === false || !hasEstimate) cost.textContent = '—';
+        else {
+          const usd = user.costNanos / 1_000_000_000;
+          cost.textContent = (usd > 0 && usd < .0001 ? '<$0.0001' : dollars.format(usd)) + (partial ? '*' : '');
+        }
+        hasPartialCost ||= result.storageConfigured !== false && partial;
+        row.append(cost);
         return row;
       });
       byId('usage-rows').replaceChildren(...rows);
+      byId('usage-cost-note').hidden = !hasPartialCost;
       byId('usage-table-wrap').hidden = false;
       const date = byId('usage-date').value;
       byId('usage-period').textContent = date || (result.since

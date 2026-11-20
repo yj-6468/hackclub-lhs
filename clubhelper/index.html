@@ -12,7 +12,7 @@
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=usage-history" defer></script>
+    <script src="/clubhelper/chat.js?v=credit-estimate" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -97,9 +97,10 @@
             <p id="usage-status" role="status"></p>
             <div id="usage-table-wrap" class="usage-table-wrap" hidden>
               <table class="usage-table">
-                <thead><tr><th scope="col">Member ID</th><th scope="col">Requests</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th><th scope="col">Total tokens</th></tr></thead>
+                <thead><tr><th scope="col">Member ID</th><th scope="col">Requests</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th><th scope="col">Total tokens</th><th scope="col">Est. credit used (USD)</th></tr></thead>
                 <tbody id="usage-rows"></tbody>
               </table>
+              <p id="usage-cost-note" hidden>* Some requests have no estimate. Amounts show known usage only.</p>
             </div>
           </section>
           <section id="history-panel" class="usage-panel" aria-labelledby="history-title" hidden>

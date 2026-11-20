@@ -1,6 +1,6 @@
 const { createHash, randomUUID } = require('node:crypto');
 
-const metrics = ['requests', 'inputTokens', 'outputTokens'];
+const metrics = ['requests', 'inputTokens', 'outputTokens', 'costNanos', 'pricedRequests'];
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
 const memberKey = id => createHash('sha256').update(id).digest('hex');
 const fields = id => metrics.map(metric => memberKey(id) + ':' + metric);
@@ -16,6 +16,32 @@ function addClaudeUsage(totals, usage) {
   totals.inputTokens += count(usage?.input_tokens) +
     count(usage?.cache_creation_input_tokens) + count(usage?.cache_read_input_tokens);
   totals.outputTokens += count(usage?.output_tokens);
+}
+
+// Standard Claude API prices, expressed as integer USD nanodollars per token.
+// https://platform.claude.com/docs/en/about-claude/pricing
+const rates = new Map([
+  ['claude-sonnet-5-5', [2000, 10000, 100]],
+  ['claude-sonnet-5', [2000, 10000, 200]],
+  ['claude-sonnet-4-6', [3000, 15000, 300]],
+  ['claude-sonnet-4-5', [3000, 15000, 300]],
+  ['claude-opus-5-5', [4000, 20000, 200]]
+]);
+
+function estimateCostNanos(model, usage) {
+  if (!Number.isSafeInteger(usage?.input_tokens) || !Number.isSafeInteger(usage?.output_tokens)) return null;
+  const input = count(usage.input_tokens);
+  const cacheRead = count(usage.cache_read_input_tokens);
+  const cacheWrite = count(usage.cache_creation_input_tokens);
+  const hourWrites = Math.min(cacheWrite, count(usage.cache_creation?.ephemeral_1h_input_tokens));
+  const modelRates = model === 'claude-haiku-5-5'
+    ? input + cacheRead + cacheWrite > 100000 ? [500, 2500, 50] : [100, 500, 10]
+    : rates.get(model?.replace(/-\d{8}$/, ''));
+  if (!modelRates) return null;
+  const [inputRate, outputRate, readRate] = modelRates;
+  return input * inputRate + count(usage.output_tokens) * outputRate + cacheRead * readRate +
+    (cacheWrite - hourWrites) * inputRate * 1.25 + hourWrites * inputRate * 2 +
+    count(usage.server_tool_use?.web_search_requests) * 10_000_000;
 }
 
 function createUsageStore(env, fetchImpl = fetch) {
@@ -81,7 +107,9 @@ function createUsageStore(env, fetchImpl = fetch) {
             id,
             requests: count(Number(result[offset])),
             inputTokens: count(Number(result[offset + 1])),
-            outputTokens: count(Number(result[offset + 2]))
+            outputTokens: count(Number(result[offset + 2])),
+            costNanos: count(Number(result[offset + 3])),
+            pricedRequests: count(Number(result[offset + 4]))
           };
         })
       };
@@ -102,4 +130,4 @@ function createUsageStore(env, fetchImpl = fetch) {
   };
 }
 
-module.exports = { createUsageStore, addClaudeUsage, usageDay };
+module.exports = { createUsageStore, addClaudeUsage, estimateCostNanos, usageDay };

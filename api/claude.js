@@ -1,5 +1,5 @@
 const { loadAccounts, authenticate, listConfiguredIds } = require('../server/accounts.cjs');
-const { createUsageStore, addClaudeUsage, usageDay } = require('../server/usage.cjs');
+const { createUsageStore, addClaudeUsage, estimateCostNanos, usageDay } = require('../server/usage.cjs');
 
 const MAX_BODY_BYTES = 4_000_000;
 const MAX_ATTACHMENT_CHARS = 3_100_000;
@@ -174,10 +174,12 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
       res.setHeader('Retry-After', '60');
       return send(429, { error: 'Chat is busy. Please wait a minute before sending another message.' });
     }
-    const totals = { requests: 1, inputTokens: 0, outputTokens: 0 };
+    const totals = { requests: 1, inputTokens: 0, outputTokens: 0, costNanos: 0, pricedRequests: 0 };
+    let completeEstimate = true;
     const startedAt = new Date(now()).toISOString();
     async function sendChat(status, payload) {
       if (usageStore) {
+        totals.pricedRequests = status === 200 && completeEstimate ? 1 : 0;
         const chat = status === 200 ? { message: body.messages.at(-1).content, reply: payload.reply } : undefined;
         try { await usageStore.record(userId, totals, startedAt, chat); }
         catch { console.warn('Club helper could not save usage counters.'); }
@@ -227,6 +229,9 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
         }
         result = await upstream.json();
         addClaudeUsage(totals, result.usage);
+        const cost = estimateCostNanos(result.model || model, result.usage);
+        if (cost === null) completeEstimate = false;
+        else totals.costNanos += cost;
         blocks.push(...(result.content || []));
         if (result.stop_reason !== 'pause_turn') break;
         conversation.push({role: 'assistant', content: result.content});
