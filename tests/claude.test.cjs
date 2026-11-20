@@ -136,7 +136,7 @@ test('forwards conversation but fixes model, token limit, credentials, and syste
     assert.equal(init.headers.Authorization, `Bearer ${env.ANTHROPIC_API_KEY}`);
     assert.ok(init.signal instanceof AbortSignal);
     const body = JSON.parse(init.body);
-    assert.equal(body.model, 'claude-sonnet-5-5');
+    assert.equal(body.model, 'claude-haiku-5-5');
     assert.equal(body.max_tokens, 10240);
     assert.match(body.system, /Hack Club/);
     assert.deepEqual(body.messages, messages);
@@ -171,11 +171,12 @@ test('only the authenticated slots can request Opus and client model IDs are rej
   const headers = { authorization: credentials('member24', 'test-password-2') };
   assert.equal((await request(handler, { headers, body: { messages: question, model: 'haiku' } })).status, 200);
   assert.equal((await request(handler, { headers })).status, 200);
+  assert.equal((await request(handler, { headers, body: { messages: question, model: 'sonnet' } })).status, 200);
   for (const model of ['claude-opus-5-5', 'constructor', ['opus'], null]) {
     assert.equal((await request(handler, { headers, body: { messages: question, model } })).status, 400);
   }
   assert.deepEqual(forwardedModels, [
-    ...Array(4).fill('claude-opus-5-5'), 'claude-haiku-5-5', 'claude-sonnet-5-5'
+    ...Array(4).fill('claude-opus-5-5'), 'claude-haiku-5-5', 'claude-haiku-5-5', 'claude-sonnet-5-5'
   ]);
 });
 
@@ -392,13 +393,13 @@ test('only admin can read daily usage and chat history, and chat expires without
   const member = { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) };
   const adminGet = url => request(handler, { method: 'GET', url, headers: admin });
   const daily = '/api/clubhelper?view=usage&date=2026-11-18';
-  const history = '/api/clubhelper?view=history&date=2026-11-18';
-  for (const url of [daily, history, history + '&member=member02']) {
+  const history = '/api/clubhelper?view=diagnostics&date=2026-11-18';
+  for (const url of [daily, history, history + '&member=member02', history.replace('diagnostics', 'history')]) {
     assert.equal((await request(handler, { method: 'GET', url, headers: { authorization: '' } })).status, 401);
     assert.equal((await request(handler, { method: 'GET', url, headers: member })).status, 403);
   }
   assert.equal((await adminGet('/api/clubhelper')).body.isAdmin, true);
-  assert.equal((await request(handler, { headers: member })).status, 200);
+  assert.equal((await request(handler, { headers: member, body: { messages: question, model: 'sonnet' } })).status, 200);
   assert.equal(providerCalls, 2);
   const result = await adminGet(daily);
   assert.equal(result.status, 200);
@@ -411,6 +412,7 @@ test('only admin can read daily usage and chat history, and chat expires without
   assert.equal((await adminGet(daily.replace('11-18', '99-99'))).status, 400);
   const memberHistory = history + '&member=member02';
   assert.equal((await adminGet(memberHistory)).body.entries[0].message, question[0].content);
+  assert.equal((await adminGet(memberHistory.replace('diagnostics', 'history'))).body.entries[0].message, question[0].content);
   time += 14 * 24 * 60 * 60 * 1000;
   assert.deepEqual((await adminGet(memberHistory)).body.entries, []);
   assert.equal((await adminGet(daily)).body.users[1].requests, 1);

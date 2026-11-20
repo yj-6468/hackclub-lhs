@@ -21,14 +21,14 @@ test('image paste, web toggle, failed-send recovery and new chat work without we
   el('user-id').value='tester'; el('password').value='test-password'; el('access-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
   assert.equal(el('conversation').hidden,false);
   assert.deepEqual(Array.from(el('chat-model').options, option => option.value), ['sonnet', 'haiku']);
-  assert.equal(el('chat-model').value,'sonnet');
-  el('chat-model').value='haiku';
+  assert.equal(el('chat-model').value,'haiku');
+  el('chat-model').value='sonnet';
   const paste=new w.Event('paste',{cancelable:true}); Object.defineProperty(paste,'clipboardData',{value:{files:[{type:'image/png',size:10}]}});
   el('message').dispatchEvent(paste); await tick();
   assert.equal(el('attachments').querySelectorAll('img').length,1);
   el('use-web').click(); el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
   assert.equal(sent.web,true); assert.equal(sent.messages[0].images.length,1);
-  assert.equal(sent.model,'haiku');
+  assert.equal(sent.model,'sonnet');
   assert.equal(el('attachments').querySelectorAll('img').length,1);
   fail=false; el('chat-form').dispatchEvent(new w.Event('submit',{cancelable:true})); await tick();
   assert.equal(el('attachments').children.length,0); assert.equal(w.document.querySelectorAll('.sent-images img').length,1);

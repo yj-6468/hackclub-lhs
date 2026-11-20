@@ -218,9 +218,9 @@
     const member = byId('history-member');
     if (offset === 0) entries.replaceChildren();
     more.disabled = true;
-    status.textContent = 'Loading history…';
+    status.textContent = 'Loading diagnostics…';
     const query = new URLSearchParams({
-      view: 'history', date: byId('history-date').value, member: member.value || signedInId, offset
+      view: 'diagnostics', date: byId('history-date').value, member: member.value || signedInId, offset
     });
     try {
       const result = await api('GET', undefined, authorization, '?' + query);
@@ -266,16 +266,17 @@
 
   function setView(view) {
     usageLoad++;
+    if (view === 'diagnostics') view = 'history';
     activeView = isAdmin && (view === 'usage' || (view === 'history' && historyAvailable)) ? view : 'chat';
     for (const report of ['usage', 'history']) {
       byId(report + '-panel').hidden = activeView !== report;
-      byId(report + '-toggle').textContent = activeView === report ? 'Chat' : report === 'usage' ? 'Usage' : 'History';
+      byId(report + '-toggle').textContent = activeView === report ? 'Chat' : report === 'usage' ? 'Usage' : 'Diagnostics';
     }
     byId('conversation').hidden = activeView !== 'chat';
     byId('new-chat').hidden = activeView !== 'chat';
     const url = new URL(window.location.href);
     if (activeView === 'chat') url.searchParams.delete('view');
-    else url.searchParams.set('view', activeView);
+    else url.searchParams.set('view', activeView === 'history' ? 'diagnostics' : activeView);
     window.history.replaceState(null, '', url);
     if (activeView === 'usage') {
       byId('usage-title').focus();
@@ -445,7 +446,7 @@
     byId('history-member').replaceChildren();
     byId('usage-rows').replaceChildren();
     byId('new-chat').hidden = false;
-    modelPicker.replaceChildren(new Option('Sonnet', 'sonnet'));
+    modelPicker.replaceChildren(new Option('Haiku', 'haiku'));
     byId('user-id').value = '';
     byId('password').value = '';
     byId('access-panel').hidden = false;
@@ -474,9 +475,10 @@
       byId('history-toggle').hidden = !isAdmin || !historyAvailable;
       byId('history-member').hidden = !isAdmin;
       byId('history-member-label').hidden = !isAdmin;
-      const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['sonnet'];
+      const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['haiku'];
       modelPicker.replaceChildren(...allowedModels.filter(model => Object.hasOwn(modelLabels, model))
         .map(model => new Option(modelLabels[model], model)));
+      if (allowedModels.includes('haiku')) modelPicker.value = 'haiku';
       byId('password').value = '';
       byId('access-panel').hidden = true;
       byId('conversation').hidden = false;

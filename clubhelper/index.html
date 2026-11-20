@@ -12,7 +12,7 @@
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=credit-estimate" defer></script>
+    <script src="/clubhelper/chat.js?v=haiku-diagnostics" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -53,7 +53,7 @@
           </nav>
           <div class="toolbar">
             <button id="usage-toggle" class="quiet-button" type="button" hidden>Usage</button>
-            <button id="history-toggle" class="quiet-button" type="button" hidden>History</button>
+            <button id="history-toggle" class="quiet-button" type="button" hidden>Diagnostics</button>
             <button id="new-chat" class="quiet-button" type="button" disabled>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               New chat
@@ -104,7 +104,7 @@
             </div>
           </section>
           <section id="history-panel" class="usage-panel" aria-labelledby="history-title" hidden>
-            <header class="usage-header"><h1 id="history-title" tabindex="-1">Chat history</h1></header>
+            <header class="usage-header"><h1 id="history-title" tabindex="-1">Diagnostics</h1></header>
             <div class="report-controls">
               <label for="history-date">Date (Eastern time)</label>
               <input id="history-date" type="date" />
@@ -135,7 +135,7 @@
                     <button id="attach-pdf" class="quiet-button" type="button" title="Attach one PDF up to 2 MB">+ PDF</button>
                     <button id="use-web" class="quiet-button" type="button" aria-pressed="false" title="Search the web and read public links">Web</button>
                     <select id="chat-model" class="quiet-button model-picker" aria-label="Claude model">
-                      <option value="sonnet">Sonnet</option>
+                      <option value="haiku">Haiku</option>
                     </select>
                   </div>
                   <button id="send" class="send-button" type="submit" aria-label="Send message">

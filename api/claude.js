@@ -126,7 +126,7 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
       const params = new URL(req.url || '/', 'http://localhost').searchParams;
       const view = params.get('view');
       const date = params.get('date') || '';
-      if (view === 'usage' || view === 'history') {
+      if (view === 'usage' || view === 'diagnostics' || view === 'history') {
         if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) ||
             new Date(date).toISOString().slice(0, 10) !== date)) {
           return send(400, { error: 'Choose a valid date.' });
@@ -139,9 +139,9 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
             return send(200, await usageStore.read(ids, date));
           }
           const member = params.get('member') || userId;
-          if (!isAdmin) return send(403, { error: 'Chat history is available to the Club helper admin.' });
+          if (!isAdmin) return send(403, { error: 'Diagnostics is available to the Club helper admin.' });
           if (member !== userId && !listConfiguredIds(env).includes(member)) return send(404, { error: 'Unknown member ID.' });
-          if (!usageStore) return send(503, { error: 'Connect storage to enable chat history.' });
+          if (!usageStore) return send(503, { error: 'Connect storage to enable Diagnostics.' });
           const offset = Number(params.get('offset') || '0');
           if (!Number.isSafeInteger(offset) || offset < 0) return send(400, { error: 'Invalid history page.' });
           const history = await usageStore.readChats(member, date || usageDay(now()), offset);
@@ -160,7 +160,7 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
     try { body = await readBody(req); }
     catch (error) { return send(error.message === 'too-large' ? 413 : 400, { error: 'The message is too large or could not be read.' }); }
     if (!validMessages(body?.messages)) return send(400, { error: 'This conversation is too long or invalid. Please start a new chat.' });
-    const selection = body.model === undefined ? 'sonnet' : body.model;
+    const selection = body.model === undefined ? 'haiku' : body.model;
     if (typeof selection !== 'string' || !Object.hasOwn(MODEL_IDS, selection)) {
       return send(400, { error: 'Choose a model from the chat menu.' });
     }
