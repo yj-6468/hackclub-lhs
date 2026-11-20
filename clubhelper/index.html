@@ -7,12 +7,12 @@
     <meta name="referrer" content="no-referrer" />
     <title>Club helper · Hack Club LHS</title>
     <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/clubhelper/styles.css?v=message-tools" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=usage" />
     <script src="/clubhelper/vendor/marked.js" defer></script>
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=message-tools" defer></script>
+    <script src="/clubhelper/chat.js?v=usage" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -52,6 +52,7 @@
             <span>Club helper</span>
           </nav>
           <div class="toolbar">
+            <button id="usage-toggle" class="quiet-button" type="button" hidden>Usage</button>
             <button id="new-chat" class="quiet-button" type="button" disabled>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               New chat
@@ -82,6 +83,19 @@
             <p class="access-help">Need an account? Ask a club leader.</p>
           </section>
 
+          <section id="usage-panel" class="usage-panel" aria-labelledby="usage-title" hidden>
+            <header class="usage-header">
+              <div><h1 id="usage-title" tabindex="-1">Member usage</h1><p id="usage-period" class="text-muted"></p></div>
+              <button id="usage-refresh" class="quiet-button" type="button">Refresh</button>
+            </header>
+            <p id="usage-status" role="status"></p>
+            <div id="usage-table-wrap" class="usage-table-wrap" hidden>
+              <table class="usage-table">
+                <thead><tr><th scope="col">Member</th><th scope="col">Requests</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th><th scope="col">Total tokens</th></tr></thead>
+                <tbody id="usage-rows"></tbody>
+              </table>
+            </div>
+          </section>
           <section id="conversation" class="conversation" aria-label="Chat with Club helper" hidden>
             <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
             </div>

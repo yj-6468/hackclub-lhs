@@ -10,6 +10,9 @@
   const PDF_TYPE = 'application/pdf';
   let authorization = '';
   let signedInId = '';
+  let isAdmin = false;
+  let showingUsage = false;
+  let usageLoad = 0;
   let history = [];
   let busy = false;
   let attachments = [];
@@ -121,8 +124,8 @@
     byId('use-web').setAttribute('aria-pressed', String(web));
   });
 
-  async function api(method, body, credentials = authorization) {
-    const response = await fetch('/api/clubhelper', {
+  async function api(method, body, credentials = authorization, query = '') {
+    const response = await fetch('/api/clubhelper' + query, {
       method,
       headers: { Authorization: credentials, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined,
@@ -139,6 +142,70 @@
     }
     return result;
   }
+
+  async function refreshUsage() {
+    if (!isAdmin || !showingUsage) return;
+    const load = ++usageLoad;
+    const refresh = byId('usage-refresh');
+    refresh.disabled = true;
+    byId('usage-status').textContent = 'Loading usage…';
+    byId('usage-table-wrap').hidden = true;
+    byId('usage-period').textContent = '';
+    try {
+      const result = await api('GET', undefined, authorization, '?view=usage');
+      if (load !== usageLoad) return;
+      const format = new Intl.NumberFormat();
+      const rows = result.users.map(user => {
+        const row = document.createElement('tr');
+        const member = document.createElement('th');
+        member.scope = 'row';
+        member.textContent = user.id;
+        row.append(member);
+        for (const number of [user.requests, user.inputTokens, user.outputTokens, user.inputTokens + user.outputTokens]) {
+          const value = document.createElement('td');
+          value.textContent = format.format(number);
+          row.append(value);
+        }
+        return row;
+      });
+      byId('usage-rows').replaceChildren(...rows);
+      byId('usage-table-wrap').hidden = false;
+      byId('usage-period').textContent = result.since ? 'Tracking since ' + new Date(result.since).toLocaleDateString() : 'No requests recorded yet';
+      byId('usage-status').textContent = '';
+    } catch (error) {
+      if (load !== usageLoad) return;
+      if (error.status === 401) {
+        lock();
+        byId('access-status').textContent = 'Your sign-in is no longer valid. Please sign in again.';
+        return;
+      }
+      byId('usage-status').textContent = error.message;
+    } finally {
+      if (load === usageLoad) refresh.disabled = false;
+    }
+  }
+
+  function setUsageView(requested) {
+    showingUsage = requested && isAdmin;
+    byId('usage-panel').hidden = !showingUsage;
+    byId('conversation').hidden = showingUsage;
+    byId('usage-toggle').textContent = showingUsage ? 'Chat' : 'Usage';
+    byId('new-chat').hidden = showingUsage;
+    const url = new URL(window.location.href);
+    if (showingUsage) url.searchParams.set('view', 'usage');
+    else url.searchParams.delete('view');
+    window.history.replaceState(null, '', url);
+    if (showingUsage) {
+      byId('usage-title').focus();
+      refreshUsage();
+    } else {
+      usageLoad++;
+      messageInput.focus();
+    }
+  }
+
+  byId('usage-toggle').addEventListener('click', () => setUsageView(!showingUsage));
+  byId('usage-refresh').addEventListener('click', refreshUsage);
 
   function addMessage(role, content, files = [], sources = []) {
     const article = document.createElement('article');
@@ -200,7 +267,7 @@
 
   function updateComposer() {
     const blocked = busy || preparingFiles;
-    for (const id of ['attach-image', 'attach-pdf', 'send', 'new-chat', 'lock-chat', 'cancel-edit']) {
+    for (const id of ['attach-image', 'attach-pdf', 'send', 'new-chat', 'lock-chat', 'cancel-edit', 'usage-toggle']) {
       byId(id).disabled = blocked;
     }
     byId('use-web').disabled = busy;
@@ -271,6 +338,13 @@
     clearChat();
     authorization = '';
     signedInId = '';
+    isAdmin = false;
+    showingUsage = false;
+    usageLoad++;
+    byId('usage-toggle').hidden = true;
+    byId('usage-panel').hidden = true;
+    byId('usage-rows').replaceChildren();
+    byId('new-chat').hidden = false;
     modelPicker.replaceChildren(new Option('Sonnet', 'sonnet'));
     byId('user-id').value = '';
     byId('password').value = '';
@@ -294,6 +368,8 @@
       const result = await api('GET', undefined, credentials);
       authorization = credentials;
       signedInId = result.userId;
+      isAdmin = result.isAdmin === true;
+      byId('usage-toggle').hidden = !isAdmin;
       const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['sonnet'];
       modelPicker.replaceChildren(...allowedModels.filter(model => Object.hasOwn(modelLabels, model))
         .map(model => new Option(modelLabels[model], model)));
@@ -303,7 +379,7 @@
       byId('lock-chat').hidden = false;
       byId('access-status').textContent = '';
       setBusy(false);
-      messageInput.focus();
+      setUsageView(new URL(window.location.href).searchParams.get('view') === 'usage');
     } catch (error) {
       byId('access-status').textContent = error.name === 'TimeoutError' ? 'The connection timed out. Please try again.' : error.message;
     } finally { byId('unlock').disabled = false; }

@@ -12,10 +12,10 @@ const credentials = (id = env.CLAUDE_USER_1_ID, password = env.CLAUDE_USER_1_PAS
 const question = [{ role: 'user', content: 'How do loops work?' }];
 const success = () => Response.json({ content: [{ type: 'text', text: 'Here is an example.' }], stop_reason: 'end_turn' });
 
-async function request(handler, { method = 'POST', body = { messages: question }, headers = {}, chunks } = {}) {
+async function request(handler, { method = 'POST', url = '/api/clubhelper', body = { messages: question }, headers = {}, chunks } = {}) {
   const req = Readable.from(chunks || []);
   Object.assign(req, {
-    method,
+    method, url,
     headers: { host: 'club.example', 'content-type': 'application/json', authorization: credentials(), ...headers },
     socket: { remoteAddress: '127.0.0.1' },
     ...(chunks ? {} : { body })
@@ -325,4 +325,59 @@ test('duplicate IDs cannot log into either slot or change another account’s mo
     assert.equal(result.status, 200);
     assert.deepEqual(result.body.allowedModels, ['sonnet', 'haiku']);
   }
+});
+
+test('usage aggregates provider rounds per member and only the admin can read it', async () => {
+  const { createUsageStore } = require('../server/usage.cjs');
+  const config = {
+    ...env,
+    CLAUDE_USER_1_ID: 'admin',
+    UPSTASH_REDIS_REST_URL: 'https://test.upstash.io',
+    UPSTASH_REDIS_REST_TOKEN: 'test-redis-token'
+  };
+  const hash = new Map();
+  const store = createUsageStore(config, async (url, init) => {
+    assert.equal(init.headers.Authorization, 'Bearer test-redis-token');
+    const commands = JSON.parse(init.body);
+    if (url.endsWith('/multi-exec')) {
+      assert.doesNotMatch(init.body, /How do loops|member02|test-password/);
+      return Response.json(commands.map(([command, key, field, value]) => {
+        assert.equal(key, 'hackclub-lhs:usage:v1:development');
+        if (command === 'HSETNX') {
+          if (!hash.has(field)) hash.set(field, value);
+          return { result: 1 };
+        }
+        assert.equal(command, 'HINCRBY');
+        hash.set(field, String(Number(hash.get(field) || 0) + value));
+        return { result: Number(hash.get(field)) };
+      }));
+    }
+    assert.equal(commands[0], 'HMGET');
+    return Response.json({ result: commands.slice(2).map(field => hash.get(field) ?? null) });
+  });
+  let providerCalls = 0;
+  const handler = createHandler({
+    env: config, usageStore: store,
+    fetchImpl: async () => Response.json({
+      stop_reason: ++providerCalls === 1 ? 'pause_turn' : 'end_turn',
+      content: [{ type: 'text', text: 'A reply' }],
+      usage: { input_tokens: 10, output_tokens: 3, cache_read_input_tokens: 12, cache_creation_input_tokens: 11 }
+    })
+  });
+  const admin = { authorization: credentials('admin', env.CLAUDE_USER_1_PASSWORD) };
+  const member = { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) };
+  const report = { method: 'GET', url: '/api/clubhelper?view=usage' };
+  assert.equal((await request(handler, { ...report, headers: { authorization: '' } })).status, 401);
+  assert.equal((await request(handler, { ...report, headers: member })).status, 403);
+  assert.equal((await request(handler, { method: 'GET', headers: admin })).body.isAdmin, true);
+  assert.equal((await request(handler, { headers: member })).status, 200);
+  assert.equal(providerCalls, 2);
+  const result = await request(createHandler({ env: config, usageStore: store }), { ...report, headers: admin });
+  assert.equal(result.status, 200);
+  assert.ok(result.body.since);
+  assert.deepEqual(result.body.users, [
+    { id: 'admin', requests: 0, inputTokens: 0, outputTokens: 0 },
+    { id: env.CLAUDE_USER_2_ID, requests: 1, inputTokens: 66, outputTokens: 6 }
+  ]);
+  assert.equal((await request(createHandler({ env: config, usageStore: null }), { ...report, headers: admin })).status, 503);
 });

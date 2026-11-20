@@ -1,4 +1,5 @@
 const { loadAccounts, authenticate } = require('../server/accounts.cjs');
+const { createUsageStore, addClaudeUsage } = require('../server/usage.cjs');
 
 const MAX_BODY_BYTES = 4_000_000;
 const MAX_ATTACHMENT_CHARS = 3_100_000;
@@ -70,7 +71,11 @@ async function readBody(req) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
-function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now } = {}) {
+function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, usageStore } = {}) {
+  if (usageStore === undefined) {
+    try { usageStore = createUsageStore(env); }
+    catch { usageStore = null; }
+  }
   // Best-effort per-instance throttling. Set a hard workspace spend limit in Claude Console.
   const buckets = new Map();
   function allow(key, limit) {
@@ -116,7 +121,19 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now } 
     }
     const { id: userId, slot } = account;
     const allowedModels = OPUS_SLOTS.has(slot) ? ['sonnet', 'haiku', 'opus'] : ['sonnet', 'haiku'];
-    if (req.method === 'GET') return send(200, { ok: true, userId, allowedModels });
+    const isAdmin = slot === 1 && userId === 'admin';
+    if (req.method === 'GET') {
+      if (new URL(req.url || '/', 'http://localhost').searchParams.get('view') !== 'usage') {
+        return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}) });
+      }
+      if (!isAdmin) return send(403, { error: 'Usage is available to the Club helper admin.' });
+      if (!usageStore) return send(503, { error: 'Connect usage storage to start tracking requests and tokens.' });
+      try {
+        return send(200, await usageStore.read(accounts.map(account => account.id)));
+      } catch {
+        return send(503, { error: 'Usage storage is unavailable. Please try again.' });
+      }
+    }
     if (req.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
       return send(415, { error: 'Send a JSON request.' });
     }
@@ -138,6 +155,16 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now } 
       res.setHeader('Retry-After', '60');
       return send(429, { error: 'Chat is busy. Please wait a minute before sending another message.' });
     }
+    const totals = { requests: 1, inputTokens: 0, outputTokens: 0 };
+    const startedAt = new Date(now()).toISOString();
+    async function sendChat(status, payload) {
+      if (usageStore) {
+        try { await usageStore.record(userId, totals, startedAt); }
+        catch { console.warn('Club helper could not save usage counters.'); }
+      }
+      return send(status, payload);
+    }
+
     try {
       const conversation = body.messages.map(({ role, content, images, pdf }) => {
         const attachments = (images || []).map(({ media_type, data }) => ({
@@ -172,13 +199,14 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now } 
         if (!upstream.ok) {
           if (upstream.status === 429) {
             res.setHeader('Retry-After', '60');
-            return send(429, { error: 'Claude has reached a usage limit. Please try again later.' });
+            return sendChat(429, { error: 'Claude has reached a usage limit. Please try again later.' });
           }
-          return send(502, { error: upstream.status === 401 || upstream.status === 403
+          return sendChat(502, { error: upstream.status === 401 || upstream.status === 403
             ? 'The Claude connection needs attention. Please contact a club leader.'
             : 'Claude could not answer right now. Please try again later.' });
         }
         result = await upstream.json();
+        addClaudeUsage(totals, result.usage);
         blocks.push(...(result.content || []));
         if (result.stop_reason !== 'pause_turn') break;
         conversation.push({role: 'assistant', content: result.content});
@@ -207,12 +235,12 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now } 
         return block.text + citations;
       }).join('').trim();
       const reply = fullReply.slice(0, 80000);
-      if (!reply?.trim()) return send(502, { error: 'Claude returned no text. Please try again.' });
+      if (!reply?.trim()) return sendChat(502, { error: 'Claude returned no text. Please try again.' });
       const webError = blocks.some(block => block.content?.type?.endsWith('_error'));
-      return send(200, { reply, truncated: fullReply.length > 80000 || ['max_tokens', 'pause_turn'].includes(result.stop_reason),
+      return sendChat(200, { reply, truncated: fullReply.length > 80000 || ['max_tokens', 'pause_turn'].includes(result.stop_reason),
         ...(sources.length ? {sources} : {}), ...(webError ? {warning: 'Some web sources could not be accessed. Try a different link or search.'} : {}) });
     } catch (error) {
-      return send(error.name === 'TimeoutError' || error.name === 'AbortError' ? 504 : 502,
+      return sendChat(error.name === 'TimeoutError' || error.name === 'AbortError' ? 504 : 502,
         { error: 'Claude took too long or could not be reached. Please try again.' });
     }
   };

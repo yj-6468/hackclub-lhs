@@ -191,3 +191,14 @@ noscript { padding: 16px; color: #bd4242; font-size: 13px; }
 .math-inline { font-size: 1.1em; }
 .math-display { display: block; max-width: 100%; overflow-x: auto; padding: 12px 2px; margin: 12px 0; font-size: 1.15em; }
 .math-display math { margin: 0 auto; }
+
+.usage-panel { width: min(900px, 100%); margin-inline: auto; padding: 24px; overflow: auto; }
+.usage-header { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.usage-header h1 { margin: 0; font-size: clamp(22px, 4vw, 30px); }
+.usage-header p, #usage-status { color: var(--muted); font-size: 13px; }
+#usage-status:empty { display: none; }
+.usage-table-wrap { overflow-x: auto; }
+.usage-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+.usage-table th, .usage-table td { padding: 10px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+.usage-table th:first-child { text-align: left; overflow-wrap: anywhere; }
+.usage-table thead { background: var(--surface); }
