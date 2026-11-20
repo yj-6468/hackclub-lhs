@@ -1,9 +1,10 @@
 const { loadAccounts, authenticate, listConfiguredIds } = require('../server/accounts.cjs');
 const { createUsageStore, addClaudeUsage, estimateCostNanos, usageDay } = require('../server/usage.cjs');
+const { createPDFStore, validPDFSizes, validPDFUpload, MAX_PDF_BYTES, MAX_PDFS, PDF_TYPE } = require('../server/pdf-uploads.cjs');
 
 const MAX_BODY_BYTES = 4_000_000;
 const MAX_ATTACHMENT_CHARS = 3_100_000;
-const MAX_PDF_BYTES = 2_000_000;
+const MAX_INLINE_PDF_BYTES = 2_000_000;
 const MAX_HISTORY_CHARS = 120000;
 const MAX_MESSAGES = 21;
 const OPUS_SLOTS = new Set([1, 3, 6, 7]);
@@ -18,12 +19,17 @@ function isBase64(data, maxLength) {
     data.length % 4 === 0 && /^[A-Za-z0-9+/]+={0,2}$/.test(data);
 }
 
-function validMessages(messages) {
+function messagePDFs(message) {
+  return message.pdf === undefined ? message.pdfs || [] : [message.pdf];
+}
+
+function validMessages(messages, userId, pdfStore) {
   if (!Array.isArray(messages) || !messages.length || messages.length > MAX_MESSAGES || messages.length % 2 !== 1) return false;
   let total = 0;
   let attachmentChars = 0;
   let imageCount = 0;
   let pdfCount = 0;
+  let pdfBytes = 0;
   return messages.every((message, index) => {
     if (!message || message.role !== (index % 2 === 0 ? 'user' : 'assistant') ||
       typeof message.content !== 'string' || !message.content.trim() ||
@@ -42,12 +48,23 @@ function validMessages(messages) {
         attachmentChars += image.data.length;
       }
     }
-    if (message.pdf !== undefined) {
-      if (message.role !== 'user' || ++pdfCount > 3 ||
-        !isBase64(message.pdf, Math.ceil(MAX_PDF_BYTES / 3) * 4)) return false;
-      const pdf = Buffer.from(message.pdf, 'base64');
-      if (pdf.length > MAX_PDF_BYTES || pdf.toString('ascii', 0, 5) !== '%PDF-') return false;
-      attachmentChars += message.pdf.length;
+    if (message.pdf !== undefined || message.pdfs !== undefined) {
+      if (message.role !== 'user' || (message.pdfs !== undefined &&
+        (message.pdf !== undefined || !Array.isArray(message.pdfs) || message.pdfs.length > MAX_PDFS))) return false;
+      for (const pdf of messagePDFs(message)) {
+        if (++pdfCount > MAX_PDFS) return false;
+        if (typeof pdf === 'string') {
+          if (!isBase64(pdf, Math.ceil(MAX_INLINE_PDF_BYTES / 3) * 4)) return false;
+          const bytes = Buffer.from(pdf, 'base64');
+          if (bytes.length > MAX_INLINE_PDF_BYTES || bytes.toString('latin1', 0, 5) !== '%PDF-') return false;
+          pdfBytes += bytes.length;
+          attachmentChars += pdf.length;
+        } else {
+          if (message.pdf !== undefined || !pdfStore || !validPDFUpload(pdf, userId)) return false;
+          pdfBytes += pdf.size;
+        }
+        if (pdfBytes > MAX_PDF_BYTES) return false;
+      }
     }
     total += message.content.length;
     return total <= MAX_HISTORY_CHARS && attachmentChars <= MAX_ATTACHMENT_CHARS;
@@ -71,7 +88,7 @@ async function readBody(req) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
-function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, usageStore } = {}) {
+function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, usageStore, pdfStore = createPDFStore(env) } = {}) {
   if (usageStore === undefined) {
     try { usageStore = createUsageStore(env); }
     catch { usageStore = null; }
@@ -122,9 +139,9 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
     const { id: userId, slot } = account;
     const allowedModels = OPUS_SLOTS.has(slot) ? ['sonnet', 'haiku', 'opus'] : ['sonnet', 'haiku'];
     const isAdmin = slot === 1 && userId === 'admin';
+    const params = new URL(req.url || '/', 'http://localhost').searchParams;
+    const view = params.get('view');
     if (req.method === 'GET') {
-      const params = new URL(req.url || '/', 'http://localhost').searchParams;
-      const view = params.get('view');
       const date = params.get('date') || '';
       if (view === 'usage' || view === 'diagnostics' || view === 'history') {
         if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) ||
@@ -151,7 +168,7 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
         }
       }
       return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}),
-        ...(usageStore ? { chatHistoryAvailable: true } : {}) });
+        ...(usageStore ? { chatHistoryAvailable: true } : {}), ...(pdfStore ? { largePDFUploads: true } : {}) });
     }
     if (req.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
       return send(415, { error: 'Send a JSON request.' });
@@ -159,7 +176,17 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
     let body;
     try { body = await readBody(req); }
     catch (error) { return send(error.message === 'too-large' ? 413 : 400, { error: 'The message is too large or could not be read.' }); }
-    if (!validMessages(body?.messages)) return send(400, { error: 'This conversation is too long or invalid. Please start a new chat.' });
+    if (view === 'pdf-upload') {
+      if (!pdfStore) return send(503, { error: 'Large PDF uploads are unavailable right now.' });
+      if (!validPDFSizes(body?.sizes)) return send(400, { error: 'Attach up to 10 PDFs totaling 30 MB.' });
+      if (!allow(`pdf:${userId}`, 10) || !allow('pdf:all', 60)) {
+        res.setHeader('Retry-After', '60');
+        return send(429, { error: 'PDF uploads are busy. Please wait a minute.' });
+      }
+      try { return send(200, { uploads: await pdfStore.sign(userId, body.sizes) }); }
+      catch { return send(503, { error: 'PDF uploads are unavailable right now. Please try again.' }); }
+    }
+    if (!validMessages(body?.messages, userId, pdfStore)) return send(400, { error: 'This conversation is too long or invalid. Please start a new chat.' });
     const selection = body.model === undefined ? 'haiku' : body.model;
     if (typeof selection !== 'string' || !Object.hasOwn(MODEL_IDS, selection)) {
       return send(400, { error: 'Choose a model from the chat menu.' });
@@ -187,15 +214,28 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
       return send(status, payload);
     }
 
+    let conversation;
     try {
-      const conversation = body.messages.map(({ role, content, images, pdf }) => {
+      conversation = await Promise.all(body.messages.map(async message => {
+        const { role, content, images } = message;
         const attachments = (images || []).map(({ media_type, data }) => ({
           type: 'image', source: { type: 'base64', media_type, data }
         }));
-        if (pdf) attachments.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdf } });
-        return { role, content: attachments.length ? [...attachments, { type: 'text', text: content }] : content };
-      });
-      const signal = AbortSignal.timeout(225000);
+        const documents = await Promise.all(messagePDFs(message).map(async pdf => {
+          const data = typeof pdf === 'string' ? pdf : await pdfStore.read(pdf);
+          if (!data) throw new Error('PDF unavailable');
+          return { type: 'document', source: { type: 'base64', media_type: PDF_TYPE, data } };
+        }));
+        return { role, content: attachments.length || documents.length
+          ? [...attachments, ...documents, { type: 'text', text: content }] : content };
+      }));
+    } catch {
+      return send(422, { error: 'An attached PDF could not be read. Try sending again or attach the file again.' });
+    }
+
+    try {
+      const usesPDFStorage = body.messages.some(message => messagePDFs(message).some(pdf => typeof pdf !== 'string'));
+      const signal = AbortSignal.timeout(usesPDFStorage ? 195000 : 225000);
       let result;
       const blocks = [];
       for (let round = 0; round < 3; round++) {

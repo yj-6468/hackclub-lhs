@@ -7,6 +7,7 @@
   "functions": {
     "api/claude.js": { "maxDuration": 240 }
   },
+  "crons": [{ "path": "/api/pdf-cleanup", "schedule": "0 7 * * *" }],
   "redirects": [
     { "source": "/claude/", "destination": "/clubhelper/", "permanent": true },
     { "source": "/claude/:path*", "destination": "/clubhelper/:path*", "permanent": true }
@@ -21,7 +22,7 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
         { "key": "Referrer-Policy", "value": "no-referrer" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://vercel.com/api/blob/; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" }
       ]
     },
     {
@@ -30,7 +31,7 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
         { "key": "Referrer-Policy", "value": "no-referrer" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://vercel.com/api/blob/; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" }
       ]
     }
   ]

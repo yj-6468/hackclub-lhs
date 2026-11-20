@@ -12,7 +12,7 @@
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=haiku-diagnostics" defer></script>
+    <script src="/clubhelper/chat.js?v=multiple-pdfs" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -127,12 +127,12 @@
                 </div>
                 <div id="attachments" class="attachments" aria-label="Attachments"></div>
                 <input id="image-files" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden />
-                <input id="pdf-file" type="file" accept="application/pdf,.pdf" hidden />
+                <input id="pdf-file" type="file" accept="application/pdf,.pdf" multiple hidden />
                 <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Write a message or paste an image…"></textarea>
                 <div class="composer-footer">
                   <div class="composer-tools">
                     <button id="attach-image" class="quiet-button" type="button">+ Image</button>
-                    <button id="attach-pdf" class="quiet-button" type="button" title="Attach one PDF up to 2 MB">+ PDF</button>
+                    <button id="attach-pdf" class="quiet-button" type="button" title="Attach PDFs">+ PDF</button>
                     <button id="use-web" class="quiet-button" type="button" aria-pressed="false" title="Search the web and read public links">Web</button>
                     <select id="chat-model" class="quiet-button model-picker" aria-label="Claude model">
                       <option value="haiku">Haiku</option>

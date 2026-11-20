@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { Readable } = require('node:stream');
 const { createHandler } = require('../api/claude.js');
+const { createPDFStore } = require('../server/pdf-uploads.cjs');
 
 const env = {
   ANTHROPIC_API_KEY: 'test-api-key-never-real',
@@ -24,6 +25,64 @@ async function request(handler, { method = 'POST', url = '/api/clubhelper', body
   await handler(req, res);
   return { status: res.statusCode, headers: res.headers, body: res.body };
 }
+
+test('multiple PDFs can total 30 MB, with private uploads scoped to their member', async () => {
+  const bytes = Buffer.from('%PDF-1.7\n%%EOF');
+  const sizes = [15_000_000, 15_000_000];
+  const stored = Buffer.alloc(sizes[0]);
+  bytes.copy(stored);
+  const sdk = {
+    async issueSignedToken(options) {
+      assert.deepEqual(options.operations, ['put']);
+      assert.deepEqual(options.allowedContentTypes, ['application/pdf']);
+      assert.equal(options.maximumSizeInBytes, sizes[0]);
+      return options;
+    },
+    async presignUrl(token, options) {
+      assert.equal(options.pathname, token.pathname);
+      assert.equal(options.access, 'private');
+      assert.equal(options.allowOverwrite, false);
+      return { presignedUrl: 'https://vercel.com/api/blob/?example' };
+    },
+    async get(path, options) {
+      assert.match(path, /^clubhelper-pdf\/v1\//);
+      assert.equal(options.access, 'private');
+      return { statusCode: 200, blob: { size: stored.length, contentType: 'application/pdf' }, stream: new Response(stored).body };
+    },
+    async list({ prefix }) {
+      assert.equal(prefix, 'clubhelper-pdf/v1/');
+      return { blobs: [
+        { pathname: 'expired', uploadedAt: new Date('2026-11-20T00:00:00Z') },
+        { pathname: 'recent', uploadedAt: new Date('2026-11-20T01:15:00Z') }
+      ] };
+    },
+    async del(paths) { assert.deepEqual(paths, ['expired']); }
+  };
+  const pdfStore = createPDFStore({ BLOB_READ_WRITE_TOKEN: 'fixture-token', CRON_SECRET: 'fixture-secret' }, sdk);
+  let calls = 0;
+  const handler = createHandler({ env, pdfStore, fetchImpl: async (_, init) => {
+    calls++;
+    const [{ content }] = JSON.parse(init.body).messages;
+    assert.deepEqual(content.map(block => block.type), ['document', 'document', 'text']);
+    for (const block of content.slice(0, 2)) {
+      assert.equal(Buffer.byteLength(block.source.data, 'base64'), sizes[0]);
+      assert.equal(Buffer.from(block.source.data.slice(0, 8), 'base64').subarray(0, 5).toString(), '%PDF-');
+    }
+    return success();
+  } });
+  const url = '/api/clubhelper?view=pdf-upload';
+  assert.equal((await request(handler, { url, body: { sizes }, headers: { authorization: '' } })).status, 401);
+  assert.equal((await request(handler, { url, body: { sizes: [sizes[0], sizes[1] + 1] } })).status, 400);
+  const signed = await request(handler, { url, body: { sizes } });
+  assert.equal(signed.status, 200);
+  const pdfs = signed.body.uploads.map(({ path, size }) => ({ path, size }));
+  assert.notEqual(pdfs[0].path, pdfs[1].path);
+  const body = { messages: [{ ...question[0], pdfs }] };
+  assert.equal((await request(handler, { body, headers: { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) } })).status, 400);
+  assert.equal((await request(handler, { body })).status, 200);
+  assert.equal(calls, 1);
+  await pdfStore.clean(Date.parse('2026-11-20T01:30:00Z'));
+});
 
 test('missing configuration fails closed before any paid request', async () => {
   const singleAccount = {

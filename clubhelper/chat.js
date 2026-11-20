@@ -7,12 +7,16 @@
   const modelPicker = byId('chat-model');
   const modelLabels = { sonnet: 'Sonnet', haiku: 'Haiku', opus: 'Opus' };
   const MAX_ATTACHMENT_CHARS = 3_100_000;
+  const MAX_INLINE_PDF_BYTES = 2_000_000;
+  const MAX_PDF_BYTES = 30_000_000;
+  const MAX_PDFS = 10;
   const PDF_TYPE = 'application/pdf';
   let authorization = '';
   let signedInId = '';
   let isAdmin = false;
   let activeView = 'chat';
   let historyAvailable = false;
+  let largePDFUploads = false;
   let historyOffset = null;
   let usageLoad = 0;
   let history = [];
@@ -43,28 +47,23 @@
       attachmentPreview(file, item);
       const remove = document.createElement('button');
       remove.type = 'button'; remove.textContent = '×';
-      remove.setAttribute('aria-label', file.media_type === PDF_TYPE ? 'Remove PDF' : `Remove image ${index + 1}`);
+      remove.setAttribute('aria-label', file.media_type === PDF_TYPE ? `Remove ${file.name}` : `Remove image ${index + 1}`);
       remove.disabled = busy || preparingFiles;
       remove.addEventListener('click', () => { attachments.splice(index, 1); renderAttachments(); });
       item.append(remove); container.append(item);
     });
   }
 
-  function readPDF(file) {
-    if (file.size > 2_000_000) throw new Error('Choose a PDF up to 2 MB.');
-    return new Promise((resolve, reject) => {
+  async function readPDF(file) {
+    const data = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onerror = () => reject(new Error('This PDF could not be read.'));
-      reader.onload = () => {
-        const data = reader.result.split(',')[1];
-        if (!data || !atob(data.slice(0, 8)).startsWith('%PDF-')) {
-          reject(new Error('Choose a valid PDF file.'));
-          return;
-        }
-        resolve({ media_type: PDF_TYPE, data, name: file.name || 'PDF attachment' });
-      };
-      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(largePDFUploads ? file.slice(0, 5) : file);
     });
+    if (!data || !atob(data.slice(0, 8)).startsWith('%PDF-')) throw new Error('Choose a valid PDF file.');
+    return { media_type: PDF_TYPE, name: file.name || 'PDF attachment', size: file.size,
+      ...(largePDFUploads ? { file } : { data }) };
   }
 
   async function readImage(file) {
@@ -95,15 +94,25 @@
     updateComposer();
     byId('chat-status').textContent = 'Preparing attachments…';
     try {
+      const next = attachments.slice();
       for (const file of files) {
         const isPDF = file.type === PDF_TYPE || (!file.type && /\.pdf$/i.test(file.name));
-        if (isPDF && attachments.some(file => file.media_type === PDF_TYPE)) throw new Error('Attach one PDF per message.');
-        if (!isPDF && attachments.filter(file => file.media_type !== PDF_TYPE).length >= 3) throw new Error('Attach up to 3 images per message.');
+        if (isPDF) {
+          const pdfs = next.filter(file => file.media_type === PDF_TYPE);
+          if (pdfs.length >= MAX_PDFS) throw new Error(`Attach up to ${MAX_PDFS} PDFs per message.`);
+          const total = pdfs.reduce((size, file) => size + file.size, file.size);
+          if (total > (largePDFUploads ? MAX_PDF_BYTES : MAX_INLINE_PDF_BYTES)) {
+            throw new Error(`Attach up to ${largePDFUploads ? '30 MB' : '2 MB'} of PDFs total per message.`);
+          }
+        } else if (next.filter(file => file.media_type !== PDF_TYPE).length >= 3) {
+          throw new Error('Attach up to 3 images per message.');
+        }
         const attachment = await (isPDF ? readPDF(file) : readImage(file));
-        const size = attachments.reduce((total, file) => total + file.data.length, attachment.data.length);
+        next.push(attachment);
+        const size = next.reduce((total, file) => total + (file.data?.length || 0), 0);
         if (size > MAX_ATTACHMENT_CHARS) throw new Error('These attachments are too large together. Remove a file or send it separately.');
-        attachments.push(attachment);
       }
+      attachments = next;
       byId('chat-status').textContent = '';
     } catch (error) { byId('chat-status').textContent = error.message || 'This attachment could not be read.'; }
     finally {
@@ -143,6 +152,33 @@
       throw error;
     }
     return result;
+  }
+
+  async function preparePDFUploads(pending) {
+    const files = [...new Set(pending.flatMap(message => message.pdfFiles || []))];
+    const toUpload = files.filter(pdf => pdf.file && !(pdf.upload?.expiresAt > Date.now()));
+    if (!toUpload.length) return;
+    byId('chat-status').textContent = 'Uploading PDFs…';
+    const { uploads } = await api('POST', { sizes: toUpload.map(pdf => pdf.size) }, authorization, '?view=pdf-upload');
+    const expiresAt = Date.now() + 50 * 60 * 1000;
+    const results = await Promise.allSettled(toUpload.map(async (pdf, index) => {
+      const { url, path, size } = uploads[index];
+      const response = await fetch(url, {
+        method: 'PUT', headers: { 'Content-Type': PDF_TYPE, 'x-vercel-blob-access': 'private' }, body: pdf.file,
+        credentials: 'omit', signal: AbortSignal.timeout(240000)
+      });
+      if (!response.ok) throw new Error(`Could not upload ${pdf.name}. Please try again.`);
+      pdf.upload = { path, size, expiresAt };
+    }));
+    const failed = results.find(result => result.status === 'rejected');
+    if (failed) throw failed.reason;
+  }
+
+  function chatPayload({ pdfFiles = [], ...message }) {
+    if (pdfFiles.length === 1 && pdfFiles[0].data) return { ...message, pdf: pdfFiles[0].data };
+    if (!pdfFiles.length) return message;
+    const pdfs = pdfFiles.map(pdf => pdf.data || { path: pdf.upload.path, size: pdf.upload.size });
+    return { ...message, pdfs };
   }
 
   async function refreshUsage() {
@@ -476,6 +512,8 @@
       byId('history-member').hidden = !isAdmin;
       byId('history-member-label').hidden = !isAdmin;
       const allowedModels = Array.isArray(result.allowedModels) ? result.allowedModels : ['haiku'];
+      largePDFUploads = result.largePDFUploads === true;
+      byId('attach-pdf').title = `Attach up to ${MAX_PDFS} PDFs (${largePDFUploads ? '30 MB' : '2 MB'} total)`;
       modelPicker.replaceChildren(...allowedModels.filter(model => Object.hasOwn(modelLabels, model))
         .map(model => new Option(modelLabels[model], model)));
       if (allowedModels.includes('haiku')) modelPicker.value = 'haiku';
@@ -496,15 +534,15 @@
     if (busy || preparingFiles || !authorization) return;
     const draft = messageInput.value;
     const sentFiles = attachments.slice();
-    const pdf = sentFiles.find(file => file.media_type === PDF_TYPE)?.data;
+    const pdfFiles = sentFiles.filter(file => file.media_type === PDF_TYPE);
     const images = sentFiles.filter(file => file.media_type !== PDF_TYPE);
-    const content = draft.trim() || (pdf ? 'Summarize this PDF.' : images.length ? 'Describe the attached images.' : '');
+    const content = draft.trim() || (pdfFiles.length > 1 ? 'Summarize these PDFs.' : pdfFiles.length ? 'Summarize this PDF.' : images.length ? 'Describe the attached images.' : '');
     if (!content) return;
     const index = editing ? editing.index : history.length;
     const prior = history.slice(0, index);
     const nextMessage = { role: 'user', content };
     if (images.length) nextMessage.images = images;
-    if (pdf) nextMessage.pdf = pdf;
+    if (pdfFiles.length) nextMessage.pdfFiles = pdfFiles;
     const pending = [...prior.slice(-20), nextMessage];
     while (pending.length > 1 && exceedsContextLimits(pending)) pending.splice(0, 2);
     let userMessage = editing ? null : addMessage('user', content, sentFiles);
@@ -514,7 +552,9 @@
     setBusy(true);
     let shouldLock = false;
     try {
-      const result = await api('POST', { messages: pending, web, model: modelPicker.value });
+      await preparePDFUploads(pending);
+      byId('chat-status').textContent = 'Thinking…';
+      const result = await api('POST', { messages: pending.map(chatPayload), web, model: modelPicker.value });
       if (typeof result.reply !== 'string' || !result.reply.trim()) throw new Error('Claude returned no text. Please try again.');
       if (editing) {
         for (const element of Array.from(messages.children).slice(index)) element.remove();
@@ -526,6 +566,9 @@
       addMessage('assistant', result.reply, [], result.sources || []);
       byId('chat-status').textContent = result.truncated ? 'Reply reached the length limit. Ask me to continue.' : (result.warning || '');
     } catch (error) {
+      if (error.status === 422) {
+        for (const message of pending) for (const pdf of message.pdfFiles || []) delete pdf.upload;
+      }
       userMessage?.remove();
       messageInput.value = draft;
       attachments = sentFiles;
@@ -545,18 +588,21 @@
     let attachmentSize = 0;
     let imageCount = 0;
     let pdfCount = 0;
+    let pdfBytes = 0;
     for (const message of list) {
       textLength += message.content.length;
       for (const image of message.images || []) {
         imageCount++;
         attachmentSize += image.data.length;
       }
-      if (message.pdf) {
+      for (const pdf of message.pdfFiles || []) {
         pdfCount++;
-        attachmentSize += message.pdf.length;
+        pdfBytes += pdf.size;
+        attachmentSize += pdf.data?.length || 0;
       }
     }
-    return textLength > 120000 || attachmentSize > MAX_ATTACHMENT_CHARS || imageCount > 6 || pdfCount > 3;
+    return textLength > 120000 || attachmentSize > MAX_ATTACHMENT_CHARS || imageCount > 6 ||
+      pdfCount > MAX_PDFS || pdfBytes > MAX_PDF_BYTES;
   }
 
   messageInput.addEventListener('keydown', (event) => {

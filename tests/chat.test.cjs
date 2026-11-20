@@ -119,3 +119,58 @@ test('uploads a PDF, copies the reply, and replaces a conversation branch only a
     w.close();
   }
 });
+
+test('the PDF picker sends multiple private uploads and reuses them for follow-ups', async () => {
+  const { window: w } = new JSDOM(fs.readFileSync('clubhelper/index.html', 'utf8'), {
+    url: 'https://club.example/clubhelper/', runScripts: 'outside-only'
+  });
+  try {
+    w.TextEncoder = TextEncoder;
+    w.AbortSignal = AbortSignal;
+    w.HTMLElement.prototype.scrollIntoView = () => {};
+    const el = id => w.document.getElementById(id);
+    const tick = () => new Promise(resolve => setTimeout(resolve, 15));
+    const files = ['notes.pdf', 'outline.pdf'].map(name => new w.File(['%PDF-1.7\n%%EOF'], name, { type: 'application/pdf' }));
+    const puts = [];
+    const chats = [];
+    w.fetch = async (url, init) => {
+      if (init.method === 'GET') return Response.json({ userId: 'tester', largePDFUploads: true });
+      if (init.method === 'PUT') {
+        puts.push(init.body);
+        assert.equal(init.headers.Authorization, undefined);
+        assert.equal(init.headers['x-vercel-blob-access'], 'private');
+        assert.equal(init.credentials, 'omit');
+        return new Response(null, { status: 200 });
+      }
+      const body = JSON.parse(init.body);
+      if (url.endsWith('?view=pdf-upload')) {
+        assert.deepEqual(body.sizes, files.map(file => file.size));
+        return Response.json({ uploads: body.sizes.map((size, i) => ({ path: `file-${i}`, size, url: `https://vercel.com/api/blob/?${i}` })) });
+      }
+      chats.push(body.messages);
+      return Response.json({ reply: 'Summary' });
+    };
+    w.eval(fs.readFileSync('clubhelper/chat.js', 'utf8'));
+    el('user-id').value = 'tester';
+    el('password').value = 'test-password';
+    el('access-form').dispatchEvent(new w.Event('submit', { cancelable: true }));
+    await tick();
+    assert.equal(el('pdf-file').multiple, true);
+    assert.match(el('attach-pdf').title, /30 MB/);
+    Object.defineProperty(el('pdf-file'), 'files', { value: files });
+    el('pdf-file').dispatchEvent(new w.Event('change'));
+    await tick();
+    assert.deepEqual(Array.from(el('attachments').querySelectorAll('.pdf-chip'), chip => chip.textContent), files.map(file => file.name));
+    el('chat-form').dispatchEvent(new w.Event('submit', { cancelable: true }));
+    await tick();
+    assert.equal(chats[0][0].content, 'Summarize these PDFs.');
+    assert.deepEqual(chats[0][0].pdfs, files.map((file, i) => ({ path: `file-${i}`, size: file.size })));
+    el('message').value = 'Compare them.';
+    el('chat-form').dispatchEvent(new w.Event('submit', { cancelable: true }));
+    await tick();
+    assert.deepEqual(chats[1][0].pdfs, chats[0][0].pdfs);
+    assert.deepEqual(puts, files);
+  } finally {
+    w.close();
+  }
+});
