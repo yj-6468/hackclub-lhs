@@ -202,3 +202,7 @@ noscript { padding: 16px; color: #bd4242; font-size: 13px; }
 .usage-table th, .usage-table td { padding: 10px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
 .usage-table th:first-child { text-align: left; overflow-wrap: anywhere; }
 .usage-table thead { background: var(--surface); }
+.report-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-block: 14px; }
+.report-controls label { margin: 0; }
+.report-controls input { width: auto; padding: 5px 8px; }
+.toolbar { flex-wrap: wrap; justify-content: flex-end; }

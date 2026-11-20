@@ -2,10 +2,13 @@ const { createHash } = require('node:crypto');
 
 const metrics = ['requests', 'inputTokens', 'outputTokens'];
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
-const fields = id => {
-  const key = createHash('sha256').update(id).digest('hex');
-  return metrics.map(metric => key + ':' + metric);
-};
+const memberKey = id => createHash('sha256').update(id).digest('hex');
+const fields = id => metrics.map(metric => memberKey(id) + ':' + metric);
+const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+function usageDay(timestamp) {
+  const parts = Object.fromEntries(dayFormat.formatToParts(new Date(timestamp)).map(part => [part.type, part.value]));
+  return parts.year + '-' + parts.month + '-' + parts.day;
+}
 
 function addClaudeUsage(totals, usage) {
   totals.inputTokens += count(usage?.input_tokens) +
@@ -34,17 +37,28 @@ function createUsageStore(env, fetchImpl = fetch) {
     return response.json();
   }
 
+  async function transact(commands) {
+    const result = await command('/multi-exec', commands);
+    if (!Array.isArray(result) || result.length !== commands.length ||
+        result.some(entry => !entry || !Object.hasOwn(entry, 'result'))) {
+      throw new Error('Usage store transaction failed.');
+    }
+  }
+
   return {
     async record(id, totals, timestamp) {
-      const increments = fields(id).map((field, index) => ['HINCRBY', key, field, totals[metrics[index]]]);
-      const result = await command('/multi-exec', [['HSETNX', key, 'since', timestamp], ...increments]);
-      if (!Array.isArray(result) || result.length !== 4 || result.some(entry => !entry || !Object.hasOwn(entry, 'result'))) {
-        throw new Error('Usage counters could not be updated.');
+      const dayKey = key + ':day:' + usageDay(timestamp);
+      const commands = [['HSETNX', key, 'since', timestamp]];
+      for (const bucket of [key, dayKey]) {
+        fields(id).forEach((field, index) => commands.push(['HINCRBY', bucket, field, totals[metrics[index]]]));
       }
+      await transact(commands);
     },
-    async read(ids) {
-      const { result } = await command('/', ['HMGET', key, 'since', ...ids.flatMap(fields)]);
-      if (!Array.isArray(result) || result.length !== 1 + ids.length * metrics.length) {
+    async read(ids, date) {
+      const bucket = date ? key + ':day:' + date : key;
+      const fieldNames = ids.flatMap(fields);
+      const { result } = await command('/', ['HMGET', bucket, 'since', ...fieldNames]);
+      if (!Array.isArray(result) || result.length !== 1 + fieldNames.length) {
         throw new Error('Usage counters could not be read.');
       }
       return {
@@ -63,4 +77,4 @@ function createUsageStore(env, fetchImpl = fetch) {
   };
 }
 
-module.exports = { createUsageStore, addClaudeUsage };
+module.exports = { createUsageStore, addClaudeUsage, usageDay };

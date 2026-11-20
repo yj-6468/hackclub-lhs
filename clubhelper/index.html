@@ -7,12 +7,12 @@
     <meta name="referrer" content="no-referrer" />
     <title>Club helper · Hack Club LHS</title>
     <link rel="icon" href="/assets/favicon.png" />
-    <link rel="stylesheet" href="/clubhelper/styles.css?v=usage" />
+    <link rel="stylesheet" href="/clubhelper/styles.css?v=daily-usage" />
     <script src="/clubhelper/vendor/marked.js" defer></script>
     <script src="/clubhelper/vendor/dompurify.js" defer></script>
     <script src="/clubhelper/vendor/katex.js" defer></script>
     <script src="/clubhelper/markdown.js?v=math-20261114" defer></script>
-    <script src="/clubhelper/chat.js?v=usage" defer></script>
+    <script src="/clubhelper/chat.js?v=daily-usage" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -33,7 +33,6 @@
           </a>
         </nav>
         <div class="sidebar-bottom">
-          <p class="privacy-note">A little help for your next idea.<br />Chats stay in this tab and clear on refresh.</p>
           <div class="account">
             <span class="account-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="3"/><path d="M5 21v-3a7 7 0 0 1 14 0v3"/></svg>
@@ -88,10 +87,15 @@
               <div><h1 id="usage-title" tabindex="-1">Member usage</h1><p id="usage-period" class="text-muted"></p></div>
               <button id="usage-refresh" class="quiet-button" type="button">Refresh</button>
             </header>
+            <div class="report-controls">
+              <label for="usage-date">Date (Eastern time)</label>
+              <input id="usage-date" type="date" />
+              <button id="usage-all" class="quiet-button" type="button">All time</button>
+            </div>
             <p id="usage-status" role="status"></p>
             <div id="usage-table-wrap" class="usage-table-wrap" hidden>
               <table class="usage-table">
-                <thead><tr><th scope="col">Member</th><th scope="col">Requests</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th><th scope="col">Total tokens</th></tr></thead>
+                <thead><tr><th scope="col">Member ID</th><th scope="col">Requests</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th><th scope="col">Total tokens</th></tr></thead>
                 <tbody id="usage-rows"></tbody>
               </table>
             </div>

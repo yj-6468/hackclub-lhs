@@ -327,37 +327,41 @@ test('duplicate IDs cannot log into either slot or change another account’s mo
   }
 });
 
-test('usage aggregates provider rounds per member and only the admin can read it', async () => {
+test('only admin can read daily usage grouped by the configured member IDs', async () => {
   const { createUsageStore } = require('../server/usage.cjs');
   const config = {
     ...env,
     CLAUDE_USER_1_ID: 'admin',
+    CLAUDE_USER_3_ID: 'unconfigured-member',
     UPSTASH_REDIS_REST_URL: 'https://test.upstash.io',
     UPSTASH_REDIS_REST_TOKEN: 'test-redis-token'
   };
-  const hash = new Map();
+  let time = Date.parse('2026-11-19T02:00:00Z');
+  const hashes = new Map();
   const store = createUsageStore(config, async (url, init) => {
-    assert.equal(init.headers.Authorization, 'Bearer test-redis-token');
     const commands = JSON.parse(init.body);
     if (url.endsWith('/multi-exec')) {
-      assert.doesNotMatch(init.body, /How do loops|member02|test-password/);
-      return Response.json(commands.map(([command, key, field, value]) => {
-        assert.equal(key, 'hackclub-lhs:usage:v1:development');
+      assert.doesNotMatch(init.body, /member02|test-password/);
+      return Response.json(commands.map(([command, key, field, value, ttl]) => {
+        if (!hashes.has(key)) hashes.set(key, new Map());
+        const hash = hashes.get(key);
         if (command === 'HSETNX') {
           if (!hash.has(field)) hash.set(field, value);
-          return { result: 1 };
+        } else {
+          assert.equal(command, 'HINCRBY');
+          assert.doesNotMatch(JSON.stringify([key, field, value]), /How do loops/);
+          hash.set(field, String(Number(hash.get(field) || 0) + value));
         }
-        assert.equal(command, 'HINCRBY');
-        hash.set(field, String(Number(hash.get(field) || 0) + value));
-        return { result: Number(hash.get(field)) };
+        return { result: 1 };
       }));
     }
-    assert.equal(commands[0], 'HMGET');
-    return Response.json({ result: commands.slice(2).map(field => hash.get(field) ?? null) });
+    const [command, key, ...args] = commands;
+    assert.equal(command, 'HMGET');
+    return Response.json({ result: args.map(field => hashes.get(key)?.get(field) ?? null) });
   });
   let providerCalls = 0;
   const handler = createHandler({
-    env: config, usageStore: store,
+    env: config, usageStore: store, now: () => time,
     fetchImpl: async () => Response.json({
       stop_reason: ++providerCalls === 1 ? 'pause_turn' : 'end_turn',
       content: [{ type: 'text', text: 'A reply' }],
@@ -366,18 +370,28 @@ test('usage aggregates provider rounds per member and only the admin can read it
   });
   const admin = { authorization: credentials('admin', env.CLAUDE_USER_1_PASSWORD) };
   const member = { authorization: credentials(env.CLAUDE_USER_2_ID, env.CLAUDE_USER_2_PASSWORD) };
-  const report = { method: 'GET', url: '/api/clubhelper?view=usage' };
-  assert.equal((await request(handler, { ...report, headers: { authorization: '' } })).status, 401);
-  assert.equal((await request(handler, { ...report, headers: member })).status, 403);
-  assert.equal((await request(handler, { method: 'GET', headers: admin })).body.isAdmin, true);
+  const adminGet = url => request(handler, { method: 'GET', url, headers: admin });
+  const daily = '/api/clubhelper?view=usage&date=2026-11-18';
+  for (const url of [daily, '/api/clubhelper?view=usage']) {
+    assert.equal((await request(handler, { method: 'GET', url, headers: { authorization: '' } })).status, 401);
+    assert.equal((await request(handler, { method: 'GET', url, headers: member })).status, 403);
+  }
+  assert.equal((await adminGet('/api/clubhelper')).body.isAdmin, true);
   assert.equal((await request(handler, { headers: member })).status, 200);
   assert.equal(providerCalls, 2);
-  const result = await request(createHandler({ env: config, usageStore: store }), { ...report, headers: admin });
+  const result = await adminGet(daily);
   assert.equal(result.status, 200);
-  assert.ok(result.body.since);
   assert.deepEqual(result.body.users, [
     { id: 'admin', requests: 0, inputTokens: 0, outputTokens: 0 },
-    { id: env.CLAUDE_USER_2_ID, requests: 1, inputTokens: 66, outputTokens: 6 }
+    { id: env.CLAUDE_USER_2_ID, requests: 1, inputTokens: 66, outputTokens: 6 },
+    { id: 'unconfigured-member', requests: 0, inputTokens: 0, outputTokens: 0 }
   ]);
-  assert.equal((await request(createHandler({ env: config, usageStore: null }), { ...report, headers: admin })).status, 503);
+  assert.equal((await adminGet(daily.replace('11-18', '11-19'))).body.users[1].requests, 0);
+  assert.equal((await adminGet(daily.replace('11-18', '99-99'))).status, 400);
+  assert.equal((await adminGet(daily)).body.users[1].requests, 1);
+  assert.equal((await adminGet('/api/clubhelper?view=usage')).body.users[1].requests, 1);
+  const missing = await request(createHandler({ env: config, usageStore: null }), { method: 'GET', url: daily, headers: admin });
+  assert.deepEqual(missing.body, { storageConfigured: false, users: [
+    { id: 'admin' }, { id: env.CLAUDE_USER_2_ID }, { id: 'unconfigured-member' }
+  ] });
 });

@@ -20,6 +20,15 @@ function loadAccounts(env) {
   return accounts.length ? accounts : null;
 }
 
+function listConfiguredIds(env) {
+  const ids = new Set();
+  for (let slot = 1; slot <= 25; slot++) {
+    const id = env[`CLAUDE_USER_${slot}_ID`]?.trim();
+    if (id && validId(id)) ids.add(id);
+  }
+  return [...ids];
+}
+
 function authenticate(authorization, accounts) {
   if (typeof authorization !== 'string' || authorization.length > 2048) return null;
   const match = /^Basic ([A-Za-z0-9+/]+={0,2})$/.exec(authorization);
@@ -42,4 +51,4 @@ function authenticate(authorization, accounts) {
   return authenticatedAccount;
 }
 
-module.exports = { loadAccounts, authenticate };
+module.exports = { loadAccounts, authenticate, listConfiguredIds };

@@ -152,7 +152,8 @@
     byId('usage-table-wrap').hidden = true;
     byId('usage-period').textContent = '';
     try {
-      const result = await api('GET', undefined, authorization, '?view=usage');
+      const query = new URLSearchParams({ view: 'usage', date: byId('usage-date').value });
+      const result = await api('GET', undefined, authorization, '?' + query);
       if (load !== usageLoad) return;
       const format = new Intl.NumberFormat();
       const rows = result.users.map(user => {
@@ -163,15 +164,20 @@
         row.append(member);
         for (const number of [user.requests, user.inputTokens, user.outputTokens, user.inputTokens + user.outputTokens]) {
           const value = document.createElement('td');
-          value.textContent = format.format(number);
+          value.textContent = result.storageConfigured === false ? '—' : format.format(number);
           row.append(value);
         }
         return row;
       });
       byId('usage-rows').replaceChildren(...rows);
       byId('usage-table-wrap').hidden = false;
-      byId('usage-period').textContent = result.since ? 'Tracking since ' + new Date(result.since).toLocaleDateString() : 'No requests recorded yet';
-      byId('usage-status').textContent = '';
+      const date = byId('usage-date').value;
+      byId('usage-period').textContent = date || (result.since
+        ? 'Tracking since ' + new Date(result.since).toLocaleDateString('en-US', { timeZone: 'America/New_York' })
+        : '');
+      byId('usage-status').textContent = result.storageConfigured === false
+        ? 'Connect usage storage to start tracking requests and tokens.'
+        : !date && !result.since ? 'No requests recorded yet.' : '';
     } catch (error) {
       if (load !== usageLoad) return;
       if (error.status === 401) {
@@ -186,6 +192,7 @@
   }
 
   function setUsageView(requested) {
+    usageLoad++;
     showingUsage = requested && isAdmin;
     byId('usage-panel').hidden = !showingUsage;
     byId('conversation').hidden = showingUsage;
@@ -206,6 +213,12 @@
 
   byId('usage-toggle').addEventListener('click', () => setUsageView(!showingUsage));
   byId('usage-refresh').addEventListener('click', refreshUsage);
+
+  byId('usage-date').addEventListener('change', refreshUsage);
+  byId('usage-all').addEventListener('click', () => {
+    byId('usage-date').value = '';
+    refreshUsage();
+  });
 
   function addMessage(role, content, files = [], sources = []) {
     const article = document.createElement('article');

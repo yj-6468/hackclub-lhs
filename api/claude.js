@@ -1,4 +1,4 @@
-const { loadAccounts, authenticate } = require('../server/accounts.cjs');
+const { loadAccounts, authenticate, listConfiguredIds } = require('../server/accounts.cjs');
 const { createUsageStore, addClaudeUsage } = require('../server/usage.cjs');
 
 const MAX_BODY_BYTES = 4_000_000;
@@ -123,16 +123,24 @@ function createHandler({ env = process.env, fetchImpl = fetch, now = Date.now, u
     const allowedModels = OPUS_SLOTS.has(slot) ? ['sonnet', 'haiku', 'opus'] : ['sonnet', 'haiku'];
     const isAdmin = slot === 1 && userId === 'admin';
     if (req.method === 'GET') {
-      if (new URL(req.url || '/', 'http://localhost').searchParams.get('view') !== 'usage') {
-        return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}) });
+      const params = new URL(req.url || '/', 'http://localhost').searchParams;
+      const view = params.get('view');
+      const date = params.get('date') || '';
+      if (view === 'usage') {
+        if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) ||
+            new Date(date).toISOString().slice(0, 10) !== date)) {
+          return send(400, { error: 'Choose a valid date.' });
+        }
+        try {
+          if (!isAdmin) return send(403, { error: 'Usage is available to the Club helper admin.' });
+          const ids = listConfiguredIds(env);
+          if (!usageStore) return send(200, { storageConfigured: false, users: ids.map(id => ({ id })) });
+          return send(200, await usageStore.read(ids, date));
+        } catch {
+          return send(503, { error: 'Storage is unavailable. Please try again.' });
+        }
       }
-      if (!isAdmin) return send(403, { error: 'Usage is available to the Club helper admin.' });
-      if (!usageStore) return send(503, { error: 'Connect usage storage to start tracking requests and tokens.' });
-      try {
-        return send(200, await usageStore.read(accounts.map(account => account.id)));
-      } catch {
-        return send(503, { error: 'Usage storage is unavailable. Please try again.' });
-      }
+      return send(200, { ok: true, userId, allowedModels, ...(isAdmin ? { isAdmin } : {}) });
     }
     if (req.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
       return send(415, { error: 'Send a JSON request.' });
